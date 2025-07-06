@@ -22,10 +22,8 @@
           (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
           l.hash
         );
-      } else {
-        // For custom domains, just redirect to the same path on the main domain
-        window.location.replace('/' + window.location.pathname.slice(1));
       }
+      // For custom domains, do nothing - let the server handle routing
     </script>
   </head>
   <body>
