@@ -24,22 +24,17 @@
   <link rel="icon" href="/lovable-uploads/ORCATech-logo-transparent.png" type="image/png">
 
   <script type="text/javascript">
-    // Single Page Apps for GitHub Pages
-    // MIT License
-    // https://github.com/rafgraph/spa-github-pages
+    // Handle SPA routing redirects from 404.html
+    (function () {
+      var urlParams = new URLSearchParams(window.location.search);
+      var redirect = urlParams.get('redirect');
 
-    // This script handles SPA routing for GitHub Pages (including custom domains)
-    (function (l) {
-      if (l.search[1] === '/') {
-        var decoded = l.search.slice(1).split('&').map(function (s) {
-          return s.replace(/~and~/g, '&')
-        }).join('?');
-        window.history.replaceState(null, null,
-          l.pathname.slice(0, -1) + decoded + l.hash
-        );
+      if (redirect) {
+        // Remove the redirect parameter and navigate to the original path
+        var newUrl = decodeURIComponent(redirect);
+        window.history.replaceState(null, null, newUrl);
       }
-    }(window.location))
-
+    })();
   </script>
   <script type="module" crossorigin src="/assets/index-BLYND_pr.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/index-Bu2Eupp4.css">
