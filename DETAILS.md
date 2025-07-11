@@ -2,46 +2,45 @@
 
 ---
 
-## 1. Project Overview
+## Project Overview
 
 ### Purpose & Domain
-**orca-tech-learn** is a React + TypeScript web application designed as a comprehensive **tech learning platform**. It provides curated educational content in the form of **courses**, **learning paths**, and **projects/exercises** focused on modern technology domains such as programming, cloud, Kubernetes, CI/CD, infrastructure as code, and more.
+This project is a **React + TypeScript** Single Page Application (SPA) designed as a **learning platform** focused on **technology education**. It provides curated **learning paths**, **courses**, and **projects** across various domains such as web development, Python, Kubernetes, CI/CD, Docker, Infrastructure as Code (IaC), and more.
 
 ### Problem Solved
-- Centralizes and organizes technical learning content for developers and IT professionals.
-- Provides structured learning journeys (learning paths) combining courses and projects.
-- Enables filtering, searching, and progress tracking to personalize learning.
-- Offers rich metadata (difficulty, duration, prerequisites) to guide learners.
-- Supports interactive UI with collapsible sections, filtering bars, and responsive design.
+- Enables learners to discover, navigate, and track progress through structured learning paths and courses.
+- Provides rich metadata, filtering, and search capabilities to help users find relevant content efficiently.
+- Supports project-based learning with detailed project descriptions, objectives, and resources.
+- Facilitates user progress tracking, favorites, and personalized learning experiences.
 
 ### Target Users & Use Cases
-- **Developers and IT professionals** seeking structured learning paths.
-- **Tech learners** wanting curated courses and hands-on projects.
-- **Educators and content managers** who want to maintain and extend course/project catalogs.
-- Use cases include browsing courses, filtering by difficulty or topic, tracking progress, and accessing project exercises.
+- **Learners and developers** seeking structured educational content in software development and DevOps.
+- **Educators and content creators** managing and presenting curated learning paths and projects.
+- Users who want **interactive filtering, search, and progress tracking** within a modern web UI.
+- Use cases include browsing courses, filtering by difficulty or topic, viewing project details, and tracking learning progress.
 
 ### Core Business Logic & Domain Models
-- **LearningPath**: Represents a curated sequence of courses grouped by themes or skills.
-- **Course**: Individual educational units with metadata and resources.
-- **Project**: Hands-on exercises with objectives, deliverables, and resources.
-- **Resource**: Supplementary materials linked to courses or projects.
-- **User Progress**: Tracks favorites, completion, and progress per resource.
+- **Learning Paths**: Aggregations of courses grouped by topic or skill area.
+- **Courses**: Individual learning units with metadata, resources, and prerequisites.
+- **Projects**: Hands-on exercises with objectives, deliverables, and difficulty ratings.
+- **Resources**: Supplementary materials linked to courses or projects.
+- **User Progress**: Tracks completion, favorites, and learning state per user.
+- **Search & Filtering**: Enables dynamic querying across courses and projects.
 
 ---
 
-## 2. Architecture and Structure
+## Architecture and Structure
 
 ### High-Level Architecture
-- **Frontend SPA** built with React and TypeScript.
-- **Component-Based UI Architecture** with modular, reusable components.
-- **Static Data Layer**: Courses, projects, and learning paths are defined as static TypeScript data modules.
-- **State Management**: React Context API for user progress and search state.
-- **Routing**: React Router for client-side navigation.
-- **Styling**: Tailwind CSS with utility-first approach and custom design system components.
-- **Build & Dev**: Vite as build tool with React SWC plugin, PostCSS, and Tailwind integration.
-- **CI/CD**: GitHub Actions workflow for automated deployment to GitHub Pages.
-
----
+- **Frontend SPA** built with **React** and **TypeScript**, using **React Router** for client-side routing.
+- **Component-Based Architecture** with separation into:
+  - **UI Primitives** (`src/components/ui/`): Reusable, styled, accessible components wrapping Radix UI primitives.
+  - **Feature Components** (`src/components/course/`, `src/components/learning-path/`, `src/components/layout/`): Domain-specific UI components.
+  - **Pages** (`src/pages/`): Route-level components rendering full pages.
+  - **Context Providers** (`src/context/`): Global state management for search and user progress.
+  - **Static Data Modules** (`src/data/`): Hardcoded course, project, and learning path data.
+  - **Hooks** (`src/hooks/`): Custom React hooks for UI behavior and business logic.
+  - **Utilities** (`src/lib/utils.ts`): Helper functions for styling and other common tasks.
 
 ### Complete Repository Structure
 
@@ -146,6 +145,7 @@
 │   ├── main.tsx
 │   └── vite-env.d.ts
 ├── .gitignore
+├── DETAILS.md
 ├── README.md
 ├── bun.lockb
 ├── components.json
@@ -163,274 +163,205 @@
 
 ---
 
-## 3. Technical Implementation Details
+## Technical Implementation Details
 
-### Module Organization & Boundaries
+### Core Technologies
+- **React 18+ with TypeScript:** Strongly typed UI components and hooks.
+- **React Router DOM:** Declarative routing with dynamic parameters.
+- **Radix UI Primitives:** Accessible, unstyled base components wrapped with custom styling.
+- **Tailwind CSS:** Utility-first CSS framework with custom theming and animations.
+- **React Query (@tanstack/react-query):** Server state management (though data is mostly static).
+- **Sonner:** Toast notification system.
+- **Recharts:** Charting library for data visualization.
+- **Embla Carousel:** Carousel/slider UI component.
+- **Fuse.js:** Fuzzy search engine used in search context.
+- **React Hook Form & Zod:** Form management and validation (implied by dependencies).
+- **Vite:** Modern build tool with React SWC plugin for fast builds.
 
-- **`src/components/`**:  
-  - **`ui/`**: Generic reusable UI components wrapping Radix UI primitives and custom styles (buttons, cards, dialogs, menus, inputs, etc.).  
-  - **`course/`**: Domain-specific components for course pages (filter bars, hero sections, resource cards).  
-  - **`learning-path/`**: Components related to learning path pages (hero, sidebar, grouped course sections).  
-  - **`layout/`**: Layout components such as header, navigation, mobile menu, and search bar.
+### Application Entry Points
+- `src/main.tsx`: Bootstraps React app, renders `<App />` into DOM.
+- `src/App.tsx`: Root component, sets up context providers (`UserProgressProvider`, `SearchProvider`, `TooltipProvider`), routing (`<Routes>`), and global layout.
+- `src/pages/`: Route components rendering full pages (Home, Courses, Projects, Learning Paths, NotFound).
+- `src/components/layout/`: Header, navigation, mobile menu, and search bar components for consistent UI layout.
 
-- **`src/pages/`**: Route-level React components representing pages (Home, Courses, Projects, Learning Paths, About, Contact, NotFound).
+### Data Layer
+- Static data files under `src/data/`:
+  - `courses/`: Course metadata grouped by domain.
+  - `projects/`: Project metadata grouped by domain.
+  - `learningPaths.ts`: Aggregated learning path definitions.
+- Data is typed with interfaces from `src/types/learningPath.ts` and `src/types/project.ts`.
+- Data is imported directly into pages and components for rendering.
 
-- **`src/data/`**: Static data modules organized by domain:  
-  - `courses/`: Course data split by category (programming, kubernetes, iac, etc.).  
-  - `projects/`: Project data similarly categorized.  
-  - `learningPaths.ts`: Learning path definitions referencing courses.
+### UI Components
+- **UI Primitives (`src/components/ui/`):**  
+  - Atomic components like `Button`, `Badge`, `Card`, `Input`, `Select`, `Popover`, `Tooltip`, `Toast`, `Tabs`, `Accordion`, `Dialog`, `Checkbox`, `RadioGroup`, `Slider`, `Switch`, `Table`, etc.
+  - Built with React + Radix UI + Tailwind CSS + `class-variance-authority` for variant styling.
+  - Use `React.forwardRef` extensively for accessibility and integration.
+- **Feature Components:**  
+  - `CourseCard`, `LearningPathCard`, `ProjectCard`: Present domain-specific data.
+  - `CourseFilterBar`, `ResourcesSection`: Filtering and resource display.
+  - `LearningPathHero`, `CourseGroupSection`, `LearningPathSidebar`: Learning path UI.
+  - `Header`, `Navigation`, `MobileMenu`, `SearchBar`: Layout and navigation.
 
-- **`src/context/`**: React Context providers for global state:  
-  - `SearchContext`: Manages search queries and results.  
-  - `UserProgressContext`: Tracks user progress, favorites, and completion.
+### State Management & Hooks
+- **React Context Providers:**
+  - `UserProgressContext`: Tracks user progress, favorites, and persistence.
+  - `SearchContext`: Manages search queries, results, and filters.
+- **Custom Hooks:**
+  - `useCourseFilters`: Encapsulates filtering logic for courses/resources.
+  - `useScrollToTop`: Scrolls to top on route changes.
+  - `useIsMobile`: Detects mobile viewport.
+  - `useToast`: Toast notification management.
 
-- **`src/hooks/`**: Custom React hooks for UI utilities and domain logic:  
-  - `useCourseFilters`: Filtering logic for course resources.  
-  - `useToast`: Toast notification management.  
-  - `useIsMobile`: Responsive viewport detection.  
-  - `useScrollToTop`: Scroll behavior on route change.
+### Routing & Navigation
+- Uses React Router v6 with `<Routes>` and `<Route>` components.
+- Dynamic routes for courses (`/course/:courseId`), learning paths (`/learning-path/:pathId`), and projects.
+- Redirect component (`Index.tsx`) redirects to home.
+- 404 pages (`NotFound.tsx`, `NotFoundPage.tsx`) handle unmatched routes.
 
-- **`src/lib/utils.ts`**: Utility functions, e.g., className concatenation (`cn`).
-
-- **`src/types/`**: TypeScript interfaces defining domain models (`Course`, `LearningPath`, `Project`, `Resource`).
-
----
-
-### Key Interfaces & Data Structures
-
-- **Domain Models (`src/types/learningPath.ts` and `project.ts`):**  
-  - `LearningPath`: id, title, description, icon, category, tags, courseIds, courseGroups, estimatedHours, isPopular, isNew, lastUpdated.  
-  - `Course`: id, title, description, icon, difficulty, duration, category, topics, resources, prerequisites, tags, isNew, lastUpdated.  
-  - `Project`: id, title, description, difficulty, category, objectives, deliverables, resources, tags, isPopular, isNew, lastUpdated.  
-  - `Resource`: id, title, description, type, url, difficulty, duration, tags, isExternal, isInteractive.
-
-- **UI State Types:**  
-  - Filter states, collapsible section states, search queries, user progress data.
-
----
-
-### Communication Patterns
-
-- **Component Composition:** UI built by composing small reusable components (e.g., `CourseCard` inside `CourseGroupSection` inside `LearningPathPage`).
-
-- **Context API:**  
-  - Global state shared via React Context (`SearchContext`, `UserProgressContext`).
-
-- **Props Drilling:** Data passed down via props from pages to components.
-
-- **Hooks:** Encapsulate reusable logic and side effects.
-
----
-
-### Entry Points & Main Execution Paths
-
-- **`src/main.tsx`**: React app bootstrap, renders `<App />` into DOM.
-
-- **`src/App.tsx`**: Root component, sets up React Router routes, context providers, and global UI components (toaster, tooltip).
-
-- **Routing:**  
-  - Routes defined for `/`, `/courses`, `/projects`, `/learning-paths`, `/learning-path/:pathId`, `/course/:courseId`, `/about`, `/contact`, and fallback 404.
-
-- **Pages:**  
-  - Each page component fetches or imports static data, manages local UI state, and renders composed UI components.
+### Styling & Theming
+- Tailwind CSS with custom configuration (`tailwind.config.ts`).
+- CSS variables and dark mode support in `src/index.css` and `src/App.css`.
+- Utility function `cn()` merges class names conditionally.
+- `class-variance-authority` (`cva`) manages component variants and styling.
 
 ---
 
-## 4. Development Patterns and Standards
+## Development Patterns and Standards
 
-### Code Organization Principles
+### Code Organization
+- **Feature-based modularity:** Components grouped by feature/domain (`course`, `learning-path`, `layout`, `ui`).
+- **UI primitives separated from business components:** `src/components/ui` contains reusable UI elements; domain components live in feature folders.
+- **Static data separated from UI:** `src/data` holds content, decoupled from rendering logic.
+- **TypeScript interfaces** in `src/types` enforce data contracts and enable type safety.
 
-- **Modular directory structure** separating UI components, pages, data, hooks, and contexts.
+### Component Design
+- **Functional Components with Hooks:** All React components use functional style and hooks.
+- **ForwardRef Pattern:** Used extensively for accessibility and integration.
+- **Compound Components:** Many UI components use compound patterns (e.g., Accordion, Dialog, Tabs).
+- **Composition over Inheritance:** Components are composed from primitives and smaller parts.
+- **Variant-based Styling:** `cva` and `cn` utilities enable flexible, theme-aware styling.
 
-- **TypeScript for type safety** and domain modeling.
+### State Management
+- **Context API:** For global state (search, user progress).
+- **Local state:** Managed via `useState` in components for UI-specific state (e.g., collapsible sections).
+- **Custom hooks:** Encapsulate reusable logic (filtering, responsiveness, scroll behavior).
 
-- **Component-based UI** with reusable, composable React functional components.
-
-- **Use of React Context** for global state management.
-
-- **Static data modules** for content, enabling easy updates and offline development.
-
-- **Consistent styling** via Tailwind CSS and utility functions (`cn`).
-
----
-
-### Testing Strategies & Coverage
-
-- No explicit test files were provided; likely testing is done via unit tests or snapshot tests on components.
-
-- Components are stateless or have minimal state, facilitating easy testing.
-
-- Hooks encapsulate logic, enabling isolated testing.
-
----
+### Testing & Quality
+- **Linting:** ESLint configured via `eslint.config.js`.
+- **Type Checking:** Strict TypeScript configuration (`tsconfig.json`).
+- **Code Quality:** Use of `class-variance-authority` and utility functions promotes maintainable styling.
 
 ### Error Handling & Logging
+- Minimal explicit error handling in UI components; relies on React error boundaries or upstream handling.
+- Console logs in error pages (`NotFound.tsx`) for debugging.
 
-- UI components handle missing data gracefully (e.g., `LearningPathNotFound` component).
-
-- `NotFound.tsx` logs errors on mount for 404 routes.
-
-- No explicit global error boundaries shown, but React error boundaries could be added.
-
----
-
-### Configuration Management Patterns
-
-- **Environment variables** managed via Vite (`vite-env.d.ts`).
-
-- **Build-time configs** in `vite.config.ts`, `tailwind.config.ts`, and TypeScript configs.
-
-- **CI/CD pipeline** configured via GitHub Actions workflow (`.github/workflows/deploy.yml`).
+### Configuration Management
+- Environment variables managed via Vite (`vite-env.d.ts`).
+- Tailwind and PostCSS configured for styling.
+- Build and development scripts defined in `package.json`.
 
 ---
 
-## 5. Integration and Dependencies
+## Integration and Dependencies
 
-### External Libraries & Their Purposes
+### External Libraries & Purposes
+- **React & React DOM:** Core UI framework.
+- **React Router DOM:** Client-side routing.
+- **Radix UI:** Accessible UI primitives.
+- **Tailwind CSS:** Styling framework.
+- **React Query:** Data fetching and caching (potentially for future dynamic data).
+- **Lucide React:** SVG icon library.
+- **Sonner:** Toast notifications.
+- **Recharts:** Charting.
+- **Embla Carousel:** Carousel UI.
+- **Fuse.js:** Fuzzy search engine.
+- **React Hook Form & Zod:** Form handling and validation.
+- **Vite:** Build tool with React SWC plugin.
+- **Class Variance Authority:** Styling variants management.
+- **clsx & tailwind-merge:** Class name utilities.
 
-- **React ecosystem:** `react`, `react-dom`, `react-router-dom` for SPA and routing.
+### Internal Modules
+- **`src/components/`**: UI and feature components.
+- **`src/context/`**: React Context providers.
+- **`src/data/`**: Static content.
+- **`src/hooks/`**: Custom hooks.
+- **`src/lib/utils.ts`**: Utility functions.
 
-- **UI primitives:** `@radix-ui/react-*` for accessible UI components (dialogs, menus, tooltips, etc.).
-
-- **Iconography:** `lucide-react` for SVG icons.
-
-- **Styling:** Tailwind CSS, `tailwind-merge`, `tailwindcss-animate`.
-
-- **Data fetching & caching:** `@tanstack/react-query`.
-
-- **Form handling:** `react-hook-form`.
-
-- **Validation:** `zod`.
-
-- **Notifications:** `sonner`.
-
-- **Charts & UI widgets:** `recharts`, `react-day-picker`, `embla-carousel-react`.
-
-- **Utilities:** `clsx`, `fuse.js` (fuzzy search), `date-fns`.
-
----
-
-### Internal Modules & Contracts
-
-- **`@/components/ui/`**: Shared UI component library.
-
-- **`@/hooks/`**: Custom hooks for domain and UI logic.
-
-- **`@/context/`**: React Context providers for global state.
-
-- **`@/data/`**: Static data modules for courses, projects, learning paths.
-
-- **`@/types/`**: TypeScript interfaces defining domain models.
+### Build & Deployment
+- **Vite config (`vite.config.ts`)**: Build and dev server setup.
+- **GitHub Actions (`.github/workflows/deploy.yml`)**: CI/CD pipeline for deployment to GitHub Pages.
+- **Static assets (`public/`)**: Favicons, 404 page, robots.txt, images.
 
 ---
 
-### Build & Deployment Dependencies
-
-- **Vite** as build tool with React SWC plugin.
-
-- **PostCSS** and **Tailwind CSS** for styling.
-
-- **GitHub Actions** workflow for CI/CD deployment to GitHub Pages.
-
----
-
-## 6. Usage and Operational Guidance
+## Usage and Operational Guidance
 
 ### Getting Started
+- **Install dependencies:** `npm ci` or `yarn install`.
+- **Run development server:** `npm run dev` (starts Vite dev server on port 8080).
+- **Build for production:** `npm run build`.
+- **Preview production build:** `npm run preview`.
+- **Lint code:** `npm run lint`.
 
-- Clone repository and install dependencies via `npm ci`.
+### Project Structure Navigation
+- **Pages:** `src/pages/` — entry points for routes.
+- **UI Components:** `src/components/ui/` — reusable UI primitives.
+- **Feature Components:** `src/components/course/`, `src/components/learning-path/`, `src/components/layout/`.
+- **Data:** `src/data/` — static course, project, and learning path data.
+- **Context:** `src/context/` — global state providers.
+- **Hooks:** `src/hooks/` — reusable logic hooks.
+- **Utilities:** `src/lib/utils.ts` — helper functions.
 
-- Run development server with `npm run dev` (configured on port 8080).
+### Modifying or Extending Content
+- Add or update courses in `src/data/courses/`.
+- Add or update projects in `src/data/projects/`.
+- Modify learning paths in `src/data/learningPaths.ts`.
+- Use TypeScript interfaces in `src/types/` to maintain data consistency.
 
-- Access app at `http://localhost:8080`.
+### Adding UI Components
+- Create new components in `src/components/ui/` for reusable UI elements.
+- Use Radix UI primitives and `cva` for styling consistency.
+- Follow existing patterns of `forwardRef` and variant styling.
 
----
+### State and Context
+- Use existing contexts (`UserProgressContext`, `SearchContext`) for global state.
+- Create new contexts in `src/context/` if needed for additional global state.
 
-### Development Workflow
+### Routing
+- Add new pages in `src/pages/`.
+- Update routing in `src/App.tsx` to add new routes.
+- Use React Router's dynamic routing features for parameterized routes.
 
-- **Code organization:** Add new UI components under `src/components/` with domain-specific subfolders or `ui` for generic components.
-
-- **Data updates:** Modify or add courses/projects/learning paths in `src/data/` modules.
-
-- **Routing:** Add new pages under `src/pages/` and register routes in `src/App.tsx`.
-
-- **Styling:** Use Tailwind CSS classes and utility `cn` for conditional styling.
-
-- **State management:** Use React Context or hooks for shared state.
-
-- **Testing:** Add unit or integration tests alongside components/hooks.
-
----
+### Theming and Styling
+- Modify Tailwind config (`tailwind.config.ts`) to customize theme colors, fonts, and animations.
+- Use `cn()` utility for conditional class names.
+- Leverage CSS variables in `src/index.css` and `src/App.css` for theming.
 
 ### Deployment
+- CI/CD pipeline configured via `.github/workflows/deploy.yml` to deploy to GitHub Pages.
+- Static assets served from `public/`.
+- Environment variables configured via Vite.
 
-- Automated via GitHub Actions (`.github/workflows/deploy.yml`) deploying to GitHub Pages.
-
-- Manual deployment scripts available in documentation (`docs/deployment-guide.md`).
-
-- Environment variables (e.g., `VITE_API_URL`) configured via GitHub Secrets.
-
----
-
-### Monitoring & Observability
-
-- No explicit monitoring tools integrated; can be added via third-party services.
-
-- Logging limited to console and error boundaries.
+### Monitoring and Observability
+- No explicit monitoring integrated; consider adding logging or analytics as needed.
+- Use browser devtools and React DevTools for debugging.
 
 ---
 
-### Performance & Scalability
+## Summary
 
-- Static data modules enable fast load times without backend calls.
+This React + TypeScript project is a **modular, scalable learning platform** with a clean separation of concerns:
 
-- React Query used for caching if dynamic data fetching is added.
+- **Static data-driven** content for courses, projects, and learning paths.
+- **Reusable UI primitives** built on Radix UI and Tailwind CSS.
+- **Context-based global state** for user progress and search.
+- **Modern development tooling** with Vite, ESLint, and TypeScript.
+- **Comprehensive routing and page structure** for SPA navigation.
+- **CI/CD pipeline** for automated deployment.
 
-- Tailwind CSS and code splitting optimize bundle size.
-
-- Responsive design via Tailwind and custom hooks (`useIsMobile`).
-
----
-
-### Security Patterns
-
-- Client-side SPA; no backend code exposed.
-
-- Uses React Router for safe navigation.
-
-- No direct API calls shown; if added, secure via environment variables and HTTPS.
+The codebase is well-structured for maintainability, extensibility, and rapid development, with clear patterns for adding new content, UI components, and features.
 
 ---
 
-## 7. Actionable Insights for Developers and AI Agents
-
-- **To understand what this codebase does:**  
-  - Focus on `src/pages/` for entry points and user flows.  
-  - Explore `src/components/` for UI building blocks and domain-specific components.  
-  - Review `src/data/` for static content shaping the learning platform.  
-  - Check `src/context/` and `src/hooks/` for state management and logic encapsulation.
-
-- **To work with or extend the codebase:**  
-  - Add new courses or projects by extending data files in `src/data/courses` or `src/data/projects`.  
-  - Create new UI components in `src/components/ui` or domain folders.  
-  - Use existing hooks and context providers for stateful logic.  
-  - Follow existing styling conventions with Tailwind CSS and `cn` utility.  
-  - Use React Router for navigation and route management.  
-  - Run and debug locally with Vite dev server on port 8080.
-
-- **To maintain or improve:**  
-  - Add tests for components and hooks.  
-  - Implement error boundaries and logging for robustness.  
-  - Integrate monitoring and analytics for operational insights.  
-  - Modularize data further if dynamic backend integration is planned.  
-  - Optimize bundle size with lazy loading and code splitting.
-
----
-
-# Summary
-
-**orca-tech-learn** is a well-structured React + TypeScript SPA for tech education, leveraging static data modules, a rich component library, and modern frontend tooling. It supports scalable content management, responsive UI, and extensible architecture suitable for continuous growth and feature addition.
-
----
-
-#### Generated by [detailer](https://detailer.ginylil.com/)
+*This document is optimized for AI agents and developers to quickly understand the project’s purpose, architecture, and how to work with the codebase effectively.*
