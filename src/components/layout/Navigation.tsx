@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu } from 'lucide-react';
+import { Menu, Settings } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +13,12 @@ import { Button } from "@/components/ui/button";
 
 const Navigation = () => {
   const location = useLocation();
+  const { user, isAuthenticated } = useAuth();
   
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
+  
+  // Check if user has management access (admin, moderator, or owner)
+  const hasManagementAccess = isAuthenticated && user?.role && ['admin', 'moderator', 'owner'].includes(user.role);
 
   const navigationItems = [
     { path: '/', label: 'Home' },
@@ -25,6 +30,11 @@ const Navigation = () => {
     { path: '/contact', label: 'Contact Us' },
     { path: '/support', label: 'Support Us' },
   ];
+  
+  // Add management link for admin/moderator users
+  const allNavigationItems = hasManagementAccess 
+    ? [...navigationItems, { path: '/management', label: 'Management', icon: Settings }]
+    : navigationItems;
 
   return (
     <DropdownMenu>
@@ -41,16 +51,17 @@ const Navigation = () => {
         align="start" 
         className="w-56 bg-slate-800 border-slate-700 z-50"
       >
-        {navigationItems.map((item) => (
+        {allNavigationItems.map((item) => (
           <DropdownMenuItem key={item.path} asChild className="focus:bg-slate-700">
             <Link
               to={item.path}
-              className={`w-full px-3 py-2 text-sm transition-colors ${
+              className={`w-full px-3 py-2 text-sm transition-colors flex items-center gap-2 ${
                 isActive(item.path) 
                   ? 'text-blue-400 bg-slate-700/50' 
                   : 'text-slate-300 hover:text-white hover:bg-slate-700'
               }`}
             >
+              {item.icon && <item.icon className="w-4 h-4" />}
               {item.label}
             </Link>
           </DropdownMenuItem>
