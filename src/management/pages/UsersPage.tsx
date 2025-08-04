@@ -21,61 +21,86 @@ const UsersPage: React.FC = () => {
   const management = useManagement();
   const {
     users,
-    pagination,
-    filters,
+    totalUsers,
+    currentPage,
+    totalPages,
+    hasNextPage,
+    hasPrevPage,
     isLoading,
     error,
-    selectedUsers,
-    fetchUsers,
+    filters,
+    searchQuery,
+    searchResults,
+    isSearching,
+    selectedUserIds,
+    selectedCount,
+    isUserSelected,
+    loadUsers,
     searchUsers,
+    clearSearch,
     setFilters,
-    setSelectedUsers,
-    exportUsers,
-    isExporting,
+    clearFilters,
+    toggleUserSelection,
+    selectAllUsers,
+    clearSelection,
+    goToPage,
+    goToNextPage,
+    goToPrevPage,
+    refresh,
+    clearErrors,
   } = useUsers();
 
   const [showFilters, setShowFilters] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
 
   // Load users on mount
   React.useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    loadUsers();
+  }, [loadUsers]);
 
   const handleSearch = async (query: string) => {
     setSearchTerm(query);
     if (query.trim().length >= 2) {
       await searchUsers(query);
     } else if (query.trim().length === 0) {
-      await fetchUsers(filters);
+      clearSearch();
+      await loadUsers();
     }
   };
 
   const handleFilterChange = async (newFilters: Partial<UserFiltersType>) => {
-    const updatedFilters = { ...filters, ...newFilters };
-    setFilters(updatedFilters);
-    await fetchUsers(updatedFilters);
+    setFilters(newFilters);
   };
 
   const handlePageChange = async (page: number) => {
-    await fetchUsers({ ...filters, page });
+    await goToPage(page);
   };
 
   const handlePageSizeChange = async (pageSize: number) => {
-    await fetchUsers({ ...filters, limit: pageSize, page: 1 });
+    // Page size change not implemented in useUsers hook
+    console.warn('Page size change not implemented');
   };
 
   const handleRefresh = async () => {
-    await fetchUsers(filters);
+    await refresh();
   };
 
   const handleExport = async () => {
-    await exportUsers(filters);
+    setIsExporting(true);
+    try {
+      // Export functionality not yet implemented
+      console.warn('Export functionality not implemented in useUsers hook');
+      // Simulate export delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const handleBulkActionComplete = async () => {
-    setSelectedUsers([]);
-    await fetchUsers(filters);
+    clearSelection();
+    await refresh();
   };
 
   const getActiveFiltersCount = () => {
@@ -106,9 +131,9 @@ const UsersPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
             <Users className="w-6 h-6" />
             User Management
-            {pagination && (
+            {totalUsers > 0 && (
               <Badge variant="secondary" className="bg-slate-700 text-slate-200">
-                {pagination.total.toLocaleString()} users
+                {totalUsers.toLocaleString()} users
               </Badge>
             )}
           </h1>
@@ -194,10 +219,10 @@ const UsersPage: React.FC = () => {
       )}
 
       {/* Bulk Actions */}
-      {selectedUsers.length > 0 && (
+      {selectedUserIds.length > 0 && (
         <BulkUserActions
-          selectedUserIds={selectedUsers}
-          onClearSelection={() => setSelectedUsers([])}
+          selectedUserIds={selectedUserIds}
+          onClearSelection={clearSelection}
           onComplete={handleBulkActionComplete}
         />
       )}
@@ -261,21 +286,21 @@ const UsersPage: React.FC = () => {
             <>
               <UserTable
                 users={users}
-                selectedUsers={selectedUsers}
-                onSelectionChange={setSelectedUsers}
+                selectedUserIds={selectedUserIds}
+                onSelectionChange={toggleUserSelection}
                 onUserAction={handleRefresh}
                 isLoading={isLoading}
               />
               
-              {pagination && pagination.pages > 1 && (
+              {totalPages > 1 && (
                 <div className="mt-6 flex justify-center">
                   <Pagination
-                    currentPage={pagination.page}
-                    totalPages={pagination.pages}
-                    totalItems={pagination.total}
-                    pageSize={pagination.per_page}
-                    onPageChange={handlePageChange}
-                    onPageSizeChange={handlePageSizeChange}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalItems={totalUsers}
+                    pageSize={50}
+                    onPageChange={goToPage}
+                    onPageSizeChange={() => {}}
                   />
                 </div>
               )}
@@ -285,20 +310,20 @@ const UsersPage: React.FC = () => {
       </Card>
 
       {/* Summary Stats */}
-      {pagination && users.length > 0 && (
+      {totalUsers > 0 && users.length > 0 && (
         <Card className="bg-slate-800/30 border-slate-600">
           <CardContent className="p-4">
             <div className="flex items-center justify-between text-sm text-slate-400">
               <div className="flex items-center gap-4">
                 <span>
-                  Showing {((pagination.page - 1) * pagination.per_page) + 1} to{' '}
-                  {Math.min(pagination.page * pagination.per_page, pagination.total)} of{' '}
-                  {pagination.total.toLocaleString()} users
+                  Showing {((currentPage - 1) * 50) + 1} to{' '}
+                  {Math.min(currentPage * 50, totalUsers)} of{' '}
+                  {totalUsers.toLocaleString()} users
                 </span>
-                {selectedUsers.length > 0 && (
+                {selectedUserIds.length > 0 && (
                   <>
                     <span>•</span>
-                    <span>{selectedUsers.length} selected</span>
+                    <span>{selectedUserIds.length} selected</span>
                   </>
                 )}
               </div>

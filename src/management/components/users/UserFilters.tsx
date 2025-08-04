@@ -52,7 +52,13 @@ const UserFilters: React.FC<UserFiltersProps> = ({
   }, [localFilters, filters]);
 
   const handleFilterChange = (key: keyof UserFiltersType, value: any) => {
-    const newFilters = { ...localFilters, [key]: value || undefined };
+    // Convert special "all" values to undefined to clear the filter
+    let filterValue = value;
+    if (value === 'all_roles' || value === 'all_providers' || value === 'all_statuses' || value === '') {
+      filterValue = undefined;
+    }
+    
+    const newFilters = { ...localFilters, [key]: filterValue };
     setLocalFilters(newFilters);
     onFiltersChange(newFilters);
   };
@@ -121,7 +127,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({
               </SelectTrigger>
               <SelectContent className="bg-slate-800 border-slate-600">
                 <SelectItem 
-                  value=""
+                  value="all_roles"
                   className="text-slate-200 focus:bg-slate-700 focus:text-white"
                 >
                   All roles
@@ -152,7 +158,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({
               </SelectTrigger>
               <SelectContent className="bg-slate-800 border-slate-600">
                 <SelectItem 
-                  value=""
+                  value="all_providers"
                   className="text-slate-200 focus:bg-slate-700 focus:text-white"
                 >
                   All providers
@@ -188,7 +194,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({
               </SelectTrigger>
               <SelectContent className="bg-slate-800 border-slate-600">
                 <SelectItem 
-                  value=""
+                  value="all_statuses"
                   className="text-slate-200 focus:bg-slate-700 focus:text-white"
                 >
                   All statuses

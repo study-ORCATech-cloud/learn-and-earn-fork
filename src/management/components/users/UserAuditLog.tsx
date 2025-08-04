@@ -108,9 +108,15 @@ const UserAuditLog: React.FC<UserAuditLogProps> = ({
   };
 
   const handleFilterChange = (key: keyof AuditFilters, value: any) => {
+    // Convert special "all" values to undefined to clear the filter
+    let filterValue = value;
+    if (value === 'all_actions' || value === '') {
+      filterValue = undefined;
+    }
+    
     setFilters(prev => ({
       ...prev,
-      [key]: value || undefined,
+      [key]: filterValue,
     }));
   };
 
@@ -221,7 +227,7 @@ const UserAuditLog: React.FC<UserAuditLogProps> = ({
                     </SelectTrigger>
                     <SelectContent className="bg-slate-800 border-slate-600">
                       <SelectItem 
-                        value=""
+                        value="all_actions"
                         className="text-slate-200 focus:bg-slate-700 focus:text-white"
                       >
                         All actions

@@ -128,7 +128,7 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({
           <SelectContent className="bg-slate-800 border-slate-600">
             {filteredRoles.length === 0 ? (
               <SelectItem 
-                value="" 
+                value="no_roles_available" 
                 disabled
                 className="text-slate-500 focus:bg-slate-700"
               >
