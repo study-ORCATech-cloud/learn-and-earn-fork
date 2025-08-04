@@ -1,17 +1,26 @@
-// Main management context for global management state
+// Main management context that fetches permissions from backend
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { roleManagementService } from '../services/roleManagementService';
-import { canAccessManagement, getEffectivePermissions } from '../utils/permissions';
-import type { UserRole, UserPermissions, ManageableRoles } from '../types/role';
+import type { UserRole } from '../types/role';
+
+interface RoleHierarchy {
+  roles: Array<{
+    name: string;
+    level: number;
+    permissions: string[];
+  }>;
+  levels: Record<string, number>;
+  permissions: Record<string, string[]>;
+}
 
 interface ManagementState {
   isManagementEnabled: boolean;
   canAccessManagement: boolean;
+  currentUser: any;
   currentUserRole: UserRole | null;
-  currentUserPermissions: UserPermissions | null;
-  manageableRoles: ManageableRoles | null;
+  roleHierarchy: RoleHierarchy | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -19,17 +28,16 @@ interface ManagementState {
 interface ManagementContextType extends ManagementState {
   refreshPermissions: () => Promise<void>;
   clearError: () => void;
-  checkPermission: (permission: string) => boolean;
+  canPerformOperation: (operation: string) => boolean;
   canManageRole: (targetRole: UserRole) => boolean;
-  canPerformOperation: (operation: string, targetRole?: UserRole) => boolean;
 }
 
 const initialState: ManagementState = {
   isManagementEnabled: false,
   canAccessManagement: false,
+  currentUser: null,
   currentUserRole: null,
-  currentUserPermissions: null,
-  manageableRoles: null,
+  roleHierarchy: null,
   isLoading: true,
   error: null,
 };
@@ -59,7 +67,7 @@ export const ManagementProvider: React.FC<ManagementProviderProps> = ({ children
         setState(prev => ({ ...prev, isLoading: true, error: null }));
 
         // Check if management is enabled
-        const isEnabled = import.meta.env.VITE_MANAGEMENT_ENABLED === 'true';
+        const isEnabled = import.meta.env.VITE_MANAGEMENT_ENABLED !== 'false';
         
         if (!isEnabled) {
           setState(prev => ({
@@ -71,7 +79,7 @@ export const ManagementProvider: React.FC<ManagementProviderProps> = ({ children
           return;
         }
 
-        // Check if user is authenticated and has management access
+        // Check if user is authenticated
         if (!isAuthenticated || !user) {
           setState(prev => ({
             ...prev,
@@ -83,36 +91,38 @@ export const ManagementProvider: React.FC<ManagementProviderProps> = ({ children
         }
 
         const userRole = user.role as UserRole;
-        const hasAccess = canAccessManagement(userRole);
+        
+        // Check if user has management access (admin, moderator, owner)
+        const hasAccess = ['admin', 'moderator', 'owner'].includes(userRole);
 
         if (!hasAccess) {
           setState(prev => ({
             ...prev,
             isManagementEnabled: true,
             canAccessManagement: false,
+            currentUser: user,
             currentUserRole: userRole,
             isLoading: false,
           }));
           return;
         }
 
-        // Load user permissions and manageable roles
-        const [permissionsResponse, manageableRolesResponse] = await Promise.all([
-          roleManagementService.getUserPermissions(user.id),
-          roleManagementService.getManageableRoles(),
-        ]);
+        // Fetch role hierarchy from backend
+        const rolesResponse = await roleManagementService.getRoles();
+
+        if (!rolesResponse.success) {
+          throw new Error('Failed to fetch role hierarchy');
+        }
 
         setState(prev => ({
           ...prev,
           isManagementEnabled: true,
           canAccessManagement: true,
+          currentUser: user,
           currentUserRole: userRole,
-          currentUserPermissions: permissionsResponse.success ? permissionsResponse.data : null,
-          manageableRoles: manageableRolesResponse.success ? manageableRolesResponse.data : null,
+          roleHierarchy: rolesResponse.data,
           isLoading: false,
-          error: permissionsResponse.success && manageableRolesResponse.success 
-            ? null 
-            : 'Failed to load management permissions',
+          error: null,
         }));
 
       } catch (error) {
@@ -137,19 +147,17 @@ export const ManagementProvider: React.FC<ManagementProviderProps> = ({ children
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }));
 
-      const [permissionsResponse, manageableRolesResponse] = await Promise.all([
-        roleManagementService.getUserPermissions(user.id),
-        roleManagementService.getManageableRoles(),
-      ]);
+      const rolesResponse = await roleManagementService.getRoles();
+
+      if (!rolesResponse.success) {
+        throw new Error('Failed to refresh role hierarchy');
+      }
 
       setState(prev => ({
         ...prev,
-        currentUserPermissions: permissionsResponse.success ? permissionsResponse.data : null,
-        manageableRoles: manageableRolesResponse.success ? manageableRolesResponse.data : null,
+        roleHierarchy: rolesResponse.data,
         isLoading: false,
-        error: permissionsResponse.success && manageableRolesResponse.success 
-          ? null 
-          : 'Failed to refresh permissions',
+        error: null,
       }));
     } catch (error) {
       console.error('Failed to refresh permissions:', error);
@@ -165,36 +173,30 @@ export const ManagementProvider: React.FC<ManagementProviderProps> = ({ children
     setState(prev => ({ ...prev, error: null }));
   };
 
-  const checkPermission = (permission: string): boolean => {
-    if (!state.currentUserPermissions) return false;
-    return state.currentUserPermissions.permissions.includes(permission);
-  };
-
-  const canManageRoleHelper = (targetRole: UserRole): boolean => {
-    if (!state.manageableRoles) return false;
-    return state.manageableRoles.manageable_roles.includes(targetRole);
-  };
-
-  const canPerformOperation = (operation: string, targetRole?: UserRole): boolean => {
-    if (!state.currentUserRole) return false;
+  const canPerformOperation = (operation: string): boolean => {
+    if (!state.currentUserRole || !state.roleHierarchy) return false;
     
-    // Use utility function for operation validation
-    const { validateOperation } = require('../utils/permissions');
-    return validateOperation(
-      state.currentUserRole,
-      operation,
-      targetRole,
-      user?.id,
-    );
+    // Get user's permissions from the fetched role hierarchy
+    const userPermissions = state.roleHierarchy.permissions[state.currentUserRole] || [];
+    return userPermissions.includes(operation);
+  };
+
+  const canManageRole = (targetRole: UserRole): boolean => {
+    if (!state.currentUserRole || !state.roleHierarchy) return false;
+    
+    const currentUserLevel = state.roleHierarchy.levels[state.currentUserRole] || 0;
+    const targetRoleLevel = state.roleHierarchy.levels[targetRole] || 0;
+    
+    // Can only manage roles with lower level than current user
+    return currentUserLevel > targetRoleLevel;
   };
 
   const contextValue: ManagementContextType = {
     ...state,
     refreshPermissions,
     clearError,
-    checkPermission,
-    canManageRole: canManageRoleHelper,
     canPerformOperation,
+    canManageRole,
   };
 
   return (
