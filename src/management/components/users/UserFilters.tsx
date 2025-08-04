@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useRoles } from '../../hooks/useRoles';
 import type { UserFilters as UserFiltersType } from '../../types/user';
-import { USER_ROLES, OAUTH_PROVIDERS } from '../../utils/constants';
+import { OAUTH_PROVIDERS } from '../../utils/constants';
 
 interface UserFiltersProps {
   filters: UserFiltersType;

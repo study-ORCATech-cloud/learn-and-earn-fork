@@ -214,7 +214,8 @@ const UsersPage: React.FC = () => {
         <UserFilters
           filters={filters}
           onFiltersChange={handleFilterChange}
-          onClear={() => handleFilterChange({})}
+          onApplyFilters={() => {}}
+          onClearFilters={clearFilters}
         />
       )}
 

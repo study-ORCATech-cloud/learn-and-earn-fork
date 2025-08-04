@@ -350,7 +350,7 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
                 <SelectValue placeholder="Select new role..." />
               </SelectTrigger>
               <SelectContent className="bg-slate-800 border-slate-600">
-                {manageableRoles.map((role) => {
+                {manageableRoles?.manageable_roles?.map((role) => {
                   const roleInfo = formatRole(role.name);
                   return (
                     <SelectItem
