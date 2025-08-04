@@ -73,9 +73,9 @@ const ManagementDashboard: React.FC = () => {
   const management = useManagement();
   const { 
     users, 
-    pagination, 
+    totalUsers,
     isLoading: usersLoading, 
-    fetchUsers 
+    loadUsers 
   } = useUsers();
   
   const { 
@@ -87,9 +87,9 @@ const ManagementDashboard: React.FC = () => {
   // Load initial data
   React.useEffect(() => {
     if (management.canPerformOperation('view_all_users')) {
-      fetchUsers({ limit: 10 }); // Just for stats
+      loadUsers(1); // Load page 1 for stats
     }
-  }, [management, fetchUsers]);
+  }, [management.canPerformOperation, loadUsers]);
 
   const getHealthStatusColor = (status?: string) => {
     switch (status?.toLowerCase()) {
@@ -136,13 +136,13 @@ const ManagementDashboard: React.FC = () => {
     ).length;
 
     return {
-      total: pagination?.total || users.length,
+      total: totalUsers || users.length,
       active: activeCount,
       inactive: inactiveCount,
       recentLogins,
       roles: roleCount
     };
-  }, [users, pagination]);
+  }, [users, totalUsers]);
 
   const quickActions = [
     {

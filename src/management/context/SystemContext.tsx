@@ -255,22 +255,6 @@ interface SystemProviderProps {
 export const SystemProvider: React.FC<SystemProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(systemReducer, initialState);
 
-  // Auto-refresh effect
-  useEffect(() => {
-    if (!state.autoRefreshEnabled) return;
-
-    const interval = setInterval(async () => {
-      // Refresh critical system data
-      await Promise.all([
-        loadHealth(),
-        loadCacheStats(),
-        loadGlobalLogoutStatus(),
-      ]);
-    }, state.autoRefreshInterval * 1000);
-
-    return () => clearInterval(interval);
-  }, [state.autoRefreshEnabled, state.autoRefreshInterval]);
-
   const loadDashboard = useCallback(async () => {
     try {
       dispatch({ type: 'SET_DASHBOARD_LOADING', payload: true });
@@ -492,6 +476,22 @@ export const SystemProvider: React.FC<SystemProviderProps> = ({ children }) => {
     if (lab_cache.hit_rate >= 50) return 'degraded';
     return 'unhealthy';
   }, [state.cacheStats]);
+
+  // Auto-refresh effect
+  useEffect(() => {
+    if (!state.autoRefreshEnabled) return;
+
+    const interval = setInterval(async () => {
+      // Refresh critical system data
+      await Promise.all([
+        loadHealth(),
+        loadCacheStats(),
+        loadGlobalLogoutStatus(),
+      ]);
+    }, state.autoRefreshInterval * 1000);
+
+    return () => clearInterval(interval);
+  }, [state.autoRefreshEnabled, state.autoRefreshInterval, loadHealth, loadCacheStats, loadGlobalLogoutStatus]);
 
   const contextValue: SystemContextType = {
     state,

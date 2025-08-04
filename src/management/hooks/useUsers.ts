@@ -100,15 +100,15 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
     if (autoLoad && management.canAccessManagement) {
       userManagement.loadUsers(1, pageSize);
     }
-  }, [autoLoad, management.canAccessManagement, pageSize, userManagement]);
+  }, [autoLoad, management.canAccessManagement, pageSize]); // Remove userManagement from deps
 
   const loadUsers = useCallback(async (page: number = 1) => {
     await userManagement.loadUsers(page, pageSize);
-  }, [pageSize, userManagement]);
+  }, [pageSize]); // Remove userManagement from deps
 
   const loadUser = useCallback(async (userId: string) => {
     await userManagement.loadUserDetails(userId);
-  }, [userManagement]);
+  }, []);
 
   const createUser = useCallback(async (userData: CreateUserRequest): Promise<boolean> => {
     if (!management.canPerformOperation('create_user')) {
@@ -122,7 +122,7 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
     } finally {
       setIsCreating(false);
     }
-  }, [management, userManagement]);
+  }, []);
 
   const updateUser = useCallback(async (userId: string, userData: UpdateUserRequest): Promise<boolean> => {
     if (!management.canPerformOperation('edit_user')) {
@@ -136,7 +136,7 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
     } finally {
       setIsUpdating(false);
     }
-  }, [management, userManagement]);
+  }, []);
 
   const deactivateUser = useCallback(async (userId: string, reason?: string): Promise<boolean> => {
     if (!management.canPerformOperation('delete_user')) {
@@ -150,7 +150,7 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
     } finally {
       setIsDeleting(false);
     }
-  }, [management, userManagement]);
+  }, []);
 
   const activateUser = useCallback(async (userId: string, reason?: string): Promise<boolean> => {
     if (!management.canPerformOperation('edit_user')) {
@@ -164,7 +164,7 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
     } finally {
       setIsUpdating(false);
     }
-  }, [management, userManagement]);
+  }, []);
 
   const deleteUser = useCallback(async (userId: string, reason?: string): Promise<boolean> => {
     // This is the same as deactivateUser since we do soft deletes
@@ -175,36 +175,36 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
     userManagement.setFilters(filters);
     // Reload users with new filters
     userManagement.loadUsers(1, pageSize);
-  }, [userManagement, pageSize]);
+  }, [pageSize]);
 
   const clearFilters = useCallback(() => {
     userManagement.setFilters({});
     userManagement.loadUsers(1, pageSize);
-  }, [userManagement, pageSize]);
+  }, [pageSize]);
 
   const searchUsers = useCallback(async (query: string) => {
     await userManagement.searchUsers(query);
-  }, [userManagement]);
+  }, []);
 
   const clearSearch = useCallback(() => {
     userManagement.clearSearch();
-  }, [userManagement]);
+  }, []);
 
   const toggleUserSelection = useCallback((userId: string) => {
     userManagement.toggleUserSelection(userId);
-  }, [userManagement]);
+  }, []);
 
   const selectAllUsers = useCallback((selected: boolean) => {
     userManagement.selectAllUsers(selected);
-  }, [userManagement]);
+  }, []);
 
   const clearSelection = useCallback(() => {
     userManagement.clearSelection();
-  }, [userManagement]);
+  }, []);
 
   const goToPage = useCallback(async (page: number) => {
     await userManagement.loadUsers(page, pageSize);
-  }, [userManagement, pageSize]);
+  }, [pageSize]);
 
   const goToNextPage = useCallback(async () => {
     const currentPage = userManagement.state.pagination?.page || 1;
@@ -226,11 +226,11 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
 
   const refresh = useCallback(async () => {
     await userManagement.refreshUsers();
-  }, [userManagement]);
+  }, []);
 
   const clearErrors = useCallback(() => {
     userManagement.clearError();
-  }, [userManagement]);
+  }, []);
 
   const validateCreateForm = useCallback((data: CreateUserRequest) => {
     const manageableRoles = management.manageableRoles?.manageable_roles || [];

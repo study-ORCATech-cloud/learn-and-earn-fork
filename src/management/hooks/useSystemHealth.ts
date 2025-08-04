@@ -116,7 +116,7 @@ export const useSystemHealth = (options: UseSystemHealthOptions = {}): UseSystem
         systemContext.enableAutoRefresh(false);
       }
     };
-  }, [autoRefresh, refreshInterval, systemContext]);
+  }, [autoRefresh, refreshInterval]); // Remove systemContext
 
   // Update health metrics when system data changes
   useEffect(() => {
@@ -130,43 +130,43 @@ export const useSystemHealth = (options: UseSystemHealthOptions = {}): UseSystem
 
   const loadSystemHealth = useCallback(async () => {
     await systemContext.loadHealth();
-  }, [systemContext]);
+  }, []);
 
   const loadCacheStats = useCallback(async () => {
     await systemContext.loadCacheStats();
-  }, [systemContext]);
+  }, []);
 
   const loadGlobalLogoutStatus = useCallback(async () => {
     await systemContext.loadGlobalLogoutStatus();
-  }, [systemContext]);
+  }, []);
 
   const loadDashboard = useCallback(async () => {
     await systemContext.loadDashboard();
-  }, [systemContext]);
+  }, []);
 
   const clearCache = useCallback(async (type: CacheType): Promise<boolean> => {
     return await systemContext.clearCache(type);
-  }, [systemContext]);
+  }, []);
 
   const triggerGlobalLogout = useCallback(async (): Promise<boolean> => {
     return await systemContext.triggerGlobalLogout();
-  }, [systemContext]);
+  }, []);
 
   const clearGlobalLogout = useCallback(async (): Promise<boolean> => {
     return await systemContext.clearGlobalLogout();
-  }, [systemContext]);
+  }, []);
 
   const loadAlerts = useCallback(async () => {
     await systemContext.loadAlerts();
-  }, [systemContext]);
+  }, []);
 
   const acknowledgeAlert = useCallback(async (alertId: string): Promise<boolean> => {
     return await systemContext.acknowledgeAlert(alertId);
-  }, [systemContext]);
+  }, []);
 
   const acknowledgeAllAlerts = useCallback(async (): Promise<boolean> => {
     return await systemContext.acknowledgeAllAlerts();
-  }, [systemContext]);
+  }, []);
 
   const getUnacknowledgedCount = useCallback((): number => {
     return systemContext.state.unacknowledgedCount;
@@ -174,11 +174,11 @@ export const useSystemHealth = (options: UseSystemHealthOptions = {}): UseSystem
 
   const enableAutoRefresh = useCallback((enabled: boolean) => {
     systemContext.enableAutoRefresh(enabled);
-  }, [systemContext]);
+  }, []);
 
   const setRefreshInterval = useCallback((seconds: number) => {
     systemContext.setAutoRefreshInterval(seconds);
-  }, [systemContext]);
+  }, []);
 
   const isAutoRefreshEnabled = useCallback((): boolean => {
     return systemContext.state.autoRefreshEnabled;
@@ -262,16 +262,16 @@ export const useSystemHealth = (options: UseSystemHealthOptions = {}): UseSystem
       warnings,
       recommendations,
     };
-  }, [systemContext.state]);
+  }, []);
 
   const getCacheHealth = useCallback(() => {
     return systemContext.getCacheHealthStatus();
-  }, [systemContext]);
+  }, []);
 
   const getSystemUptime = useCallback((): string => {
     const dashboardData = systemContext.state.dashboardData;
     return dashboardData?.metrics.uptime || 'Unknown';
-  }, [systemContext.state.dashboardData]);
+  }, []);
 
   const formatHealthStatusHelper = useCallback((status: string) => {
     return formatHealthStatus(status);
@@ -296,7 +296,7 @@ export const useSystemHealth = (options: UseSystemHealthOptions = {}): UseSystem
 
   const clearErrors = useCallback(() => {
     systemContext.clearErrors();
-  }, [systemContext]);
+  }, []);
 
   const exportHealthReport = useCallback((): string => {
     const { health, cacheStats, alerts, globalLogoutStatus, dashboardData } = systemContext.state;
@@ -312,7 +312,7 @@ export const useSystemHealth = (options: UseSystemHealthOptions = {}): UseSystem
     };
 
     return JSON.stringify(report, null, 2);
-  }, [systemContext.state, healthMetrics]);
+  }, [healthMetrics]);
 
   return {
     // Data
