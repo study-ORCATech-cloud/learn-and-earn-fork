@@ -238,7 +238,7 @@ const ManagementDashboard: React.FC = () => {
                 </div>
                 <Users className="w-8 h-8 text-slate-600" />
               </div>
-            </div>
+            </CardContent>
           </Card>
         )}
 
@@ -260,7 +260,7 @@ const ManagementDashboard: React.FC = () => {
                 </div>
                 <Database className="w-8 h-8 text-slate-600" />
               </div>
-            </div>
+            </CardContent>
           </Card>
         )}
 
@@ -282,7 +282,7 @@ const ManagementDashboard: React.FC = () => {
                 </div>
                 <Shield className="w-8 h-8 text-slate-600" />
               </div>
-            </div>
+            </CardContent>
           </Card>
         )}
       </div>

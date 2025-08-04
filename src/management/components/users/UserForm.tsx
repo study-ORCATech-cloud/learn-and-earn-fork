@@ -18,7 +18,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import { useManagement } from '../../context/ManagementContext';
 import { useRoles } from '../../hooks/useRoles';
-import { validateUserForm } from '../../utils/validators';
+import { validateCreateUserForm, validateUpdateUserForm } from '../../utils/validators';
 import { formatRole } from '../../utils/formatters';
 import type { ManagementUser } from '../../types/user';
 
@@ -88,7 +88,13 @@ const UserForm: React.FC<UserFormProps> = ({
     e.preventDefault();
     
     // Validate form
-    const validation = validateUserForm(formData, isEditMode);
+    const validation = isEditMode 
+      ? validateUpdateUserForm({
+          name: formData.name,
+          avatar_url: formData.avatar_url,
+        })
+      : validateCreateUserForm(formData, manageableRoles.map(r => r.name));
+    
     if (!validation.isValid) {
       setErrors(validation.errors);
       return;

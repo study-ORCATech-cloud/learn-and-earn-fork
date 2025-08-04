@@ -1,7 +1,7 @@
 // Roles management page with hierarchy and permissions
 
 import React, { useState } from 'react';
-import { Shield, Users, Eye, Matrix3X3, RefreshCw } from 'lucide-react';
+import { Shield, Users, Eye, Grid3X3, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -172,7 +172,7 @@ const RolesPage: React.FC = () => {
               value="matrix"
               className="data-[state=active]:bg-slate-700 data-[state=active]:text-white"
             >
-              <Matrix3X3 className="w-4 h-4 mr-2" />
+              <Grid3X3 className="w-4 h-4 mr-2" />
               Permissions Matrix
             </TabsTrigger>
           </TabsList>
@@ -244,7 +244,7 @@ const RolesPage: React.FC = () => {
             <Card className="bg-slate-800/30 border-slate-600">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
-                  <Matrix3X3 className="w-5 h-5 text-blue-400 mt-0.5" />
+                  <Grid3X3 className="w-5 h-5 text-blue-400 mt-0.5" />
                   <div className="space-y-1">
                     <h4 className="font-medium text-slate-300">Understanding the Permissions Matrix</h4>
                     <p className="text-sm text-slate-400">
