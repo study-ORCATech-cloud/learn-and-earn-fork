@@ -76,7 +76,7 @@ const ManagementDashboard: React.FC = () => {
     totalUsers,
     isLoading: usersLoading, 
     loadUsers 
-  } = useUsers();
+  } = useUsers({ autoLoad: false });
   
   const { 
     healthData, 
