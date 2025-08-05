@@ -73,6 +73,7 @@ class ErrorBoundary extends Component<Props, State> {
       }
 
       // Default error UI
+      // TODO: send actual error and data to backend for logging
       return (
         <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
           <Card className="max-w-2xl w-full bg-slate-900/50 border-slate-700">

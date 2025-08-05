@@ -35,13 +35,12 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
   className,
 }) => {
   const { 
-    healthData, 
+    health, 
     cacheStats, 
     isLoading, 
     error, 
-    lastUpdated, 
-    refresh 
-  } = useSystemHealth({ autoRefresh, refreshInterval });
+    refreshAll 
+  } = useSystemHealth({ autoRefresh, refreshInterval: Math.floor(refreshInterval / 1000) });
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -87,7 +86,7 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
             <h3 className="text-lg font-semibold text-red-400 mb-2">Health Check Failed</h3>
             <p className="text-slate-400 mb-4">{error}</p>
             <Button
-              onClick={refresh}
+              onClick={refreshAll}
               variant="outline"
               className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
             >
@@ -109,31 +108,31 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
             <CardTitle className="text-slate-200 flex items-center gap-2">
               <Activity className="w-5 h-5" />
               System Health Status
-              {healthData && (
+              {health && (
                 <Badge 
                   variant="secondary" 
                   className={cn(
                     'border',
-                    healthData.status === 'healthy' 
+                    health.status === 'healthy' 
                       ? 'bg-green-900/20 border-green-500/30 text-green-400'
                       : 'bg-red-900/20 border-red-500/30 text-red-400'
                   )}
                 >
-                  {healthData.status?.toUpperCase()}
+                  {health.status?.toUpperCase()}
                 </Badge>
               )}
             </CardTitle>
             
             <div className="flex items-center gap-2">
-              {lastUpdated && (
+              {health?.timestamp && (
                 <span className="text-xs text-slate-500">
-                  Updated {formatRelativeTime(lastUpdated)}
+                  Updated {formatRelativeTime(health.timestamp)}
                 </span>
               )}
               <Button
                 variant="outline"
                 size="sm"
-                onClick={refresh}
+                onClick={refreshAll}
                 disabled={isLoading}
                 className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
               >
@@ -144,7 +143,7 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
         </CardHeader>
       </Card>
 
-      {isLoading && !healthData ? (
+      {isLoading && !health ? (
         <Card className="bg-slate-900/50 border-slate-700">
           <CardContent className="p-12">
             <div className="flex items-center justify-center">
@@ -155,7 +154,7 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
       ) : (
         <>
           {/* Overall Status */}
-          {healthData && (
+          {health && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card className="bg-slate-900/50 border-slate-700">
                 <CardContent className="p-6">
@@ -163,9 +162,9 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
                     <div>
                       <p className="text-slate-400 text-sm">Service Status</p>
                       <div className="flex items-center gap-2 mt-1">
-                        {getStatusIcon(healthData.status)}
-                        <span className={cn('font-semibold', getStatusColor(healthData.status))}>
-                          {healthData.status?.charAt(0).toUpperCase() + healthData.status?.slice(1)}
+                        {getStatusIcon(health.status)}
+                        <span className={cn('font-semibold', getStatusColor(health.status))}>
+                          {health.status?.charAt(0).toUpperCase() + health.status?.slice(1)}
                         </span>
                       </div>
                     </div>
@@ -180,7 +179,7 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
                     <div>
                       <p className="text-slate-400 text-sm">Version</p>
                       <p className="font-semibold text-slate-200 mt-1">
-                        {healthData.version || 'Unknown'}
+                        {health.version || 'Unknown'}
                       </p>
                     </div>
                     <TrendingUp className="w-8 h-8 text-slate-600" />
@@ -198,12 +197,12 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
                           variant="outline" 
                           className={cn(
                             'border',
-                            healthData.environment === 'production'
+                            health.environment === 'production'
                               ? 'border-red-500/30 text-red-400'
                               : 'border-blue-500/30 text-blue-400'
                           )}
                         >
-                          {healthData.environment || 'Unknown'}
+                          {health.environment || 'Unknown'}
                         </Badge>
                       </div>
                     </div>
@@ -305,7 +304,7 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
           )}
 
           {/* System Information */}
-          {healthData && (
+          {health && (
             <Card className="bg-slate-900/50 border-slate-700">
               <CardHeader>
                 <CardTitle className="text-slate-200 flex items-center gap-2">
@@ -319,13 +318,13 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
                     <div className="flex justify-between items-center py-2 border-b border-slate-700">
                       <span className="text-slate-400">Service Name</span>
                       <span className="text-slate-200 font-mono">
-                        {healthData.service || 'learn-and-earn-backend'}
+                        {health.service || 'learn-and-earn-backend'}
                       </span>
                     </div>
                     <div className="flex justify-between items-center py-2 border-b border-slate-700">
                       <span className="text-slate-400">Version</span>
                       <Badge variant="outline" className="border-slate-600 text-slate-300 font-mono">
-                        {healthData.version || 'Unknown'}
+                        {health.version || 'Unknown'}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center py-2 border-b border-slate-700">
@@ -334,12 +333,12 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
                         variant="outline" 
                         className={cn(
                           'border font-mono',
-                          healthData.environment === 'production'
+                          health.environment === 'production'
                             ? 'border-red-500/30 text-red-400'
                             : 'border-blue-500/30 text-blue-400'
                         )}
                       >
-                        {healthData.environment || 'Unknown'}
+                        {health.environment || 'Unknown'}
                       </Badge>
                     </div>
                   </div>
@@ -348,16 +347,16 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
                     <div className="flex justify-between items-center py-2 border-b border-slate-700">
                       <span className="text-slate-400">Status</span>
                       <div className="flex items-center gap-2">
-                        {getStatusIcon(healthData.status)}
-                        <span className={cn('font-medium', getStatusColor(healthData.status))}>
-                          {healthData.status?.charAt(0).toUpperCase() + healthData.status?.slice(1)}
+                        {getStatusIcon(health.status)}
+                        <span className={cn('font-medium', getStatusColor(health.status))}>
+                          {health.status?.charAt(0).toUpperCase() + health.status?.slice(1)}
                         </span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center py-2 border-b border-slate-700">
                       <span className="text-slate-400">Last Check</span>
                       <span className="text-slate-200 font-mono text-sm">
-                        {healthData.timestamp ? formatDate(healthData.timestamp) : 'Unknown'}
+                        {health.timestamp ? formatDate(health.timestamp) : 'Unknown'}
                       </span>
                     </div>
                     <div className="flex justify-between items-center py-2 border-b border-slate-700">
@@ -381,7 +380,7 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
           )}
 
           {/* Health Warnings */}
-          {healthData?.status !== 'healthy' && (
+          {health?.status !== 'healthy' && (
             <Alert className="bg-yellow-900/20 border-yellow-500/30">
               <AlertTriangle className="w-4 h-4 text-yellow-400" />
               <AlertDescription className="text-yellow-300">

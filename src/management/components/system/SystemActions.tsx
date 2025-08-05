@@ -47,7 +47,7 @@ const SystemActions: React.FC<SystemActionsProps> = ({
   className,
 }) => {
   const management = useManagement();
-  const { clearDataCache, clearLabCache, refresh } = useSystemHealth();
+  const { clearCache, refreshAll } = useSystemHealth();
   const [executingAction, setExecutingAction] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<SystemAction | null>(null);
 
@@ -77,7 +77,7 @@ const SystemActions: React.FC<SystemActionsProps> = ({
       danger: true,
       confirmTitle: 'Clear Data Cache',
       confirmDescription: 'This will clear all cached application data. The system may run slower until the cache is rebuilt. Continue?',
-      action: clearDataCache,
+      action: () => clearCache('data'),
     },
     {
       id: 'clear_lab_cache',
@@ -90,7 +90,7 @@ const SystemActions: React.FC<SystemActionsProps> = ({
       danger: true,
       confirmTitle: 'Clear Lab Cache',
       confirmDescription: 'This will clear all cached lab data. Lab loading may be slower until cache is rebuilt. Continue?',
-      action: clearLabCache,
+      action: () => clearCache('lab'),
     },
     {
       id: 'refresh_system_status',
@@ -103,7 +103,7 @@ const SystemActions: React.FC<SystemActionsProps> = ({
       danger: false,
       confirmTitle: 'Refresh System Status',
       confirmDescription: 'This will refresh all system health data and cache statistics.',
-      action: refresh,
+      action: refreshAll,
     },
   ];
 
