@@ -79,7 +79,7 @@ const ManagementDashboard: React.FC = () => {
   } = useUsers({ autoLoad: false });
   
   const { 
-    healthData, 
+    health, 
     cacheStats, 
     isLoading: healthLoading 
   } = useSystemHealth({ autoRefresh: true });
@@ -203,15 +203,15 @@ const ManagementDashboard: React.FC = () => {
                   {healthLoading ? (
                     <div className="w-5 h-5 bg-slate-600 rounded animate-pulse" />
                   ) : (
-                    getHealthStatusIcon(healthData?.status)
+                    getHealthStatusIcon(health?.status)
                   )}
-                  <span className={cn('font-semibold', getHealthStatusColor(healthData?.status))}>
-                    {healthLoading ? 'Loading...' : (healthData?.status?.charAt(0).toUpperCase() + healthData?.status?.slice(1) || 'Unknown')}
+                  <span className={cn('font-semibold', getHealthStatusColor(health?.status))}>
+                    {healthLoading ? 'Loading...' : (health?.status?.charAt(0).toUpperCase() + health?.status?.slice(1) || 'Unknown')}
                   </span>
                 </div>
-                {healthData?.timestamp && (
+                {health?.timestamp && (
                   <p className="text-xs text-slate-500 mt-1">
-                    Updated {formatRelativeTime(healthData.timestamp)}
+                    Updated {formatRelativeTime(health.timestamp)}
                   </p>
                 )}
               </div>
@@ -396,7 +396,7 @@ const ManagementDashboard: React.FC = () => {
                   {/* System Status */}
                   <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
                     <div className="flex items-center gap-3">
-                      {getHealthStatusIcon(healthData?.status)}
+                      {getHealthStatusIcon(health?.status)}
                       <div>
                         <p className="text-sm font-medium text-slate-200">System Status</p>
                         <p className="text-xs text-slate-500">Overall health</p>
@@ -404,9 +404,9 @@ const ManagementDashboard: React.FC = () => {
                     </div>
                     <Badge 
                       variant="outline" 
-                      className={cn('border-current', getHealthStatusColor(healthData?.status))}
+                      className={cn('border-current', getHealthStatusColor(health?.status))}
                     >
-                      {healthData?.status?.toUpperCase() || 'UNKNOWN'}
+                      {health?.status?.toUpperCase() || 'UNKNOWN'}
                     </Badge>
                   </div>
 
@@ -417,12 +417,12 @@ const ManagementDashboard: React.FC = () => {
                       variant="outline" 
                       className={cn(
                         'border text-xs',
-                        healthData?.environment === 'production'
+                        health?.environment === 'production'
                           ? 'border-red-500/30 text-red-400'
                           : 'border-blue-500/30 text-blue-400'
                       )}
                     >
-                      {healthData?.environment?.toUpperCase() || 'UNKNOWN'}
+                      {health?.environment?.toUpperCase() || 'UNKNOWN'}
                     </Badge>
                   </div>
 
@@ -430,7 +430,7 @@ const ManagementDashboard: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-slate-400 text-sm">Version</span>
                     <span className="text-slate-300 text-sm font-mono">
-                      {healthData?.version || 'Unknown'}
+                      {health?.version || 'Unknown'}
                     </span>
                   </div>
 

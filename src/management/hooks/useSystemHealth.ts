@@ -104,8 +104,19 @@ export const useSystemHealth = (options: UseSystemHealthOptions = {}): UseSystem
     recommendations: [],
   });
 
-  // Auto-refresh effect
+  // Initial load and auto-refresh effect
   useEffect(() => {
+    // Load initial data
+    const loadInitialData = async () => {
+      await Promise.all([
+        systemContext.loadHealth(),
+        systemContext.loadCacheStats(),
+        systemContext.loadGlobalLogoutStatus(),
+      ]);
+    };
+    
+    loadInitialData();
+    
     if (autoRefresh) {
       systemContext.enableAutoRefresh(true);
       systemContext.setAutoRefreshInterval(refreshInterval);
