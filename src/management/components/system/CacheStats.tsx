@@ -93,7 +93,7 @@ const CacheStats: React.FC<CacheStatsProps> = ({
               variant="outline"
               size="sm"
               onClick={refresh}
-              className="mt-3 border-slate-600 text-slate-300"
+              className="mt-3 bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Retry
@@ -123,7 +123,7 @@ const CacheStats: React.FC<CacheStatsProps> = ({
               size="sm"
               onClick={refresh}
               disabled={isLoading}
-              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+              className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
             >
               <RefreshCw className={cn('w-4 h-4', isLoading && 'animate-spin')} />
             </Button>
@@ -172,7 +172,7 @@ const CacheStats: React.FC<CacheStatsProps> = ({
                     size="sm"
                     onClick={() => setShowClearDialog('lab')}
                     disabled={clearingCache === 'lab'}
-                    className="border-slate-600 text-red-400 hover:bg-red-900/20 hover:border-red-500"
+                    className="bg-slate-800 border-slate-600 text-red-400 hover:bg-red-900/20 hover:border-red-500 hover:text-red-300"
                   >
                     {clearingCache === 'lab' ? (
                       <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
@@ -319,7 +319,7 @@ const CacheStats: React.FC<CacheStatsProps> = ({
                     size="sm"
                     onClick={() => setShowClearDialog('data')}
                     disabled={clearingCache === 'data'}
-                    className="border-slate-600 text-red-400 hover:bg-red-900/20 hover:border-red-500"
+                    className="bg-slate-800 border-slate-600 text-red-400 hover:bg-red-900/20 hover:border-red-500 hover:text-red-300"
                   >
                     {clearingCache === 'data' ? (
                       <RefreshCw className="w-4 h-4 mr-2 animate-spin" />

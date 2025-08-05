@@ -147,7 +147,7 @@ const GlobalLogout: React.FC<GlobalLogoutProps> = ({
               size="sm"
               onClick={fetchStatus}
               disabled={isLoading}
-              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+              className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
             >
               <RefreshCw className={cn('w-4 h-4', isLoading && 'animate-spin')} />
             </Button>
@@ -296,7 +296,7 @@ const GlobalLogout: React.FC<GlobalLogoutProps> = ({
                       onClick={() => setShowTriggerDialog(true)}
                       disabled={isTriggering}
                       variant="outline"
-                      className="border-red-500/50 text-red-400 hover:bg-red-900/20"
+                      className="bg-slate-800 border-red-500/50 text-red-400 hover:bg-red-900/20 hover:text-red-300"
                     >
                       {isTriggering ? (
                         <RefreshCw className="w-4 h-4 mr-2 animate-spin" />

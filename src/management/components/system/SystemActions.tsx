@@ -170,7 +170,7 @@ const SystemActions: React.FC<SystemActionsProps> = ({
                   size="sm"
                   onClick={() => setPendingAction(action)}
                   disabled={!!executingAction}
-                  className={cn('shrink-0 border', action.buttonColor)}
+                  className={cn('shrink-0 border bg-slate-800', action.buttonColor)}
                 >
                   {executingAction === action.id ? (
                     <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
@@ -230,7 +230,7 @@ const SystemActions: React.FC<SystemActionsProps> = ({
                   onClick={() => setPendingAction(action)}
                   disabled={!!executingAction}
                   className={cn(
-                    'shrink-0 border',
+                    'shrink-0 border bg-slate-800',
                     action.buttonColor,
                     'border-red-500/50 text-red-400 hover:bg-red-900/20'
                   )}

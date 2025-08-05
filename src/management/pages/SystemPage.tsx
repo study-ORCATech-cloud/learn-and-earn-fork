@@ -123,7 +123,7 @@ const SystemPage: React.FC = () => {
             variant="outline"
             onClick={refresh}
             disabled={isLoading}
-            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+            className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
           >
             <RefreshCw className={cn('w-4 h-4 mr-2', isLoading && 'animate-spin')} />
             Refresh
