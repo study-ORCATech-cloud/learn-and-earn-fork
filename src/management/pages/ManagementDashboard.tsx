@@ -372,7 +372,7 @@ const ManagementDashboard: React.FC = () => {
 
               <div className="pt-2 border-t border-slate-700">
                 <Link to="/management/users">
-                  <Button variant="outline" size="sm" className="w-full border-slate-600 text-slate-300">
+                  <Button variant="outline" size="sm" className="w-full bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white">
                     <Eye className="w-4 h-4 mr-2" />
                     View All Users
                   </Button>
@@ -467,7 +467,7 @@ const ManagementDashboard: React.FC = () => {
 
               <div className="pt-2 border-t border-slate-700">
                 <Link to="/management/system">
-                  <Button variant="outline" size="sm" className="w-full border-slate-600 text-slate-300">
+                  <Button variant="outline" size="sm" className="w-full bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white">
                     <Settings className="w-4 h-4 mr-2" />
                     System Management
                   </Button>
@@ -502,7 +502,7 @@ const ManagementDashboard: React.FC = () => {
                     </Button>
                   </Link>
                   <Link to="/management/roles">
-                    <Button variant="outline" size="sm" className="border-slate-600 text-slate-300">
+                    <Button variant="outline" size="sm" className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white">
                       <Shield className="w-4 h-4 mr-2" />
                       View Roles
                     </Button>
