@@ -35,7 +35,7 @@ const RolesPage: React.FC = () => {
   }
 
   const totalRoles = roleHierarchy?.roles?.length || 0;
-  const manageableRoleCount = manageableRoles.length;
+  const manageableRoleCount = manageableRoles?.manageable_roles?.length || 0;
 
   return (
     <div className="space-y-6">
