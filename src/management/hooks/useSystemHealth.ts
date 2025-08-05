@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSystem } from '../context/SystemContext';
-import { systemManagementService } from '../services/systemManagementService';
 import { formatHealthStatus, formatHitRate, formatFileSize } from '../utils/formatters';
 import type { 
   SystemHealth, 
@@ -221,16 +220,27 @@ export const useSystemHealth = (options: UseSystemHealthOptions = {}): UseSystem
     if (cacheStats) {
       const { lab_cache } = cacheStats;
       
-      if (lab_cache.hit_rate < 50) {
-        healthScore -= 25;
-        criticalIssues.push(`Lab cache hit rate is critically low: ${lab_cache.hit_rate.toFixed(1)}%`);
-      } else if (lab_cache.hit_rate < 80) {
-        healthScore -= 10;
-        warnings.push(`Lab cache hit rate is below optimal: ${lab_cache.hit_rate.toFixed(1)}%`);
+      // Calculate hit rate from available data: total_entries / total_available_entries * 100
+      let hitRate = 0;
+      if (lab_cache.total_available_entries > 0) {
+        hitRate = (lab_cache.total_entries / lab_cache.total_available_entries) * 100;
       }
       
-      if (lab_cache.hit_rate < 90) {
-        recommendations.push('Consider clearing cache or investigating cache performance');
+      if (lab_cache.total_entries > 0) {
+        if (hitRate < 50) {
+          healthScore -= 25;
+          criticalIssues.push(`Lab cache hit rate is critically low: ${hitRate.toFixed(1)}%`);
+        } else if (hitRate < 80) {
+          healthScore -= 10;
+          warnings.push(`Lab cache hit rate is below optimal: ${hitRate.toFixed(1)}%`);
+        }
+        
+        if (hitRate < 90) {
+          recommendations.push('Consider clearing cache or investigating cache performance');
+        }
+      } else if (lab_cache.total_available_entries === 0) {
+        warnings.push('Lab cache appears to be empty');
+        recommendations.push('Cache may need time to warm up with lab content');
       }
     } else {
       healthScore -= 15;
@@ -276,7 +286,18 @@ export const useSystemHealth = (options: UseSystemHealthOptions = {}): UseSystem
   }, []);
 
   const getCacheHealth = useCallback(() => {
-    return systemContext.getCacheHealthStatus();
+    const status = systemContext.getCacheHealthStatus();
+    const labCache = systemContext.state.cacheStats?.lab_cache;
+    
+    let details = 'Unknown cache state';
+    if (labCache) {
+      const hitRate = labCache.total_available_entries > 0 
+        ? (labCache.total_entries / labCache.total_available_entries) * 100 
+        : 0;
+      details = `${labCache.total_entries}/${labCache.total_available_entries} entries (${hitRate.toFixed(1)}%)`;
+    }
+    
+    return { status, details };
   }, []);
 
   const getSystemUptime = useCallback((): string => {

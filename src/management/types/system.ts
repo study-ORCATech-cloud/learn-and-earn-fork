@@ -10,13 +10,19 @@ export interface SystemHealth {
 
 export interface CacheStatistics {
   lab_cache: {
-    hits: number;
-    misses: number;
-    hit_rate: number;
+    expired_entries: number;
+    max_age_hours: number;
+    total_available_entries: number;
+    total_entries: number;
+    valid_entries: number;
   };
   data_cache: {
-    size: string;
-    entries: number;
+    cache_enabled: boolean;
+    cached_at: string;
+    expires_at: string | null;
+    is_cached: boolean;
+    is_valid: boolean;
+    max_age_hours: number;
   };
   timestamp: string;
 }

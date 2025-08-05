@@ -11,7 +11,6 @@ import {
   AlertTriangle,
   CheckCircle,
   Database,
-  Plus,
   Eye,
   UserPlus,
   BarChart3
@@ -25,7 +24,6 @@ import { useManagement } from '../context/ManagementContext';
 import { useUsers } from '../hooks/useUsers';
 import { useSystemHealth } from '../hooks/useSystemHealth';
 import { formatRelativeTime } from '../utils/formatters';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 
 interface QuickActionProps {
   title: string;
@@ -250,11 +248,23 @@ const ManagementDashboard: React.FC = () => {
                 <div>
                   <p className="text-slate-400 text-sm">Cache Hit Rate</p>
                   <p className="text-2xl font-bold text-white mt-1">
-                    {healthLoading ? '...' : `${cacheStats?.lab_cache?.hit_rate?.toFixed(1) || '0'}%`}
+                    {healthLoading ? '...' : (() => {
+                      const labCache = cacheStats?.lab_cache;
+                      if (!labCache) return '0%';
+                      
+                      // Calculate hit rate as total_available_entries/total_entries
+                      // But handle division by zero case
+                      if (labCache.total_entries === 0) {
+                        return labCache.total_available_entries > 0 ? 'Ready' : '0%';
+                      }
+                      
+                      const hitRate = (labCache.total_entries / labCache.total_available_entries) * 100;
+                      return `${hitRate.toFixed(1)}%`;
+                    })()}
                   </p>
                   {cacheStats?.lab_cache && (
                     <p className="text-xs text-slate-500 mt-1">
-                      {cacheStats.lab_cache.hits?.toLocaleString()} hits
+                      {cacheStats.lab_cache.total_available_entries.toLocaleString()} available / {cacheStats.lab_cache.total_entries.toLocaleString()} total
                     </p>
                   )}
                 </div>
@@ -438,16 +448,16 @@ const ManagementDashboard: React.FC = () => {
                   {cacheStats?.lab_cache && (
                     <>
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400 text-sm">Cache Hit Rate</span>
+                        <span className="text-slate-400 text-sm">Cache Entries</span>
                         <span className="text-slate-300 text-sm">
-                          {cacheStats.lab_cache.hit_rate?.toFixed(1)}%
+                          {cacheStats.lab_cache.total_entries || 0 } / {cacheStats.lab_cache.total_available_entries}
                         </span>
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400 text-sm">Cache Size</span>
+                        <span className="text-slate-400 text-sm">Cache Status</span>
                         <span className="text-slate-300 text-sm">
-                          {cacheStats.data_cache?.size || 'Unknown'}
+                          {cacheStats.data_cache?.cache_enabled ? 'Enabled' : 'Disabled'}
                         </span>
                       </div>
                     </>
