@@ -19,7 +19,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import { useManagement } from '../context/ManagementContext';
 import { useSystemHealth } from '../hooks/useSystemHealth';
-import HealthStatus from '../components/system/HealthStatus';
 import CacheStats from '../components/system/CacheStats';
 import SystemActions from '../components/system/SystemActions';
 import GlobalLogout from '../components/system/GlobalLogout';
@@ -29,7 +28,7 @@ import SystemStatusBar from '../components/common/SystemStatusBar';
 const SystemPage: React.FC = () => {
   const management = useManagement();
   const { health, cacheStats, isLoading, error, refreshAll } = useSystemHealth({ autoRefresh: true });
-  const [activeTab, setActiveTab] = useState('health');
+  const [activeTab, setActiveTab] = useState('cache');
   const [lastActionResult, setLastActionResult] = useState<{
     action: string;
     success: boolean;
@@ -176,13 +175,6 @@ const SystemPage: React.FC = () => {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="bg-slate-800 border border-slate-600">
           <TabsTrigger 
-            value="health" 
-            className="data-[state=active]:bg-slate-700 data-[state=active]:text-white"
-          >
-            <Activity className="w-4 h-4 mr-2" />
-            Health Status
-          </TabsTrigger>
-          <TabsTrigger 
             value="cache"
             className="data-[state=active]:bg-slate-700 data-[state=active]:text-white"
           >
@@ -204,13 +196,6 @@ const SystemPage: React.FC = () => {
             Global Logout
           </TabsTrigger>
         </TabsList>
-
-        <TabsContent value="health" className="space-y-6">
-          <HealthStatus 
-            autoRefresh={true}
-            refreshInterval={30000}
-          />
-        </TabsContent>
 
         <TabsContent value="cache" className="space-y-6">
           <CacheStats 
@@ -238,7 +223,7 @@ const SystemPage: React.FC = () => {
           <AlertTriangle className="w-4 h-4 text-yellow-400" />
           <AlertDescription className="text-yellow-300">
             <strong>System Health Warning:</strong> The system is not reporting as fully healthy. 
-            Check the health status tab for detailed information and consider reviewing system logs.
+            Monitor the system status above and consider reviewing system logs or performing maintenance operations.
           </AlertDescription>
         </Alert>
       )}

@@ -17,7 +17,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import { formatDate, formatRelativeTime } from '../../utils/formatters';
 import { useSystemHealth } from '../../hooks/useSystemHealth';
@@ -42,6 +41,7 @@ const CacheStats: React.FC<CacheStatsProps> = ({
   const systemContext = useSystem();
   const [clearingCache, setClearingCache] = useState<string | null>(null);
   const [showClearDialog, setShowClearDialog] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const calculateHitRate = (totalEntries: number, totalAvailable: number) => {
     return totalAvailable > 0 ? Math.round((totalEntries / totalAvailable) * 100) : 0;
@@ -60,6 +60,7 @@ const CacheStats: React.FC<CacheStatsProps> = ({
       total_available_entries: labCache.total_available_entries,
       valid_entries: labCache.valid_entries,
       expired_entries: labCache.expired_entries,
+      cache_enabled: labCache.cache_enabled,
     };
   };
 
@@ -67,7 +68,7 @@ const CacheStats: React.FC<CacheStatsProps> = ({
     if (!dataCache) return null;
     
     return {
-      entries: dataCache.cache_enabled ? 1 : 0,
+      entries: dataCache.total_entries,
       size: dataCache.cache_enabled ? 'Enabled' : 'Disabled',
       cache_enabled: dataCache.cache_enabled,
       cached_at: dataCache.cached_at,
@@ -94,6 +95,18 @@ const CacheStats: React.FC<CacheStatsProps> = ({
   const formatSize = (sizeStr: string) => {
     // Handle size strings like "2.5MB"
     return sizeStr || 'Unknown';
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refreshAll();
+    } catch (error) {
+      console.error('Failed to refresh cache stats:', error);
+    } finally {
+      // Add a small delay to show the feedback even if the request is very fast
+      setTimeout(() => setIsRefreshing(false), 500);
+    }
   };
 
   const handleClearCache = async (cacheType: 'data' | 'lab') => {
@@ -150,11 +163,11 @@ const CacheStats: React.FC<CacheStatsProps> = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={refreshAll}
-              disabled={isLoading}
+              onClick={handleRefresh}
+              disabled={isLoading || isRefreshing}
               className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
             >
-              <RefreshCw className={cn('w-4 h-4', isLoading && 'animate-spin')} />
+              <RefreshCw className={cn('w-4 h-4', (isLoading || isRefreshing) && 'animate-spin')} />
             </Button>
           </div>
         </CardHeader>
@@ -247,14 +260,14 @@ const CacheStats: React.FC<CacheStatsProps> = ({
                     <Card className="bg-slate-800/50 border-slate-600">
                       <CardContent className="p-4 text-center">
                         <div className="flex items-center justify-center gap-2 mb-2">
-                          <TrendingUp className="w-5 h-5 text-green-400" />
-                          <span className="text-slate-300 font-medium">Hits</span>
+                          <Database className="w-5 h-5 text-blue-400" />
+                          <span className="text-slate-300 font-medium">Cache Entries</span>
                         </div>
-                        <div className="text-2xl font-bold text-green-400">
+                        <div className="text-2xl font-bold text-blue-400">
                           {adaptedLabCache.hits?.toLocaleString() || 0}
                         </div>
                         <div className="text-xs text-slate-500 mt-1">
-                          Successful cache retrievals
+                          Cached labs
                         </div>
                       </CardContent>
                     </Card>
@@ -262,29 +275,29 @@ const CacheStats: React.FC<CacheStatsProps> = ({
                     <Card className="bg-slate-800/50 border-slate-600">
                       <CardContent className="p-4 text-center">
                         <div className="flex items-center justify-center gap-2 mb-2">
-                          <TrendingDown className="w-5 h-5 text-red-400" />
-                          <span className="text-slate-300 font-medium">Misses</span>
+                          <Database className="w-5 h-5 text-green-400" />
+                          <span className="text-slate-300 font-medium">Total Available</span>
                         </div>
-                        <div className="text-2xl font-bold text-red-400">
-                          {adaptedLabCache.misses?.toLocaleString() || 0}
-                        </div>
-                        <div className="text-xs text-slate-500 mt-1">
-                          Cache lookups that failed
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="bg-slate-800/50 border-slate-600">
-                      <CardContent className="p-4 text-center">
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                          <Activity className="w-5 h-5 text-blue-400" />
-                          <span className="text-slate-300 font-medium">Total</span>
-                        </div>
-                        <div className="text-2xl font-bold text-blue-400">
+                        <div className="text-2xl font-bold text-green-400">
                           {((adaptedLabCache.hits || 0) + (adaptedLabCache.misses || 0)).toLocaleString()}
                         </div>
                         <div className="text-xs text-slate-500 mt-1">
-                          Total cache operations
+                          Cache available labs
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-slate-800/50 border-slate-600">
+                      <CardContent className="p-4 text-center">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          <Activity className="w-5 h-5 text-purple-400" />
+                          <span className="text-slate-300 font-medium">Cache Status</span>
+                        </div>
+                        <div className="text-2xl font-bold text-purple-400">
+                          {adaptedLabCache.cache_enabled ? 'Enabled' : 'Disabled'}
+                        </div>
+                        <div className="text-xs text-slate-500 mt-1">
+                          Cache lookups that failed
                         </div>
                       </CardContent>
                     </Card>
@@ -382,14 +395,11 @@ const CacheStats: React.FC<CacheStatsProps> = ({
                   <Card className="bg-slate-800/50 border-slate-600">
                     <CardContent className="p-6 text-center">
                       <div className="flex items-center justify-center gap-2 mb-4">
-                        <BarChart3 className="w-6 h-6 text-purple-400" />
-                        <span className="text-slate-300 font-medium">Cache Size</span>
+                        <Activity className="w-6 h-6 text-purple-400" />
+                        <span className="text-slate-300 font-medium">Cache Status</span>
                       </div>
                       <div className="text-3xl font-bold text-purple-400 mb-2">
-                        {formatSize(adaptedDataCache.size)}
-                      </div>
-                      <div className="text-sm text-slate-500">
-                        Memory usage
+                        {adaptedDataCache.cache_enabled ? 'Enabled' : 'Disabled'}
                       </div>
                     </CardContent>
                   </Card>
@@ -419,14 +429,14 @@ const CacheStats: React.FC<CacheStatsProps> = ({
 
           {/* Cache Clear Confirmation Dialog */}
           <ConfirmDialog
-            open={!!showClearDialog}
+            isOpen={!!showClearDialog}
             onClose={() => setShowClearDialog(null)}
             onConfirm={() => showClearDialog && handleClearCache(showClearDialog as 'data' | 'lab')}
             title={`Clear ${showClearDialog === 'data' ? 'Data' : 'Lab'} Cache`}
             description={`Are you sure you want to clear the ${showClearDialog} cache? This action cannot be undone and may temporarily impact system performance.`}
             confirmText="Clear Cache"
             cancelText="Cancel"
-            variant="destructive"
+            type="danger"
             isLoading={!!clearingCache}
           />
         </>

@@ -23,6 +23,7 @@ export interface CacheStatistics {
     is_cached: boolean;
     is_valid: boolean;
     max_age_hours: number;
+    total_entries: number;
   };
   timestamp: string;
 }
