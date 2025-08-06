@@ -43,7 +43,7 @@ const CacheStats: React.FC<CacheStatsProps> = ({
   const [showClearDialog, setShowClearDialog] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const calculateHitRate = (totalEntries: number, totalAvailable: number) => {
+  const calculateCachePercentage = (totalEntries: number, totalAvailable: number) => {
     return totalAvailable > 0 ? Math.round((totalEntries / totalAvailable) * 100) : 0;
   };
 
@@ -51,9 +51,9 @@ const CacheStats: React.FC<CacheStatsProps> = ({
   const adaptCacheData = (labCache: any) => {
     if (!labCache) return null;
     
-    const hitRate = calculateHitRate(labCache.total_entries, labCache.total_available_entries);
+    const cachePercentage = calculateCachePercentage(labCache.total_entries, labCache.total_available_entries);
     return {
-      hit_rate: hitRate,
+      hit_rate: cachePercentage,
       hits: labCache.total_entries,
       misses: Math.max(0, labCache.total_available_entries - labCache.total_entries),
       total_entries: labCache.total_entries,
@@ -191,11 +191,11 @@ const CacheStats: React.FC<CacheStatsProps> = ({
                   <BarChart3 className="w-5 h-5" />
                   Lab Cache
                   {adaptedLabCache && (() => {
-                    const hitRate = adaptedLabCache.hit_rate || calculateHitRate(
-                      adaptedLabCache.hits, 
-                      adaptedLabCache.misses
+                    const cachePercentage = adaptedLabCache.hit_rate || calculateCachePercentage(
+                      adaptedLabCache.total_entries, 
+                      adaptedLabCache.total_available_entries
                     );
-                    const status = getHitRateStatus(hitRate);
+                    const status = getHitRateStatus(cachePercentage);
                     return (
                       <Badge 
                         variant="outline" 
@@ -230,26 +230,26 @@ const CacheStats: React.FC<CacheStatsProps> = ({
             <CardContent className="space-y-6">
               {adaptedLabCache ? (
                 <>
-                  {/* Hit Rate Progress */}
+                  {/* Cache Percentage Progress */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-slate-300 font-medium">Hit Rate</span>
+                      <span className="text-slate-300 font-medium">Cache Percentage</span>
                       <span className={cn('font-bold text-lg', getHitRateColor(
-                        adaptedLabCache.hit_rate || calculateHitRate(
-                          adaptedLabCache.hits, 
-                          adaptedLabCache.misses
+                        adaptedLabCache.hit_rate || calculateCachePercentage(
+                          adaptedLabCache.total_entries, 
+                          adaptedLabCache.total_available_entries
                         )
                       ))}>
-                        {(adaptedLabCache.hit_rate || calculateHitRate(
-                          adaptedLabCache.hits, 
-                          adaptedLabCache.misses
+                        {(adaptedLabCache.hit_rate || calculateCachePercentage(
+                          adaptedLabCache.total_entries, 
+                          adaptedLabCache.total_available_entries
                         )).toFixed(1)}%
                       </span>
                     </div>
                     <Progress 
-                      value={adaptedLabCache.hit_rate || calculateHitRate(
-                        adaptedLabCache.hits, 
-                        adaptedLabCache.misses
+                      value={adaptedLabCache.hit_rate || calculateCachePercentage(
+                        adaptedLabCache.total_entries, 
+                        adaptedLabCache.total_available_entries
                       )} 
                       className="h-3"
                     />
@@ -279,7 +279,7 @@ const CacheStats: React.FC<CacheStatsProps> = ({
                           <span className="text-slate-300 font-medium">Total Available</span>
                         </div>
                         <div className="text-2xl font-bold text-green-400">
-                          {((adaptedLabCache.hits || 0) + (adaptedLabCache.misses || 0)).toLocaleString()}
+                          {adaptedLabCache.total_available_entries?.toLocaleString() || 0}
                         </div>
                         <div className="text-xs text-slate-500 mt-1">
                           Cache available labs
@@ -308,18 +308,18 @@ const CacheStats: React.FC<CacheStatsProps> = ({
                     <h4 className="text-slate-300 font-medium mb-3">Performance Analysis</h4>
                     <div className="space-y-2 text-sm">
                       {(() => {
-                        const hitRate = adaptedLabCache.hit_rate || calculateHitRate(
-                          adaptedLabCache.hits, 
-                          adaptedLabCache.misses
+                        const cachePercentage = adaptedLabCache.hit_rate || calculateCachePercentage(
+                          adaptedLabCache.total_entries, 
+                          adaptedLabCache.total_available_entries
                         );
-                        if (hitRate >= 90) {
+                        if (cachePercentage >= 90) {
                           return (
                             <div className="flex items-start gap-2 text-green-400">
                               <CheckCircle className="w-4 h-4 mt-0.5" />
                               <span>Excellent cache performance! The lab cache is working efficiently.</span>
                             </div>
                           );
-                        } else if (hitRate >= 70) {
+                        } else if (cachePercentage >= 70) {
                           return (
                             <div className="flex items-start gap-2 text-yellow-400">
                               <AlertTriangle className="w-4 h-4 mt-0.5" />
