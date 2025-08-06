@@ -3,6 +3,14 @@
 import { authService } from '../../services/authService';
 import type { ApiResponse } from '../types/management';
 
+// Global variable to store logout callback
+let logoutCallback: (() => Promise<void>) | null = null;
+
+// Function to set the logout callback from AuthContext
+export const setAuthLogoutCallback = (callback: () => Promise<void>) => {
+  logoutCallback = callback;
+};
+
 class ManagementApiService {
   private baseUrl: string;
   private timeout: number;
@@ -52,6 +60,14 @@ class ManagementApiService {
 
       // Handle authentication errors
       if (response.status === 401) {
+        // Trigger logout if callback is available
+        if (logoutCallback) {
+          try {
+            await logoutCallback();
+          } catch (error) {
+            console.error('Failed to trigger logout:', error);
+          }
+        }
         throw new Error('authentication_failed');
       }
 

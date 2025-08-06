@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { roleManagementService } from '../services/roleManagementService';
+import { setAuthLogoutCallback } from '../services/managementApiService';
 import type { UserRole } from '../types/role';
 
 interface RoleHierarchy {
@@ -58,7 +59,12 @@ interface ManagementProviderProps {
 
 export const ManagementProvider: React.FC<ManagementProviderProps> = ({ children }) => {
   const [state, setState] = useState<ManagementState>(initialState);
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading, logout } = useAuth();
+
+  // Set up logout callback for management API service
+  useEffect(() => {
+    setAuthLogoutCallback(logout);
+  }, [logout]);
 
   // Initialize management state when authentication is ready
   useEffect(() => {
