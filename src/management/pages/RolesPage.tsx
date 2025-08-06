@@ -19,6 +19,7 @@ const RolesPage: React.FC = () => {
   const { roleHierarchy, manageableRoles, isLoading, error, refresh } = useRoles();
   const [selectedRole, setSelectedRole] = useState<string>('');
   const [activeTab, setActiveTab] = useState('hierarchy');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   if (!management.canPerformOperation('view_all_users')) {
     return (
@@ -36,6 +37,18 @@ const RolesPage: React.FC = () => {
 
   const totalRoles = roleHierarchy?.roles?.length || 0;
   const manageableRoleCount = manageableRoles?.manageable_roles?.length || 0;
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refresh();
+    } catch (error) {
+      console.error('Failed to refresh roles:', error);
+    } finally {
+      // Add a small delay to show the feedback even if the request is very fast
+      setTimeout(() => setIsRefreshing(false), 500);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -57,11 +70,11 @@ const RolesPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
-            onClick={refresh}
-            disabled={isLoading}
-            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+            onClick={handleRefresh}
+            disabled={isLoading || isRefreshing}
+            className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
           >
-            <RefreshCw className={cn('w-4 h-4 mr-2', isLoading && 'animate-spin')} />
+            <RefreshCw className={cn('w-4 h-4 mr-2', (isLoading || isRefreshing) && 'animate-spin')} />
             Refresh
           </Button>
         </div>
@@ -133,11 +146,12 @@ const RolesPage: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={refresh}
-                className="mt-3 border-slate-600 text-slate-300"
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="mt-3 bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
               >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Retry
+                <RefreshCw className={cn('w-4 h-4 mr-2', isRefreshing && 'animate-spin')} />
+                {isRefreshing ? 'Retrying...' : 'Retry'}
               </Button>
             </div>
           </CardContent>
