@@ -358,8 +358,7 @@ const CacheStats: React.FC<CacheStatsProps> = ({
                 <div className="flex items-center justify-center gap-2 text-sm text-slate-400">
                   <Clock className="w-4 h-4" />
                   <span>
-                    Last updated: {formatDate(cacheStats.timestamp)} 
-                    ({formatRelativeTime(cacheStats.timestamp)})
+                    Last updated: {formatDate(cacheStats.timestamp)} ({formatRelativeTime(cacheStats.timestamp)})
                   </span>
                 </div>
               </CardContent>
