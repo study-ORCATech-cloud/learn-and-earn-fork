@@ -36,7 +36,11 @@ const RolesPage: React.FC = () => {
   }
 
   const totalRoles = roleHierarchy?.roles?.length || 0;
-  const manageableRoleCount = manageableRoles?.manageable_roles?.length || 0;
+  const currentUserRoleLevel = roleHierarchy?.levels[management.currentUserRole] || 0;
+  const manageableRoleCount = Object.keys(roleHierarchy?.levels || {}).filter(roleName => {
+    const roleLevel = roleHierarchy?.levels[roleName];
+    return roleLevel < currentUserRoleLevel;
+  }).length;
 
   const handleRefresh = async () => {
     setIsRefreshing(true);

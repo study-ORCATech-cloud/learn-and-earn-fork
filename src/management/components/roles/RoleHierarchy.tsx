@@ -54,7 +54,11 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
   };
 
   const sortedRoles = roleHierarchy?.roles?.sort((a, b) => b.level - a.level) || [];
-  const manageableRoleNames = manageableRoles?.manageable_roles?.map(r => r.name) || [];
+  const currentUserRoleLevel = roleHierarchy?.levels[management.currentUserRole] || 0;
+  const manageableRoleNames = Object.keys(roleHierarchy?.levels || {}).filter(roleName => {
+    const roleLevel = roleHierarchy?.levels[roleName];
+    return roleLevel < currentUserRoleLevel;
+  });
 
   if (error) {
     return (
