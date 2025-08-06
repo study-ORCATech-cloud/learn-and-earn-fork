@@ -8,7 +8,9 @@ import {
   Shield,
   Settings,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  TrendingDown,
+  TrendingUpIcon
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -189,7 +191,7 @@ const SystemStatusBar: React.FC<SystemStatusBarProps> = ({
       value: isLoading ? '...' : (health?.version || 'Unknown'),
       subtitle: 'Service version',
       icon: null,
-      bgIcon: <Activity className="w-8 h-8 text-slate-600" />,
+      bgIcon: <TrendingUpIcon className="w-8 h-8 text-slate-600" />,
       valueColor: 'text-white',
       valueSize: 'text-lg font-mono',
       customContent: null,
