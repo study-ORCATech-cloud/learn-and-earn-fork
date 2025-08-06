@@ -193,7 +193,7 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
                             <Badge
                               key={permission}
                               variant="outline"
-                              className="border-current text-xs opacity-75"
+                              className="border-slate-500 text-slate-200 bg-slate-800/50 text-xs"
                             >
                               {permission.replace(/_/g, ' ')}
                             </Badge>
@@ -201,7 +201,7 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
                           {role.permissions.length > 4 && (
                             <Badge
                               variant="outline"
-                              className="border-current text-xs opacity-75"
+                              className="border-slate-500 text-slate-200 bg-slate-800/50 text-xs"
                             >
                               +{role.permissions.length - 4} more
                             </Badge>
