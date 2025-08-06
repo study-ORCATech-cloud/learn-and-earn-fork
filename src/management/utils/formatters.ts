@@ -1,19 +1,40 @@
 // Data formatting utilities for management interface
 
-import { UserRole, ROLE_COLORS, ROLE_ICONS, PROVIDER_ICONS } from './constants';
+import { USER_ROLES, ROLE_COLORS, ROLE_ICONS, PROVIDER_ICONS } from './constants';
+
+type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES];
 
 /**
- * Format a date string to a readable format
+ * Format a date string to a readable format in the client's local timezone
  */
 export const formatDate = (dateString: string): string => {
   try {
-    const date = new Date(dateString);
+    let date: Date;
+    
+    // If the date string doesn't end with 'Z' or have timezone info, treat it as UTC
+    if (dateString && !dateString.endsWith('Z') && !dateString.includes('+') && !dateString.includes('T')) {
+      // Backend sends date without timezone, assume it's UTC
+      date = new Date(dateString + 'Z');
+    } else if (dateString && !dateString.endsWith('Z') && dateString.includes('T') && !dateString.includes('+')) {
+      // ISO format without timezone, assume UTC
+      date = new Date(dateString + 'Z');
+    } else {
+      // Already has timezone info or is properly formatted
+      date = new Date(dateString);
+    }
+    
+    // Ensure the date is valid
+    if (isNaN(date.getTime())) {
+      return 'Invalid date';
+    }
+    
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
+      timeZoneName: 'short',
     });
   } catch {
     return 'Invalid date';
@@ -21,13 +42,52 @@ export const formatDate = (dateString: string): string => {
 };
 
 /**
- * Format a date to relative time (e.g., "2 days ago")
+ * Format a date to relative time (e.g., "2 days ago") in the client's local timezone
  */
 export const formatRelativeTime = (dateString: string): string => {
   try {
-    const date = new Date(dateString);
+    let date: Date;
+    
+    // If the date string doesn't end with 'Z' or have timezone info, treat it as UTC
+    if (dateString && !dateString.endsWith('Z') && !dateString.includes('+') && !dateString.includes('T')) {
+      // Backend sends date without timezone, assume it's UTC
+      date = new Date(dateString + 'Z');
+    } else if (dateString && !dateString.endsWith('Z') && dateString.includes('T') && !dateString.includes('+')) {
+      // ISO format without timezone, assume UTC
+      date = new Date(dateString + 'Z');
+    } else {
+      // Already has timezone info or is properly formatted
+      date = new Date(dateString);
+    }
+    
+    // Ensure the date is valid
+    if (isNaN(date.getTime())) {
+      return 'Unknown';
+    }
+    
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    // Handle future dates
+    if (diffInSeconds < 0) {
+      const futureDiff = Math.abs(diffInSeconds);
+      const intervals = [
+        { label: 'year', seconds: 31536000 },
+        { label: 'month', seconds: 2592000 },
+        { label: 'week', seconds: 604800 },
+        { label: 'day', seconds: 86400 },
+        { label: 'hour', seconds: 3600 },
+        { label: 'minute', seconds: 60 },
+      ];
+
+      for (const interval of intervals) {
+        const count = Math.floor(futureDiff / interval.seconds);
+        if (count > 0) {
+          return `in ${count} ${interval.label}${count > 1 ? 's' : ''}`;
+        }
+      }
+      return 'in a few seconds';
+    }
 
     const intervals = [
       { label: 'year', seconds: 31536000 },
