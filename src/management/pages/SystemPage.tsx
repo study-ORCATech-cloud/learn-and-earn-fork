@@ -24,10 +24,11 @@ import CacheStats from '../components/system/CacheStats';
 import SystemActions from '../components/system/SystemActions';
 import GlobalLogout from '../components/system/GlobalLogout';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import SystemStatusBar from '../components/common/SystemStatusBar';
 
 const SystemPage: React.FC = () => {
   const management = useManagement();
-  const { healthData, cacheStats, isLoading, error, refresh } = useSystemHealth({ autoRefresh: true });
+  const { health, cacheStats, isLoading, error, refreshAll } = useSystemHealth({ autoRefresh: true });
   const [activeTab, setActiveTab] = useState('health');
   const [lastActionResult, setLastActionResult] = useState<{
     action: string;
@@ -46,7 +47,7 @@ const SystemPage: React.FC = () => {
     setTimeout(() => setLastActionResult(null), 5000);
     
     // Refresh system data after actions
-    refresh();
+    refreshAll();
   };
 
   if (!management.canPerformOperation('manage_system')) {
@@ -99,17 +100,17 @@ const SystemPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
             <Settings className="w-6 h-6" />
             System Management
-            {healthData && (
+            {health && (
               <Badge 
                 variant="secondary" 
                 className={cn(
                   'border',
-                  healthData.status === 'healthy' 
+                  health.status === 'healthy' 
                     ? 'bg-green-900/20 border-green-500/30 text-green-400'
                     : 'bg-red-900/20 border-red-500/30 text-red-400'
                 )}
               >
-                {healthData.status?.toUpperCase()}
+                {health.status?.toUpperCase()}
               </Badge>
             )}
           </h1>
@@ -121,7 +122,7 @@ const SystemPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
-            onClick={refresh}
+            onClick={refreshAll}
             disabled={isLoading}
             className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
           >
@@ -153,91 +154,14 @@ const SystemPage: React.FC = () => {
       )}
 
       {/* System Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-slate-900/50 border-slate-700">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm">System Status</p>
-                <div className="flex items-center gap-2 mt-1">
-                  {isLoading ? (
-                    <div className="w-5 h-5 bg-slate-600 rounded animate-pulse" />
-                  ) : (
-                    getHealthStatusIcon(healthData?.status)
-                  )}
-                  <span className={cn('font-semibold', getHealthStatusColor(healthData?.status))}>
-                    {isLoading ? 'Loading...' : (healthData?.status?.charAt(0).toUpperCase() + healthData?.status?.slice(1) || 'Unknown')}
-                  </span>
-                </div>
-              </div>
-              <Server className="w-8 h-8 text-slate-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-slate-900/50 border-slate-700">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm">Cache Hit Rate</p>
-                <p className="text-2xl font-bold text-white mt-1">
-                  {isLoading ? '...' : `${cacheStats?.lab_cache?.hit_rate?.toFixed(1) || '0'}%`}
-                </p>
-                <p className="text-xs text-slate-500 mt-1">
-                  Lab cache performance
-                </p>
-              </div>
-              <Database className="w-8 h-8 text-slate-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-slate-900/50 border-slate-700">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm">Environment</p>
-                <p className="text-lg font-bold text-white mt-1">
-                  {isLoading ? '...' : (healthData?.environment?.toUpperCase() || 'Unknown')}
-                </p>
-                <p className="text-xs text-slate-500 mt-1">
-                  Deployment environment
-                </p>
-              </div>
-              <div className={cn(
-                'w-8 h-8 rounded-full flex items-center justify-center',
-                healthData?.environment === 'production' 
-                  ? 'bg-red-600/20' 
-                  : 'bg-blue-600/20'
-              )}>
-                <Settings className={cn(
-                  'w-5 h-5',
-                  healthData?.environment === 'production' 
-                    ? 'text-red-400' 
-                    : 'text-blue-400'
-                )} />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-slate-900/50 border-slate-700">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm">Version</p>
-                <p className="text-lg font-bold text-white mt-1 font-mono">
-                  {isLoading ? '...' : (healthData?.version || 'Unknown')}
-                </p>
-                <p className="text-xs text-slate-500 mt-1">
-                  Service version
-                </p>
-              </div>
-              <Activity className="w-8 h-8 text-slate-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <SystemStatusBar
+        health={health}
+        cacheStats={cacheStats}
+        isLoading={isLoading}
+        showUserStats={false}
+        showEnvironment={true}
+        showVersion={true}
+      />
 
       {error && (
         <Alert className="bg-red-900/20 border-red-500/30">
@@ -309,7 +233,7 @@ const SystemPage: React.FC = () => {
       </Tabs>
 
       {/* System Warnings */}
-      {healthData && healthData.status !== 'healthy' && (
+      {health && health.status !== 'healthy' && (
         <Alert className="bg-yellow-900/20 border-yellow-500/30">
           <AlertTriangle className="w-4 h-4 text-yellow-400" />
           <AlertDescription className="text-yellow-300">
@@ -320,7 +244,7 @@ const SystemPage: React.FC = () => {
       )}
 
       {/* Environment Warning */}
-      {healthData?.environment === 'production' && (
+      {health?.environment === 'production' && (
         <Alert className="bg-red-900/20 border-red-500/30">
           <AlertTriangle className="w-4 h-4 text-red-400" />
           <AlertDescription className="text-red-300">

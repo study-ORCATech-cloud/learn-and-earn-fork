@@ -24,6 +24,7 @@ import { useManagement } from '../context/ManagementContext';
 import { useUsers } from '../hooks/useUsers';
 import { useSystemHealth } from '../hooks/useSystemHealth';
 import { formatRelativeTime } from '../utils/formatters';
+import SystemStatusBar from '../components/common/SystemStatusBar';
 
 interface QuickActionProps {
   title: string;
@@ -190,112 +191,16 @@ const ManagementDashboard: React.FC = () => {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* System Health */}
-        <Card className="bg-slate-900/50 border-slate-700">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm">System Health</p>
-                <div className="flex items-center gap-2 mt-1">
-                  {healthLoading ? (
-                    <div className="w-5 h-5 bg-slate-600 rounded animate-pulse" />
-                  ) : (
-                    getHealthStatusIcon(health?.status)
-                  )}
-                  <span className={cn('font-semibold', getHealthStatusColor(health?.status))}>
-                    {healthLoading ? 'Loading...' : (health?.status?.charAt(0).toUpperCase() + health?.status?.slice(1) || 'Unknown')}
-                  </span>
-                </div>
-                {health?.timestamp && (
-                  <p className="text-xs text-slate-500 mt-1">
-                    Updated {formatRelativeTime(health.timestamp)}
-                  </p>
-                )}
-              </div>
-              <Activity className="w-8 h-8 text-slate-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Total Users */}
-        {management.canPerformOperation('view_all_users') && (
-          <Card className="bg-slate-900/50 border-slate-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-slate-400 text-sm">Total Users</p>
-                  <p className="text-2xl font-bold text-white mt-1">
-                    {usersLoading ? '...' : (userStats?.total.toLocaleString() || '0')}
-                  </p>
-                  {userStats && (
-                    <p className="text-xs text-slate-500 mt-1">
-                      {userStats.active} active, {userStats.inactive} inactive
-                    </p>
-                  )}
-                </div>
-                <Users className="w-8 h-8 text-slate-600" />
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Cache Performance */}
-        {management.canPerformOperation('manage_system') && (
-          <Card className="bg-slate-900/50 border-slate-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-slate-400 text-sm">Cache Hit Rate</p>
-                  <p className="text-2xl font-bold text-white mt-1">
-                    {healthLoading ? '...' : (() => {
-                      const labCache = cacheStats?.lab_cache;
-                      if (!labCache) return '0%';
-                      
-                      // Calculate hit rate as total_available_entries/total_entries
-                      // But handle division by zero case
-                      if (labCache.total_entries === 0) {
-                        return labCache.total_available_entries > 0 ? 'Ready' : '0%';
-                      }
-                      
-                      const hitRate = (labCache.total_entries / labCache.total_available_entries) * 100;
-                      return `${hitRate.toFixed(1)}%`;
-                    })()}
-                  </p>
-                  {cacheStats?.lab_cache && (
-                    <p className="text-xs text-slate-500 mt-1">
-                      {cacheStats.lab_cache.total_available_entries.toLocaleString()} available / {cacheStats.lab_cache.total_entries.toLocaleString()} total
-                    </p>
-                  )}
-                </div>
-                <Database className="w-8 h-8 text-slate-600" />
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Role Distribution */}
-        {management.canPerformOperation('view_all_users') && userStats && (
-          <Card className="bg-slate-900/50 border-slate-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-slate-400 text-sm">Role Distribution</p>
-                  <div className="mt-2 space-y-1">
-                    {Object.entries(userStats.roles).slice(0, 2).map(([role, count]) => (
-                      <div key={role} className="flex items-center justify-between text-sm">
-                        <span className="text-slate-300 capitalize">{role}s</span>
-                        <span className="text-slate-400">{count}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <Shield className="w-8 h-8 text-slate-600" />
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+      <SystemStatusBar
+        health={health}
+        cacheStats={cacheStats}
+        userStats={userStats}
+        isLoading={healthLoading || usersLoading}
+        showUserStats={management.canPerformOperation('view_all_users')}
+        showRoleDistribution={management.canPerformOperation('view_all_users')}
+        showEnvironment={false}
+        showVersion={false}
+      />
 
       {/* Quick Actions */}
       <Card className="bg-slate-900/50 border-slate-700">
