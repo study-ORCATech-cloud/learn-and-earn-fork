@@ -86,6 +86,7 @@ const App = () => (
                                         <SystemPage />
                                       </ProtectedRoute>
                                     } />
+                                    <Route path="*" element={<ManagementDashboard />} />
                                   </Routes>
                                 </ManagementLayout>
                               </SystemProvider>
