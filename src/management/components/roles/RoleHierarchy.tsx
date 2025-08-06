@@ -151,10 +151,10 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
                           
                           <div className="flex items-center gap-2 text-sm opacity-80">
                             <span>Level {role.level.toLocaleString()}</span>
-                            {index > 0 && (
+                            {index < sortedRoles.length - 1 && (
                               <>
                                 <ChevronUp className="w-3 h-3" />
-                                <span>Higher than {sortedRoles[index].name}</span>
+                                <span>Higher than {sortedRoles[index + 1].name}</span>
                               </>
                             )}
                           </div>
@@ -169,7 +169,7 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
                     </div>
 
                     {/* Role Description */}
-                    <div className="mt-3 text-sm opacity-90">
+                    <div className="mt-3 ml-8 text-sm opacity-90">
                       {role.name === 'owner' && (
                         <p>Complete system control. Can manage all users and roles, including admins. Set only at deployment time.</p>
                       )}
