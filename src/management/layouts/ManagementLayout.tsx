@@ -107,9 +107,6 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({ children }) => {
       '/management/users/create': 'Create a new user account',
       '/management/roles': 'View and manage role hierarchy and permissions',
       '/management/system': 'System health monitoring and maintenance',
-      '/management/system/health': 'Monitor system health and performance',
-      '/management/system/cache': 'Cache statistics and management',
-      '/management/system/logout': 'Global logout and session management',
     };
     return descriptions[path] || 'Management system administration';
   };

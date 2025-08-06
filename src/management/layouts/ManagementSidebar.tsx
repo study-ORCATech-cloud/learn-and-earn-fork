@@ -90,30 +90,7 @@ const ManagementSidebar: React.FC<ManagementSidebarProps> = ({
       path: '/management/system',
       icon: <Settings className="w-5 h-5" />,
       requiredPermission: 'manage_system',
-      description: 'System health and maintenance',
-      children: [
-        {
-          id: 'system-health',
-          label: 'Health Status',
-          path: '/management/system/health',
-          icon: <Activity className="w-4 h-4" />,
-          requiredPermission: 'manage_system',
-        },
-        {
-          id: 'system-cache',
-          label: 'Cache Management',
-          path: '/management/system/cache',
-          icon: <Database className="w-4 h-4" />,
-          requiredPermission: 'manage_system',
-        },
-        {
-          id: 'system-logout',
-          label: 'Global Logout',
-          path: '/management/system/logout',
-          icon: <LogOut className="w-4 h-4" />,
-          requiredPermission: 'manage_system',
-        },
-      ],
+      description: 'System health and maintenance'
     },
   ];
 
