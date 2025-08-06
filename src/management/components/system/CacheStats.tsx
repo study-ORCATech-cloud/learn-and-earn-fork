@@ -6,8 +6,6 @@ import {
   BarChart3, 
   Trash2, 
   RefreshCw, 
-  TrendingUp, 
-  TrendingDown,
   Activity,
   AlertTriangle,
   CheckCircle,
@@ -92,10 +90,6 @@ const CacheStats: React.FC<CacheStatsProps> = ({
     return { icon: <AlertTriangle className="w-4 h-4" />, label: 'Poor', color: 'text-red-400' };
   };
 
-  const formatSize = (sizeStr: string) => {
-    // Handle size strings like "2.5MB"
-    return sizeStr || 'Unknown';
-  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);

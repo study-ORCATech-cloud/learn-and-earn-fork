@@ -29,11 +29,24 @@ const SystemPage: React.FC = () => {
   const management = useManagement();
   const { health, cacheStats, isLoading, error, refreshAll } = useSystemHealth({ autoRefresh: true });
   const [activeTab, setActiveTab] = useState('cache');
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastActionResult, setLastActionResult] = useState<{
     action: string;
     success: boolean;
     timestamp: Date;
   } | null>(null);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refreshAll();
+    } catch (error) {
+      console.error('Failed to refresh system data:', error);
+    } finally {
+      // Add a small delay to show the feedback even if the request is very fast
+      setTimeout(() => setIsRefreshing(false), 500);
+    }
+  };
 
   const handleActionComplete = (action: string, success: boolean) => {
     setLastActionResult({
@@ -121,11 +134,11 @@ const SystemPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
-            onClick={refreshAll}
-            disabled={isLoading}
+            onClick={handleRefresh}
+            disabled={isLoading || isRefreshing}
             className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
           >
-            <RefreshCw className={cn('w-4 h-4 mr-2', isLoading && 'animate-spin')} />
+            <RefreshCw className={cn('w-4 h-4 mr-2', (isLoading || isRefreshing) && 'animate-spin')} />
             Refresh
           </Button>
         </div>
