@@ -237,7 +237,7 @@ const GlobalLogout: React.FC<GlobalLogoutProps> = ({
                   </Card>
                 </div>
 
-                {/* Clear Logout Action */}
+                {/* Clear Global Logout Action */}
                 <div className="bg-slate-800/30 rounded-lg p-4 border border-slate-600">
                   <div className="flex items-start justify-between">
                     <div className="space-y-2">
@@ -261,7 +261,7 @@ const GlobalLogout: React.FC<GlobalLogoutProps> = ({
                       ) : (
                         <CheckCircle className="w-4 h-4 mr-2" />
                       )}
-                      {isClearing ? 'Clearing...' : 'Clear Logout'}
+                      {isClearing ? 'Clearing...' : 'Clear Global Logout'}
                     </Button>
                   </div>
                 </div>
