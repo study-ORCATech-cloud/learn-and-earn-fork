@@ -312,14 +312,14 @@ const SystemActions: React.FC<SystemActionsProps> = ({
 
       {/* Confirmation Dialog */}
       <ConfirmDialog
-        open={!!pendingAction}
+        isOpen={!!pendingAction}
         onClose={() => setPendingAction(null)}
         onConfirm={() => pendingAction && executeAction(pendingAction)}
-        title={pendingAction?.confirmTitle}
-        description={pendingAction?.confirmDescription}
+        title={pendingAction?.confirmTitle || ""}
+        description={pendingAction?.confirmDescription || ""}
         confirmText="Execute"
         cancelText="Cancel"
-        variant={pendingAction?.danger ? "destructive" : "default"}
+        type={pendingAction?.danger ? "danger" : "info"}
         isLoading={!!executingAction}
       />
     </div>

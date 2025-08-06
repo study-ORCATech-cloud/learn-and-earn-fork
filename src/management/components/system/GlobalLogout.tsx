@@ -42,6 +42,7 @@ const GlobalLogout: React.FC<GlobalLogoutProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isTriggering, setIsTriggering] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showTriggerDialog, setShowTriggerDialog] = useState(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
@@ -50,12 +51,24 @@ const GlobalLogout: React.FC<GlobalLogoutProps> = ({
     try {
       setError(null);
       const response = await systemManagementService.getGlobalLogoutStatus();
-      setStatus(response);
+      setStatus(response.data);
     } catch (err) {
       setError('Failed to fetch global logout status');
       console.error('Error fetching global logout status:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await fetchStatus();
+    } catch (error) {
+      console.error('Failed to refresh global logout status:', error);
+    } finally {
+      // Add a small delay to show the feedback even if the request is very fast
+      setTimeout(() => setIsRefreshing(false), 500);
     }
   };
 
@@ -145,11 +158,11 @@ const GlobalLogout: React.FC<GlobalLogoutProps> = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={fetchStatus}
-              disabled={isLoading}
+              onClick={handleRefresh}
+              disabled={isLoading || isRefreshing}
               className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
             >
-              <RefreshCw className={cn('w-4 h-4', isLoading && 'animate-spin')} />
+              <RefreshCw className={cn('w-4 h-4', (isLoading || isRefreshing) && 'animate-spin')} />
             </Button>
           </div>
         </CardHeader>
@@ -381,27 +394,27 @@ const GlobalLogout: React.FC<GlobalLogoutProps> = ({
 
       {/* Trigger Confirmation Dialog */}
       <ConfirmDialog
-        open={showTriggerDialog}
+        isOpen={showTriggerDialog}
         onClose={() => setShowTriggerDialog(false)}
         onConfirm={handleTriggerLogout}
         title="Trigger Global Logout"
         description="This will immediately invalidate ALL existing user sessions system-wide. All users will be forced to log in again. This action should only be used in emergency situations. Are you sure you want to proceed?"
         confirmText="Trigger Global Logout"
         cancelText="Cancel"
-        variant="destructive"
+        type="danger"
         isLoading={isTriggering}
       />
 
       {/* Clear Confirmation Dialog */}
       <ConfirmDialog
-        open={showClearDialog}
+        isOpen={showClearDialog}
         onClose={() => setShowClearDialog(false)}
         onConfirm={handleClearLogout}
         title="Clear Global Logout"
         description="This will resume normal token validation and allow new user sessions. The global logout state will be deactivated. Continue?"
         confirmText="Clear Global Logout"
         cancelText="Cancel"
-        variant="default"
+        type="info"
         isLoading={isClearing}
       />
     </div>

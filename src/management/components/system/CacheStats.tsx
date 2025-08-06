@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { 
   Database, 
   BarChart3, 
-  Trash2, 
   RefreshCw, 
   Activity,
   AlertTriangle,
@@ -18,27 +17,18 @@ import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { formatDate, formatRelativeTime } from '../../utils/formatters';
 import { useSystemHealth } from '../../hooks/useSystemHealth';
-import { useSystem } from '../../context/SystemContext';
-import { useManagement } from '../../context/ManagementContext';
-import ConfirmDialog from '../common/ConfirmDialog';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 interface CacheStatsProps {
-  showActions?: boolean;
   autoRefresh?: boolean;
   className?: string;
 }
 
 const CacheStats: React.FC<CacheStatsProps> = ({
-  showActions = true,
   autoRefresh = true,
   className,
 }) => {
-  const management = useManagement();
   const { cacheStats, isLoading, error, refreshAll } = useSystemHealth({ autoRefresh });
-  const systemContext = useSystem();
-  const [clearingCache, setClearingCache] = useState<string | null>(null);
-  const [showClearDialog, setShowClearDialog] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const calculateCachePercentage = (totalEntries: number, totalAvailable: number) => {
@@ -103,19 +93,6 @@ const CacheStats: React.FC<CacheStatsProps> = ({
     }
   };
 
-  const handleClearCache = async (cacheType: 'data' | 'lab') => {
-    setClearingCache(cacheType);
-    try {
-      await systemContext.clearCache(cacheType as any);
-      // Refresh stats after clearing
-      await refreshAll();
-    } catch (error) {
-      console.error(`Failed to clear ${cacheType} cache:`, error);
-    } finally {
-      setClearingCache(null);
-      setShowClearDialog(null);
-    }
-  };
 
   if (error) {
     return (
@@ -202,22 +179,6 @@ const CacheStats: React.FC<CacheStatsProps> = ({
                   })()}
                 </CardTitle>
                 
-                {showActions && management.canPerformOperation('manage_system') && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowClearDialog('lab')}
-                    disabled={clearingCache === 'lab'}
-                    className="bg-slate-800 border-slate-600 text-red-400 hover:bg-red-900/20 hover:border-red-500 hover:text-red-300"
-                  >
-                    {clearingCache === 'lab' ? (
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <Trash2 className="w-4 h-4 mr-2" />
-                    )}
-                    Clear Cache
-                  </Button>
-                )}
               </div>
             </CardHeader>
             
@@ -349,22 +310,6 @@ const CacheStats: React.FC<CacheStatsProps> = ({
                   Data Cache
                 </CardTitle>
                 
-                {showActions && management.canPerformOperation('manage_system') && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowClearDialog('data')}
-                    disabled={clearingCache === 'data'}
-                    className="bg-slate-800 border-slate-600 text-red-400 hover:bg-red-900/20 hover:border-red-500 hover:text-red-300"
-                  >
-                    {clearingCache === 'data' ? (
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <Trash2 className="w-4 h-4 mr-2" />
-                    )}
-                    Clear Cache
-                  </Button>
-                )}
               </div>
             </CardHeader>
             
@@ -421,18 +366,6 @@ const CacheStats: React.FC<CacheStatsProps> = ({
             </Card>
           )}
 
-          {/* Cache Clear Confirmation Dialog */}
-          <ConfirmDialog
-            isOpen={!!showClearDialog}
-            onClose={() => setShowClearDialog(null)}
-            onConfirm={() => showClearDialog && handleClearCache(showClearDialog as 'data' | 'lab')}
-            title={`Clear ${showClearDialog === 'data' ? 'Data' : 'Lab'} Cache`}
-            description={`Are you sure you want to clear the ${showClearDialog} cache? This action cannot be undone and may temporarily impact system performance.`}
-            confirmText="Clear Cache"
-            cancelText="Cancel"
-            type="danger"
-            isLoading={!!clearingCache}
-          />
         </>
       ) : (
         <Card className="bg-slate-900/50 border-slate-700">

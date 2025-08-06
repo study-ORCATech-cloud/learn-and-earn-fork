@@ -212,7 +212,6 @@ const SystemPage: React.FC = () => {
 
         <TabsContent value="cache" className="space-y-6">
           <CacheStats 
-            showActions={true}
             autoRefresh={true}
           />
         </TabsContent>
