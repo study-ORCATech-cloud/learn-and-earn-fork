@@ -106,10 +106,6 @@ export const logValidationResults = (result: MetadataValidationResult, context: 
     console.warn(`${prefix}Backend metadata warnings:`);
     result.warnings.forEach(warning => console.warn(`${prefix}⚠️  ${warning}`));
   }
-
-  if (result.isValid && result.warnings.length === 0) {
-    console.log(`${prefix}✅ Backend metadata validation passed`);
-  }
 };
 
 /**

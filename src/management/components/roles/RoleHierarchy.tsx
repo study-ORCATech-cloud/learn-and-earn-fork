@@ -22,8 +22,13 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
   const { roleHierarchy, isLoading, error } = useRoles();
 
   const getRoleIcon = (roleName: string) => {
-    // Require backend metadata - no hardcoded fallbacks
-    const backendRole = roleHierarchy?.role_metadata?.[roleName];
+    // Handle loading state
+    if (!roleHierarchy) {
+      return <Shield className="w-5 h-5 text-slate-400" />;
+    }
+
+    // Check for missing role metadata in loaded data
+    const backendRole = roleHierarchy.role_metadata?.[roleName];
     if (!backendRole) {
       console.error(`Missing role metadata for role: ${roleName}. Check backend /api/v1/roles endpoint.`);
       return <Shield className="w-5 h-5 text-red-400" />;
@@ -59,8 +64,13 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
   };
 
   const getRoleColor = (roleName: string, isManageable: boolean) => {
-    // Require backend metadata - no hardcoded fallbacks
-    const backendRole = roleHierarchy?.role_metadata?.[roleName];
+    // Handle loading state
+    if (!roleHierarchy) {
+      return 'bg-slate-900/20 border-slate-500/30 text-slate-200';
+    }
+
+    // Check for missing role metadata in loaded data
+    const backendRole = roleHierarchy.role_metadata?.[roleName];
     if (!backendRole) {
       console.error(`Missing role metadata for role: ${roleName}. Check backend /api/v1/roles endpoint.`);
       return 'bg-red-900/20 border-red-500/30 text-red-200';
@@ -83,8 +93,13 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
   const manageableRoleNames = getManageableRoleNames(management.currentUserRole, roleHierarchy);
 
   const getRoleDescription = (roleName: string) => {
-    // Require backend metadata - no hardcoded fallbacks
-    const backendRole = roleHierarchy?.role_metadata?.[roleName];
+    // Handle loading state
+    if (!roleHierarchy) {
+      return 'Loading role description...';
+    }
+
+    // Check for missing role metadata in loaded data
+    const backendRole = roleHierarchy.role_metadata?.[roleName];
     if (!backendRole?.description) {
       console.error(`Missing role description for role: ${roleName}. Check backend /api/v1/roles endpoint.`);
       return `❌ Missing description for ${roleName} role. Check backend configuration.`;

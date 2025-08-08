@@ -114,8 +114,17 @@ export const formatRelativeTime = (dateString: string): string => {
  * Format a role with appropriate styling classes using backend metadata
  */
 export const formatRole = (role: UserRole, roleHierarchy?: any): { text: string; className: string; icon: string } => {
-  // Require backend metadata - no hardcoded fallbacks
-  const backendRole = roleHierarchy?.role_metadata?.[role];
+  // Handle loading state - roleHierarchy is null/undefined while data is being fetched
+  if (!roleHierarchy) {
+    return {
+      text: '...',
+      className: 'text-slate-400 bg-slate-900/20 border-slate-500/30',
+      icon: '⏳',
+    };
+  }
+
+  // Check for missing role metadata in loaded data
+  const backendRole = roleHierarchy.role_metadata?.[role];
   if (!backendRole) {
     console.error(`Missing role metadata for role: ${role}. Check backend /api/v1/roles endpoint.`);
     return {

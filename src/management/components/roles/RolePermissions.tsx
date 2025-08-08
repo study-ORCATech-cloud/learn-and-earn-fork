@@ -40,14 +40,19 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
   };
 
   const getPermissionCategory = (permission: string) => {
+    // Handle loading state
+    if (!roleHierarchy) {
+      return 'loading';
+    }
+
     // Use backend metadata first
-    const backendCategory = roleHierarchy?.permission_metadata?.[permission]?.category;
+    const backendCategory = roleHierarchy.permission_metadata?.[permission]?.category;
     if (backendCategory) {
       return backendCategory;
     }
 
     // Use rules-based categorization from backend
-    const rules = roleHierarchy?.ui_configuration?.permission_categorization_rules;
+    const rules = roleHierarchy.ui_configuration?.permission_categorization_rules;
     if (rules) {
       const permissionLower = permission.toLowerCase();
       
@@ -85,8 +90,28 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
   };
 
   const getCategoryInfo = (category: string) => {
-    // Require backend metadata - no hardcoded fallbacks
-    const backendCategory = roleHierarchy?.category_metadata?.[category];
+    // Handle loading state
+    if (category === 'loading' || !roleHierarchy) {
+      return {
+        label: 'Loading...',
+        icon: <Shield className="w-4 h-4 text-slate-400" />,
+        color: 'text-slate-400',
+        description: 'Loading category information...'
+      };
+    }
+
+    // Handle uncategorized state
+    if (category === 'uncategorized') {
+      return {
+        label: 'Uncategorized',
+        icon: <Shield className="w-4 h-4 text-red-400" />,
+        color: 'text-red-400',
+        description: '❌ Missing categorization rules'
+      };
+    }
+
+    // Check for backend category metadata
+    const backendCategory = roleHierarchy.category_metadata?.[category];
     if (!backendCategory) {
       console.error(`Missing category metadata for: ${category}. Check backend /api/v1/roles endpoint.`);
       return {
@@ -129,8 +154,13 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
   };
 
   const formatPermissionName = (permission: string) => {
-    // Require backend metadata - no hardcoded fallbacks
-    const backendPermission = roleHierarchy?.permission_metadata?.[permission];
+    // Handle loading state
+    if (!roleHierarchy) {
+      return '...';
+    }
+
+    // Check for backend permission metadata
+    const backendPermission = roleHierarchy.permission_metadata?.[permission];
     if (!backendPermission?.display_name) {
       console.error(`Missing permission display name for: ${permission}. Check backend /api/v1/roles endpoint.`);
       return `❌ ${permission.toUpperCase()}`;
@@ -140,8 +170,13 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
   };
 
   const getPermissionDescription = (permission: string) => {
-    // Require backend metadata - no hardcoded fallbacks
-    const backendPermission = roleHierarchy?.permission_metadata?.[permission];
+    // Handle loading state
+    if (!roleHierarchy) {
+      return 'Loading description...';
+    }
+
+    // Check for backend permission metadata
+    const backendPermission = roleHierarchy.permission_metadata?.[permission];
     if (!backendPermission?.description) {
       console.error(`Missing permission description for: ${permission}. Check backend /api/v1/roles endpoint.`);
       return `❌ Missing description for ${permission}. Check backend configuration.`;
