@@ -198,7 +198,7 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
                     key={role.name}
                     variant="outline"
                     onClick={() => onRoleSelect?.(role.name)}
-                    className="h-auto p-4 border-slate-600 text-slate-300 hover:bg-slate-700"
+                    className="h-auto p-4 bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
                   >
                     <div className="text-center space-y-2">
                       <div className="text-2xl">{roleInfo.icon}</div>
