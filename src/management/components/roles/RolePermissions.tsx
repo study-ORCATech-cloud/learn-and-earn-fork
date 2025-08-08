@@ -1,7 +1,7 @@
 // Role permissions component showing detailed permission breakdown
 
 import React, { useState } from 'react';
-import { Shield, Eye, Settings, Users, Search, ChevronDown, ChevronRight } from 'lucide-react';
+import { Shield, Eye, Settings, Users, Search, ChevronDown, ChevronRight, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -174,15 +174,29 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
   return (
     <Card className={cn('bg-slate-900/50 border-slate-700', className)}>
       <CardHeader>
-        <CardTitle className="text-slate-200 flex items-center gap-2">
-          <Shield className="w-5 h-5" />
-          Role Permissions
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-slate-200 flex items-center gap-2">
+            <Shield className="w-5 h-5" />
+            Role Permissions
+            {selectedRoleData && (
+              <Badge variant="secondary" className="bg-slate-700 text-slate-200">
+                {formatRole(selectedRoleData.name).text}
+              </Badge>
+            )}
+          </CardTitle>
+          
           {selectedRoleData && (
-            <Badge variant="secondary" className="bg-slate-700 text-slate-200">
-              {formatRole(selectedRoleData.name).text}
-            </Badge>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onRoleSelect?.('')}
+              className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Roles
+            </Button>
           )}
-        </CardTitle>
+        </div>
       </CardHeader>
 
       <CardContent className="space-y-6">
