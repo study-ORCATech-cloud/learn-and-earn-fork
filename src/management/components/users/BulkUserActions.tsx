@@ -47,7 +47,7 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
   className,
 }) => {
   const management = useManagement();
-  const { manageableRoles } = useRoles();
+  const { manageableRoles, roleHierarchy } = useRoles();
   const { executeBulkOperation, isExecuting, progress, results } = useBulkOperations();
   
   const [operation, setOperation] = useState<BulkOperationType | ''>('');
@@ -129,7 +129,7 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
     let summary = `${selectedOperation.label} for ${selectedUserIds.length} user${selectedUserIds.length === 1 ? '' : 's'}`;
     
     if (operation === 'ROLE_CHANGE' && targetRole) {
-      const roleInfo = formatRole(targetRole);
+      const roleInfo = formatRole(targetRole, roleHierarchy);
       summary += ` to ${roleInfo.text}`;
     }
     
@@ -351,7 +351,7 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
               </SelectTrigger>
               <SelectContent className="bg-slate-800 border-slate-600">
                 {manageableRoles?.manageable_roles?.map((role) => {
-                  const roleInfo = formatRole(role.name);
+                  const roleInfo = formatRole(role.name, roleHierarchy);
                   return (
                     <SelectItem
                       key={role.name}

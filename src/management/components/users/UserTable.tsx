@@ -3,6 +3,7 @@
 import React from 'react';
 import { Edit2, Eye, UserX, UserCheck, Shield, MoreHorizontal } from 'lucide-react';
 import { useUsers } from '../../hooks/useUsers';
+import { useRoles } from '../../hooks/useRoles';
 import { useManagement } from '../../context/ManagementContext';
 import { formatDate, formatRelativeTime, formatRole } from '../../utils/formatters';
 import DataTable from '../common/DataTable';
@@ -28,6 +29,7 @@ const UserTable: React.FC<UserTableProps> = ({
   className,
 }) => {
   const management = useManagement();
+  const { roleHierarchy } = useRoles();
   const {
     users,
     isLoading,
@@ -105,7 +107,7 @@ const UserTable: React.FC<UserTableProps> = ({
       sortable: true,
       align: 'center',
       render: (_, user) => {
-        const roleInfo = formatRole(user.role);
+        const roleInfo = formatRole(user.role, roleHierarchy);
         return (
           <div className="flex items-center justify-center">
             <Badge 
@@ -186,14 +188,14 @@ const UserTable: React.FC<UserTableProps> = ({
       label: 'Edit User',
       icon: <Edit2 className="w-4 h-4" />,
       onClick: (user) => onUserEdit?.(user),
-      disabled: (user) => !management.canPerformOperation('edit_user', user.role),
+      disabled: (user) => !management.canPerformOperation('edit_user'),
     },
     {
       key: 'toggle_status',
       label: (user) => user.is_active ? 'Deactivate' : 'Activate',
       icon: (user) => user.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />,
       onClick: handleUserActivate,
-      disabled: (user) => !management.canPerformOperation('delete_user', user.role),
+      disabled: (user) => !management.canPerformOperation('delete_user'),
       variant: (user) => user.is_active ? 'destructive' : 'default',
       className: (user) => user.is_active 
         ? 'text-red-400 hover:text-red-300' 

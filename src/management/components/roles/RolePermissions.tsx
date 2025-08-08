@@ -40,6 +40,31 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
   };
 
   const getPermissionCategory = (permission: string) => {
+    // Use backend metadata if available
+    const backendCategory = roleHierarchy?.permission_metadata?.[permission]?.category;
+    if (backendCategory) {
+      return backendCategory;
+    }
+
+    // Fallback to rules-based categorization using backend rules if available
+    const rules = roleHierarchy?.ui_configuration?.permission_categorization_rules;
+    if (rules) {
+      const permissionLower = permission.toLowerCase();
+      
+      for (const rule of rules.sort((a, b) => a.priority - b.priority)) {
+        if (rule.rule.includes('contains')) {
+          const keywords = rule.rule.match(/'([^']+)'/g)?.map(k => k.slice(1, -1)) || [];
+          if (keywords.some(keyword => permissionLower.includes(keyword))) {
+            return rule.category;
+          }
+        }
+      }
+      
+      // Return default fallback
+      return rules.find(r => r.rule.includes('default'))?.category || 'general';
+    }
+
+    // Hardcoded fallback for backward compatibility
     if (permission.includes('user') || permission.includes('profile')) {
       return 'user_management';
     }
@@ -58,7 +83,34 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
     return 'general';
   };
 
+  const getIconComponent = (iconName: string, className: string = "w-4 h-4") => {
+    const iconComponents = {
+      Users: <Users className={className} />,
+      Shield: <Shield className={className} />,
+      Eye: <Eye className={className} />,
+      Settings: <Settings className={className} />,
+      Crown: <Settings className={className} />, // Crown not available in imports, fallback to Settings
+      User: <Users className={className} />
+    };
+    return iconComponents[iconName] || <Shield className={className} />;
+  };
+
   const getCategoryInfo = (category: string) => {
+    // Use backend metadata if available
+    const backendCategory = roleHierarchy?.category_metadata?.[category];
+    if (backendCategory) {
+      const colorClass = roleHierarchy?.ui_configuration?.color_mapping?.[backendCategory.color]?.text || 'text-slate-400';
+      const iconComponent = roleHierarchy?.ui_configuration?.icon_mapping?.[backendCategory.icon];
+      
+      return {
+        label: backendCategory.label,
+        icon: getIconComponent(iconComponent || 'Shield'),
+        color: colorClass,
+        description: backendCategory.description
+      };
+    }
+
+    // Hardcoded fallback for backward compatibility
     const categories = {
       user_management: {
         label: 'User Management',
@@ -101,12 +153,26 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
   };
 
   const formatPermissionName = (permission: string) => {
+    // Use backend metadata if available
+    const backendPermission = roleHierarchy?.permission_metadata?.[permission];
+    if (backendPermission?.display_name) {
+      return backendPermission.display_name;
+    }
+
+    // Fallback to formatted permission name
     return permission
       .replace(/_/g, ' ')
       .replace(/\b\w/g, l => l.toUpperCase());
   };
 
   const getPermissionDescription = (permission: string) => {
+    // Use backend metadata if available
+    const backendPermission = roleHierarchy?.permission_metadata?.[permission];
+    if (backendPermission?.description) {
+      return backendPermission.description;
+    }
+
+    // Hardcoded fallback for backward compatibility
     const descriptions = {
       view_all_users: 'View information about all users in the system',
       create_users: 'Create new user accounts',
@@ -180,7 +246,7 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
             Role Permissions
             {selectedRoleData && (
               <Badge variant="secondary" className="bg-slate-700 text-slate-200">
-                {formatRole(selectedRoleData.name).text}
+                {formatRole(selectedRoleData.name, roleHierarchy).text}
               </Badge>
             )}
           </CardTitle>
@@ -206,7 +272,7 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
             <p className="text-slate-400">Select a role to view its permissions:</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {roles.map((role) => {
-                const roleInfo = formatRole(role.name);
+                const roleInfo = formatRole(role.name, roleHierarchy);
                 return (
                   <Button
                     key={role.name}
@@ -246,7 +312,7 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
             <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-600">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="text-slate-200 font-medium">
-                  {formatRole(selectedRoleData.name).text} Permissions
+                  {formatRole(selectedRoleData.name, roleHierarchy).text} Permissions
                 </h4>
                 <Badge variant="outline" className="border-slate-600 text-slate-300">
                   {filteredPermissions.length} / {permissions.length}

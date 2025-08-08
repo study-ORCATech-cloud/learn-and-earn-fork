@@ -8,10 +8,51 @@ export interface Role {
   permissions: string[];
 }
 
+export interface PermissionMetadata {
+  display_name: string;
+  description: string;
+  category: string;
+}
+
+export interface CategoryMetadata {
+  label: string;
+  description: string;
+  icon: string;
+  color: string;
+  sort_order: number;
+}
+
+export interface RoleMetadata {
+  display_name: string;
+  description: string;
+  icon: string;
+  color: string;
+  level: number;
+  can_be_assigned_via_ui: boolean;
+}
+
+export interface UIConfiguration {
+  permission_categorization_rules: Array<{
+    rule: string;
+    category: string;
+    priority: number;
+  }>;
+  color_mapping: Record<string, {
+    text: string;
+    bg: string;
+    border: string;
+  }>;
+  icon_mapping: Record<string, string>;
+}
+
 export interface RoleHierarchy {
   roles: Role[];
   levels: Record<UserRole, number>;
   permissions: Record<UserRole, string[]>;
+  permission_metadata?: Record<string, PermissionMetadata>;
+  category_metadata?: Record<string, CategoryMetadata>;
+  role_metadata?: Record<string, RoleMetadata>;
+  ui_configuration?: UIConfiguration;
 }
 
 export interface ChangeUserRoleRequest {

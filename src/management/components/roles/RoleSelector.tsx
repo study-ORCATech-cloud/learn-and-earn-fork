@@ -136,7 +136,7 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({
               </SelectItem>
             ) : (
               filteredRoles.map((role) => {
-                const roleInfo = formatRole(role.name);
+                const roleInfo = formatRole(role.name, roleHierarchy);
                 return (
                   <SelectItem
                     key={role.name}
@@ -180,9 +180,9 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({
               <Card className="bg-transparent border-0 shadow-none">
                 <CardContent className="p-0 space-y-3">
                   <div className="flex items-center gap-2">
-                    {formatRole(selectedRole.name).icon}
+                    {formatRole(selectedRole.name, roleHierarchy).icon}
                     <h4 className="font-semibold text-slate-200">
-                      {formatRole(selectedRole.name).text}
+                      {formatRole(selectedRole.name, roleHierarchy).text}
                     </h4>
                     <Badge variant="outline" className="border-slate-600 text-slate-400 text-xs">
                       Level {selectedRole.level}
@@ -252,12 +252,12 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({
           <CardContent className="p-3">
             <div className="flex items-start gap-3">
               <div className="mt-0.5">
-                {formatRole(selectedRole.name).icon}
+                {formatRole(selectedRole.name, roleHierarchy).icon}
               </div>
               <div className="flex-1 space-y-1">
                 <div className="flex items-center gap-2">
                   <h5 className="font-medium text-slate-200">
-                    {formatRole(selectedRole.name).text}
+                    {formatRole(selectedRole.name, roleHierarchy).text}
                   </h5>
                   <Badge variant="outline" className="border-slate-600 text-slate-400 text-xs">
                     Level {selectedRole.level}

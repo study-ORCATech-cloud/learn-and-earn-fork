@@ -21,6 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { useManagement } from '../../context/ManagementContext';
+import { useRoles } from '../../hooks/useRoles';
 import { formatDate, formatRelativeTime, formatRole } from '../../utils/formatters';
 import type { ManagementUser, UserProvider, UserAuditEntry } from '../../types/user';
 
@@ -46,9 +47,10 @@ const UserDetails: React.FC<UserDetailsProps> = ({
   className,
 }) => {
   const management = useManagement();
+  const { roleHierarchy } = useRoles();
   const [activeTab, setActiveTab] = useState<'overview' | 'providers' | 'activity'>('overview');
 
-  const roleInfo = formatRole(user.role);
+  const roleInfo = formatRole(user.role, roleHierarchy);
   const canEdit = management.canPerformOperation('edit_user', user.role);
   const canViewProviders = management.currentUserRole === 'admin' || management.currentUserRole === 'owner';
   const canViewActivity = management.currentUserRole === 'admin' || management.currentUserRole === 'owner';

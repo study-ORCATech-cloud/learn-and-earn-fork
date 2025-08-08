@@ -95,16 +95,16 @@ const PermissionsMatrix: React.FC<PermissionsMatrixProps> = ({
   }
 
   const roles = showOnlyManageable 
-    ? manageableRoles 
+    ? manageableRoles?.detailed_roles?.sort((a, b) => b.level - a.level) || []
     : roleHierarchy?.roles?.sort((a, b) => b.level - a.level) || [];
 
   // Get all unique permissions across all roles
   const allPermissions = Array.from(
-    new Set(roles.flatMap(role => role.permissions || []))
+    new Set(roles.flatMap((role: any) => role.permissions || []))
   ).sort();
 
   // Filter permissions based on search and category
-  const filteredPermissions = allPermissions.filter(permission => {
+  const filteredPermissions = allPermissions.filter((permission: string) => {
     const matchesSearch = !searchTerm || 
       permission.toLowerCase().includes(searchTerm.toLowerCase()) ||
       formatPermissionName(permission).toLowerCase().includes(searchTerm.toLowerCase());
@@ -114,7 +114,7 @@ const PermissionsMatrix: React.FC<PermissionsMatrixProps> = ({
     
     // Filter out permissions that no role has (if showEmptyPermissions is false)
     const hasAnyRole = showEmptyPermissions || 
-      roles.some(role => role.permissions?.includes(permission));
+      roles.some((role: any) => role.permissions?.includes(permission));
     
     return matchesSearch && matchesCategory && hasAnyRole;
   });
@@ -202,8 +202,8 @@ const PermissionsMatrix: React.FC<PermissionsMatrixProps> = ({
                   <TableHead className="w-[300px] text-slate-300 font-medium sticky left-0 bg-slate-900/90 backdrop-blur-sm">
                     Permission
                   </TableHead>
-                  {roles.map((role) => {
-                    const roleInfo = formatRole(role.name);
+                  {roles.map((role: any) => {
+                    const roleInfo = formatRole(role.name, roleHierarchy);
                     const isHighlighted = highlightRole === role.name;
                     return (
                       <TableHead
@@ -269,7 +269,7 @@ const PermissionsMatrix: React.FC<PermissionsMatrixProps> = ({
                           </div>
                         </TableCell>
                         
-                        {roles.map((role) => {
+                        {roles.map((role: any) => {
                           const hasPermission = role.permissions?.includes(permission);
                           const isHighlighted = highlightRole === role.name;
                           
@@ -327,9 +327,9 @@ const PermissionsMatrix: React.FC<PermissionsMatrixProps> = ({
 
         {/* Summary Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {roles.map((role) => {
+          {roles.map((role: any) => {
             const rolePermissions = role.permissions || [];
-            const visiblePermissions = rolePermissions.filter(p => 
+            const visiblePermissions = rolePermissions.filter((p: any) => 
               filteredPermissions.includes(p)
             );
             const percentage = filteredPermissions.length > 0 
@@ -340,9 +340,9 @@ const PermissionsMatrix: React.FC<PermissionsMatrixProps> = ({
               <Card key={role.name} className="bg-slate-800/30 border-slate-600">
                 <CardContent className="p-3 text-center">
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    {formatRole(role.name).icon}
+                    {formatRole(role.name, roleHierarchy).icon}
                     <span className="font-medium text-slate-200 text-sm">
-                      {formatRole(role.name).text}
+                      {formatRole(role.name, roleHierarchy).text}
                     </span>
                   </div>
                   <div className="space-y-1">

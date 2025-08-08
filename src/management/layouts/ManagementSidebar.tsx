@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { useManagement } from '../context/ManagementContext';
+import { useRoles } from '../hooks/useRoles';
 import { formatRole } from '../utils/formatters';
 
 interface NavigationItem {
@@ -43,6 +44,7 @@ const ManagementSidebar: React.FC<ManagementSidebarProps> = ({
 }) => {
   const location = useLocation();
   const management = useManagement();
+  const { roleHierarchy } = useRoles();
 
   const navigationItems: NavigationItem[] = [
     {
@@ -194,7 +196,7 @@ const ManagementSidebar: React.FC<ManagementSidebarProps> = ({
                 </p>
                 <div className="flex items-center gap-1">
                   {(() => {
-                    const roleInfo = formatRole(management.currentUserRole);
+                    const roleInfo = formatRole(management.currentUserRole, roleHierarchy);
                     return (
                       <>
                         <span className="text-xs">{roleInfo.icon}</span>

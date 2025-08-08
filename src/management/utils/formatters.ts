@@ -114,7 +114,26 @@ export const formatRelativeTime = (dateString: string): string => {
 /**
  * Format a role with appropriate styling classes
  */
-export const formatRole = (role: UserRole): { text: string; className: string; icon: string } => {
+export const formatRole = (role: UserRole, roleHierarchy?: any): { text: string; className: string; icon: string } => {
+  // Use backend metadata if available
+  const backendRole = roleHierarchy?.role_metadata?.[role];
+  if (backendRole) {
+    const colorMapping = roleHierarchy?.ui_configuration?.color_mapping?.[backendRole.color];
+    const iconMapping = roleHierarchy?.ui_configuration?.icon_mapping?.[backendRole.icon];
+    
+    if (colorMapping && iconMapping) {
+      return {
+        text: backendRole.display_name,
+        className: `${colorMapping.text} ${colorMapping.bg} ${colorMapping.border}`,
+        icon: iconMapping === 'Crown' ? '👑' : 
+              iconMapping === 'Shield' ? '🛡️' : 
+              iconMapping === 'Users' ? '👥' : 
+              iconMapping === 'User' ? '👤' : '❓',
+      };
+    }
+  }
+
+  // Hardcoded fallback for backward compatibility
   return {
     text: role.charAt(0).toUpperCase() + role.slice(1),
     className: ROLE_COLORS[role]?.full || ROLE_COLORS.user.full,

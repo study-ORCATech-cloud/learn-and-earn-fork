@@ -45,7 +45,7 @@ const UserForm: React.FC<UserFormProps> = ({
   className,
 }) => {
   const management = useManagement();
-  const { manageableRoles, isLoading: isLoadingRoles } = useRoles();
+  const { manageableRoles, roleHierarchy, isLoading: isLoadingRoles } = useRoles();
   
   const isEditMode = !!user;
   const [formData, setFormData] = useState<UserFormData>({
@@ -256,7 +256,7 @@ const UserForm: React.FC<UserFormProps> = ({
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800 border-slate-600">
                     {manageableRoles.map((role) => {
-                      const roleInfo = formatRole(role.name);
+                      const roleInfo = formatRole(role.name, roleHierarchy);
                       return (
                         <SelectItem
                           key={role.name}
@@ -280,7 +280,7 @@ const UserForm: React.FC<UserFormProps> = ({
               {formData.role && (
                 <div className="flex items-center">
                   {(() => {
-                    const roleInfo = formatRole(formData.role);
+                    const roleInfo = formatRole(formData.role, roleHierarchy);
                     return (
                       <div className={cn('px-3 py-2 rounded-md border text-sm', roleInfo.className)}>
                         <span className="mr-1">{roleInfo.icon}</span>
