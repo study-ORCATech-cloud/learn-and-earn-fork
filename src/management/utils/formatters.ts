@@ -1,8 +1,7 @@
 // Data formatting utilities for management interface
 
-import { USER_ROLES, ROLE_COLORS, ROLE_ICONS, PROVIDER_ICONS } from './constants';
-
-type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES];
+import { PROVIDER_ICONS } from './constants';
+import type { UserRole } from '../types/role';
 
 /**
  * Format a date string to a readable format in the client's local timezone
@@ -112,32 +111,48 @@ export const formatRelativeTime = (dateString: string): string => {
 };
 
 /**
- * Format a role with appropriate styling classes
+ * Format a role with appropriate styling classes using backend metadata
  */
 export const formatRole = (role: UserRole, roleHierarchy?: any): { text: string; className: string; icon: string } => {
-  // Use backend metadata if available
+  // Require backend metadata - no hardcoded fallbacks
   const backendRole = roleHierarchy?.role_metadata?.[role];
-  if (backendRole) {
-    const colorMapping = roleHierarchy?.ui_configuration?.color_mapping?.[backendRole.color];
-    const iconMapping = roleHierarchy?.ui_configuration?.icon_mapping?.[backendRole.icon];
-    
-    if (colorMapping && iconMapping) {
-      return {
-        text: backendRole.display_name,
-        className: `${colorMapping.text} ${colorMapping.bg} ${colorMapping.border}`,
-        icon: iconMapping === 'Crown' ? '👑' : 
-              iconMapping === 'Shield' ? '🛡️' : 
-              iconMapping === 'Users' ? '👥' : 
-              iconMapping === 'User' ? '👤' : '❓',
-      };
-    }
+  if (!backendRole) {
+    console.error(`Missing role metadata for role: ${role}. Check backend /api/v1/roles endpoint.`);
+    return {
+      text: role.toUpperCase(),
+      className: 'text-red-400 bg-red-900/20 border-red-500/30',
+      icon: '❌',
+    };
   }
 
-  // Hardcoded fallback for backward compatibility
+  const colorMapping = roleHierarchy?.ui_configuration?.color_mapping?.[backendRole.color];
+  const iconMapping = roleHierarchy?.ui_configuration?.icon_mapping?.[backendRole.icon];
+  
+  if (!colorMapping) {
+    console.error(`Missing color mapping for ${backendRole.color}. Check backend UI configuration.`);
+    return {
+      text: backendRole.display_name || role.toUpperCase(),
+      className: 'text-red-400 bg-red-900/20 border-red-500/30',
+      icon: '❌',
+    };
+  }
+
+  if (!iconMapping) {
+    console.error(`Missing icon mapping for ${backendRole.icon}. Check backend UI configuration.`);
+    return {
+      text: backendRole.display_name,
+      className: `${colorMapping.text} ${colorMapping.bg} ${colorMapping.border}`,
+      icon: '❌',
+    };
+  }
+
   return {
-    text: role.charAt(0).toUpperCase() + role.slice(1),
-    className: ROLE_COLORS[role]?.full || ROLE_COLORS.user.full,
-    icon: ROLE_ICONS[role] || ROLE_ICONS.user,
+    text: backendRole.display_name,
+    className: `${colorMapping.text} ${colorMapping.bg} ${colorMapping.border}`,
+    icon: iconMapping === 'Crown' ? '👑' : 
+          iconMapping === 'Shield' ? '🛡️' : 
+          iconMapping === 'Users' ? '👥' : 
+          iconMapping === 'User' ? '👤' : '❓',
   };
 };
 

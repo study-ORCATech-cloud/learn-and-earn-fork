@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useManagement } from '../context/ManagementContext';
 import { roleManagementService } from '../services/roleManagementService';
 import { canManageRole as canManageRoleUtil } from '../utils/permissions';
+import { validateRoleHierarchy, logValidationResults } from '../utils/metadata-validator';
 import type { 
   RoleHierarchy, 
   UserPermissions, 
@@ -85,7 +86,16 @@ export const useRoles = (options: UseRolesOptions = {}): UseRolesReturn => {
       const response = await roleManagementService.getRoles();
       
       if (response.success && response.data) {
+        // Validate backend metadata
+        const validationResult = validateRoleHierarchy(response.data);
+        logValidationResults(validationResult, 'useRoles');
+        
+        // Still set the data even if there are warnings, but errors are critical
         setRoleHierarchy(response.data);
+        
+        if (!validationResult.isValid) {
+          console.error('Critical backend metadata errors detected. Some features may not work correctly.');
+        }
       } else {
         setError(response.message || 'Failed to load role hierarchy');
       }

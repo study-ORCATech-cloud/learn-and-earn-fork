@@ -40,13 +40,13 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
   };
 
   const getPermissionCategory = (permission: string) => {
-    // Use backend metadata if available
+    // Use backend metadata first
     const backendCategory = roleHierarchy?.permission_metadata?.[permission]?.category;
     if (backendCategory) {
       return backendCategory;
     }
 
-    // Fallback to rules-based categorization using backend rules if available
+    // Use rules-based categorization from backend
     const rules = roleHierarchy?.ui_configuration?.permission_categorization_rules;
     if (rules) {
       const permissionLower = permission.toLowerCase();
@@ -60,27 +60,16 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
         }
       }
       
-      // Return default fallback
-      return rules.find(r => r.rule.includes('default'))?.category || 'general';
+      // Return default from backend rules
+      const defaultRule = rules.find(r => r.rule.includes('default'));
+      if (defaultRule) {
+        return defaultRule.category;
+      }
     }
 
-    // Hardcoded fallback for backward compatibility
-    if (permission.includes('user') || permission.includes('profile')) {
-      return 'user_management';
-    }
-    if (permission.includes('role') || permission.includes('permission')) {
-      return 'role_management';
-    }
-    if (permission.includes('audit') || permission.includes('log')) {
-      return 'audit_logging';
-    }
-    if (permission.includes('system') || permission.includes('cache') || permission.includes('health')) {
-      return 'system_management';
-    }
-    if (permission.includes('bulk')) {
-      return 'bulk_operations';
-    }
-    return 'general';
+    // No hardcoded fallbacks - show error
+    console.error(`Missing permission categorization for: ${permission}. Check backend /api/v1/roles endpoint.`);
+    return 'uncategorized';
   };
 
   const getIconComponent = (iconName: string, className: string = "w-4 h-4") => {
@@ -96,99 +85,69 @@ const RolePermissions: React.FC<RolePermissionsProps> = ({
   };
 
   const getCategoryInfo = (category: string) => {
-    // Use backend metadata if available
+    // Require backend metadata - no hardcoded fallbacks
     const backendCategory = roleHierarchy?.category_metadata?.[category];
-    if (backendCategory) {
-      const colorClass = roleHierarchy?.ui_configuration?.color_mapping?.[backendCategory.color]?.text || 'text-slate-400';
-      const iconComponent = roleHierarchy?.ui_configuration?.icon_mapping?.[backendCategory.icon];
-      
+    if (!backendCategory) {
+      console.error(`Missing category metadata for: ${category}. Check backend /api/v1/roles endpoint.`);
+      return {
+        label: category.toUpperCase(),
+        icon: <Shield className="w-4 h-4 text-red-400" />,
+        color: 'text-red-400',
+        description: `❌ Missing metadata for ${category} category`
+      };
+    }
+
+    const colorMapping = roleHierarchy?.ui_configuration?.color_mapping?.[backendCategory.color];
+    const iconComponent = roleHierarchy?.ui_configuration?.icon_mapping?.[backendCategory.icon];
+    
+    if (!colorMapping) {
+      console.error(`Missing color mapping for ${backendCategory.color}. Check backend UI configuration.`);
       return {
         label: backendCategory.label,
         icon: getIconComponent(iconComponent || 'Shield'),
-        color: colorClass,
+        color: 'text-red-400',
         description: backendCategory.description
       };
     }
 
-    // Hardcoded fallback for backward compatibility
-    const categories = {
-      user_management: {
-        label: 'User Management',
-        icon: <Users className="w-4 h-4" />,
-        color: 'text-blue-400',
-        description: 'Permissions related to managing users'
-      },
-      role_management: {
-        label: 'Role Management',
-        icon: <Shield className="w-4 h-4" />,
-        color: 'text-purple-400',
-        description: 'Permissions for managing roles and permissions'
-      },
-      audit_logging: {
-        label: 'Audit & Logging',
-        icon: <Eye className="w-4 h-4" />,
-        color: 'text-orange-400',
-        description: 'Access to audit trails and logs'
-      },
-      system_management: {
-        label: 'System Management',
-        icon: <Settings className="w-4 h-4" />,
-        color: 'text-red-400',
-        description: 'System administration and maintenance'
-      },
-      bulk_operations: {
-        label: 'Bulk Operations',
-        icon: <Users className="w-4 h-4" />,
-        color: 'text-green-400',
-        description: 'Mass operations on multiple resources'
-      },
-      general: {
-        label: 'General',
-        icon: <Shield className="w-4 h-4" />,
-        color: 'text-slate-400',
-        description: 'Other permissions'
-      }
+    if (!iconComponent) {
+      console.error(`Missing icon mapping for ${backendCategory.icon}. Check backend UI configuration.`);
+      return {
+        label: backendCategory.label,
+        icon: <Shield className="w-4 h-4 text-red-400" />,
+        color: colorMapping.text,
+        description: backendCategory.description
+      };
+    }
+    
+    return {
+      label: backendCategory.label,
+      icon: getIconComponent(iconComponent),
+      color: colorMapping.text,
+      description: backendCategory.description
     };
-    return categories[category] || categories.general;
   };
 
   const formatPermissionName = (permission: string) => {
-    // Use backend metadata if available
+    // Require backend metadata - no hardcoded fallbacks
     const backendPermission = roleHierarchy?.permission_metadata?.[permission];
-    if (backendPermission?.display_name) {
-      return backendPermission.display_name;
+    if (!backendPermission?.display_name) {
+      console.error(`Missing permission display name for: ${permission}. Check backend /api/v1/roles endpoint.`);
+      return `❌ ${permission.toUpperCase()}`;
     }
 
-    // Fallback to formatted permission name
-    return permission
-      .replace(/_/g, ' ')
-      .replace(/\b\w/g, l => l.toUpperCase());
+    return backendPermission.display_name;
   };
 
   const getPermissionDescription = (permission: string) => {
-    // Use backend metadata if available
+    // Require backend metadata - no hardcoded fallbacks
     const backendPermission = roleHierarchy?.permission_metadata?.[permission];
-    if (backendPermission?.description) {
-      return backendPermission.description;
+    if (!backendPermission?.description) {
+      console.error(`Missing permission description for: ${permission}. Check backend /api/v1/roles endpoint.`);
+      return `❌ Missing description for ${permission}. Check backend configuration.`;
     }
 
-    // Hardcoded fallback for backward compatibility
-    const descriptions = {
-      view_all_users: 'View information about all users in the system',
-      create_users: 'Create new user accounts',
-      edit_all_users: 'Modify user information for any user',
-      edit_user_role_only: 'Only edit user role, not other user information',
-      delete_users: 'Deactivate or delete user accounts',
-      change_all_roles: 'Assign any role to any user',
-      change_admin_and_below_roles: 'Assign admin, moderator, or user roles',
-      change_user_role_only: 'Only assign user role to other users',
-      view_audit_logs: 'Access audit trails and activity logs',
-      manage_system: 'Access system administration features',
-      bulk_operations: 'Perform operations on multiple users at once',
-      view_own_profile: 'View own user profile information',
-      edit_own_profile: 'Edit own user profile information'
-    };
-    return descriptions[permission] || 'Permission description not available';
+    return backendPermission.description;
   };
 
   if (error) {

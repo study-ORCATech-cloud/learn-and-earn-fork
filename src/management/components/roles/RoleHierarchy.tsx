@@ -19,92 +19,78 @@ interface RoleHierarchyProps {
 
 const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
   const management = useManagement();
-  const { roleHierarchy, manageableRoles, isLoading, error } = useRoles();
+  const { roleHierarchy, isLoading, error } = useRoles();
 
   const getRoleIcon = (roleName: string) => {
-    // Use backend metadata if available
+    // Require backend metadata - no hardcoded fallbacks
     const backendRole = roleHierarchy?.role_metadata?.[roleName];
-    if (backendRole && roleHierarchy?.ui_configuration?.color_mapping?.[backendRole.color]) {
-      const colorClass = roleHierarchy.ui_configuration.color_mapping[backendRole.color].text;
-      const iconComponent = roleHierarchy?.ui_configuration?.icon_mapping?.[backendRole.icon];
-      
-      switch (iconComponent) {
-        case 'Crown':
-          return <Crown className={`w-5 h-5 ${colorClass}`} />;
-        case 'Shield':
-          return <Shield className={`w-5 h-5 ${colorClass}`} />;
-        case 'Users':
-          return <Users className={`w-5 h-5 ${colorClass}`} />;
-        case 'User':
-          return <User className={`w-5 h-5 ${colorClass}`} />;
-        default:
-          return <Shield className={`w-5 h-5 ${colorClass}`} />;
-      }
+    if (!backendRole) {
+      console.error(`Missing role metadata for role: ${roleName}. Check backend /api/v1/roles endpoint.`);
+      return <Shield className="w-5 h-5 text-red-400" />;
     }
 
-    // Hardcoded fallback for backward compatibility
-    switch (roleName) {
-      case 'owner':
-        return <Crown className="w-5 h-5 text-yellow-400" />;
-      case 'admin':
-        return <Shield className="w-5 h-5 text-purple-400" />;
-      case 'moderator':
-        return <Users className="w-5 h-5 text-blue-400" />;
-      case 'user':
-        return <User className="w-5 h-5 text-green-400" />;
+    const colorMapping = roleHierarchy?.ui_configuration?.color_mapping?.[backendRole.color];
+    if (!colorMapping) {
+      console.error(`Missing color mapping for ${backendRole.color}. Check backend UI configuration.`);
+      return <Shield className="w-5 h-5 text-red-400" />;
+    }
+
+    const colorClass = colorMapping.text;
+    const iconComponent = roleHierarchy?.ui_configuration?.icon_mapping?.[backendRole.icon];
+    
+    if (!iconComponent) {
+      console.error(`Missing icon mapping for ${backendRole.icon}. Check backend UI configuration.`);
+      return <Shield className={`w-5 h-5 text-red-400`} />;
+    }
+
+    switch (iconComponent) {
+      case 'Crown':
+        return <Crown className={`w-5 h-5 ${colorClass}`} />;
+      case 'Shield':
+        return <Shield className={`w-5 h-5 ${colorClass}`} />;
+      case 'Users':
+        return <Users className={`w-5 h-5 ${colorClass}`} />;
+      case 'User':
+        return <User className={`w-5 h-5 ${colorClass}`} />;
       default:
-        return <Shield className="w-5 h-5 text-slate-400" />;
+        console.error(`Unknown icon component: ${iconComponent}. Check backend UI configuration.`);
+        return <Shield className={`w-5 h-5 text-red-400`} />;
     }
   };
 
   const getRoleColor = (roleName: string, isManageable: boolean) => {
-    // Use backend metadata if available
+    // Require backend metadata - no hardcoded fallbacks
     const backendRole = roleHierarchy?.role_metadata?.[roleName];
-    if (backendRole && roleHierarchy?.ui_configuration?.color_mapping?.[backendRole.color]) {
-      const colorMapping = roleHierarchy.ui_configuration.color_mapping[backendRole.color];
-      const intensity = isManageable ? '30' : '20';
-      const borderIntensity = isManageable ? '50' : '30';
-      const textIntensity = isManageable ? '100' : '200';
-      
-      return `${colorMapping.bg.replace('20', intensity)} ${colorMapping.border.replace('30', borderIntensity)} ${colorMapping.text.replace('400', textIntensity)}`;
+    if (!backendRole) {
+      console.error(`Missing role metadata for role: ${roleName}. Check backend /api/v1/roles endpoint.`);
+      return 'bg-red-900/20 border-red-500/30 text-red-200';
     }
 
-    // Hardcoded fallback for backward compatibility
-    const baseColors = {
-      owner: 'bg-yellow-900/20 border-yellow-500/30 text-yellow-200',
-      admin: 'bg-purple-900/20 border-purple-500/30 text-purple-200',
-      moderator: 'bg-blue-900/20 border-blue-500/30 text-blue-200',
-      user: 'bg-green-900/20 border-green-500/30 text-green-200',
-    };
+    const colorMapping = roleHierarchy?.ui_configuration?.color_mapping?.[backendRole.color];
+    if (!colorMapping) {
+      console.error(`Missing color mapping for ${backendRole.color}. Check backend UI configuration.`);
+      return 'bg-red-900/20 border-red-500/30 text-red-200';
+    }
 
-    const managedColors = {
-      owner: 'bg-yellow-900/30 border-yellow-400/50 text-yellow-100',
-      admin: 'bg-purple-900/30 border-purple-400/50 text-purple-100',
-      moderator: 'bg-blue-900/30 border-blue-400/50 text-blue-100',
-      user: 'bg-green-900/30 border-green-400/50 text-green-100',
-    };
-
-    return isManageable ? managedColors[roleName] || baseColors.user : baseColors[roleName] || baseColors.user;
+    const intensity = isManageable ? '30' : '20';
+    const borderIntensity = isManageable ? '50' : '30';
+    const textIntensity = isManageable ? '100' : '200';
+    
+    return `${colorMapping.bg.replace('20', intensity)} ${colorMapping.border.replace('30', borderIntensity)} ${colorMapping.text.replace('400', textIntensity)}`;
   };
 
   const sortedRoles = roleHierarchy?.roles?.sort((a, b) => b.level - a.level) || [];
   const manageableRoleNames = getManageableRoleNames(management.currentUserRole, roleHierarchy);
 
   const getRoleDescription = (roleName: string) => {
-    // Use backend metadata if available
+    // Require backend metadata - no hardcoded fallbacks
     const backendRole = roleHierarchy?.role_metadata?.[roleName];
-    if (backendRole?.description) {
-      return backendRole.description;
+    if (!backendRole?.description) {
+      console.error(`Missing role description for role: ${roleName}. Check backend /api/v1/roles endpoint.`);
+      return `❌ Missing description for ${roleName} role. Check backend configuration.`;
     }
 
-    // Hardcoded fallback for backward compatibility
-    const descriptions = {
-      owner: 'Complete system control. Can manage all users and roles, including admins. Set only at deployment time.',
-      admin: 'Full administrative access. Can manage moderators and users, view audit logs, perform bulk operations.',
-      moderator: 'Limited administrative access. Can view and manage regular users only.',
-      user: 'Standard user access. Can manage own profile and access learning content.'
-    };
-    return descriptions[roleName] || 'Role description not available';
+    return backendRole.description;
   };
 
   if (error) {
