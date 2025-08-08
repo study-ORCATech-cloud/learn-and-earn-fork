@@ -1,7 +1,7 @@
 // Permissions matrix component showing role capabilities comparison
 
 import React, { useState } from 'react';
-import { Shield, Check, X, Search, Filter, Eye, EyeOff } from 'lucide-react';
+import { Shield, Check, X, Search, Filter, RotateCcw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -41,7 +41,11 @@ const PermissionsMatrix: React.FC<PermissionsMatrixProps> = ({
   const { roleHierarchy, manageableRoles, isLoading, error } = useRoles();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [showEmptyPermissions, setShowEmptyPermissions] = useState(false);
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setCategoryFilter('all');
+  };
 
   const getPermissionCategory = (permission: string) => {
     if (permission.includes('user') || permission.includes('profile')) {
@@ -112,11 +116,7 @@ const PermissionsMatrix: React.FC<PermissionsMatrixProps> = ({
     const matchesCategory = categoryFilter === 'all' || 
       getPermissionCategory(permission) === categoryFilter;
     
-    // Filter out permissions that no role has (if showEmptyPermissions is false)
-    const hasAnyRole = showEmptyPermissions || 
-      roles.some((role: any) => role.permissions?.includes(permission));
-    
-    return matchesSearch && matchesCategory && hasAnyRole;
+    return matchesSearch && matchesCategory;
   });
 
   // Get unique categories for filter dropdown
@@ -185,11 +185,12 @@ const PermissionsMatrix: React.FC<PermissionsMatrixProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setShowEmptyPermissions(!showEmptyPermissions)}
-            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+            onClick={clearFilters}
+            disabled={searchTerm === '' && categoryFilter === 'all'}
+            className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {showEmptyPermissions ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
-            {showEmptyPermissions ? 'Hide Empty' : 'Show All'}
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Clear Filters
           </Button>
         </div>
 
@@ -198,7 +199,7 @@ const PermissionsMatrix: React.FC<PermissionsMatrixProps> = ({
           <ScrollArea className="h-[600px]">
             <Table>
               <TableHeader className="sticky top-0 bg-slate-900/90 backdrop-blur-sm z-10">
-                <TableRow className="border-slate-700">
+                <TableRow className="border-slate-700 hover:bg-transparent">
                   <TableHead className="w-[300px] text-slate-300 font-medium sticky left-0 bg-slate-900/90 backdrop-blur-sm">
                     Permission
                   </TableHead>

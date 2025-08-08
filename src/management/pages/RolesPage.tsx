@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { useManagement } from '../context/ManagementContext';
 import { useRoles } from '../hooks/useRoles';
 import { getManageableRoleCount } from '../utils/permissions';
+import { formatRole } from '../utils/formatters';
 import RoleHierarchy from '../components/roles/RoleHierarchy';
 import RolePermissions from '../components/roles/RolePermissions';
 import PermissionsMatrix from '../components/roles/PermissionsMatrix';
@@ -122,15 +123,15 @@ const RolesPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-400 text-sm">Your Role</p>
-                <p className="text-lg font-bold text-white mt-1 capitalize">
-                  {management.currentUserRole}
+                <p className="text-lg font-bold text-white mt-1">
+                  {formatRole(management.currentUserRole, roleHierarchy).text}
                 </p>
                 <p className="text-xs text-slate-500 mt-1">
                   Current access level
                 </p>
               </div>
               <div className="w-8 h-8 bg-blue-600/20 rounded-full flex items-center justify-center">
-                <Shield className="w-5 h-5 text-blue-400" />
+                {formatRole(management.currentUserRole, roleHierarchy).icon}
               </div>
             </div>
           </CardContent>

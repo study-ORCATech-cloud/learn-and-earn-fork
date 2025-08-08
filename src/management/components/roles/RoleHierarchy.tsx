@@ -21,6 +21,14 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
   const management = useManagement();
   const { roleHierarchy, isLoading, error } = useRoles();
 
+  // Icon component mapping
+  const iconComponents = {
+    Crown: Crown,
+    Shield: Shield,
+    Users: Users,
+    User: User,
+  };
+
   const getRoleIcon = (roleName: string) => {
     // Handle loading state
     if (!roleHierarchy) {
@@ -41,26 +49,16 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
     }
 
     const colorClass = colorMapping.text;
-    const iconComponent = roleHierarchy?.ui_configuration?.icon_mapping?.[backendRole.icon];
+    const iconName = roleHierarchy?.ui_configuration?.icon_mapping?.[backendRole.icon];
     
-    if (!iconComponent) {
-      console.error(`Missing icon mapping for ${backendRole.icon}. Check backend UI configuration.`);
-      return <Shield className={`w-5 h-5 text-red-400`} />;
+    if (!iconName || !iconComponents[iconName]) {
+      console.error(`Unknown icon component: ${iconName}. Check backend UI configuration.`);
+      return <Shield className="w-5 h-5 text-red-400" />;
     }
 
-    switch (iconComponent) {
-      case 'Crown':
-        return <Crown className={`w-5 h-5 ${colorClass}`} />;
-      case 'Shield':
-        return <Shield className={`w-5 h-5 ${colorClass}`} />;
-      case 'Users':
-        return <Users className={`w-5 h-5 ${colorClass}`} />;
-      case 'User':
-        return <User className={`w-5 h-5 ${colorClass}`} />;
-      default:
-        console.error(`Unknown icon component: ${iconComponent}. Check backend UI configuration.`);
-        return <Shield className={`w-5 h-5 text-red-400`} />;
-    }
+    // Dynamically render the icon component
+    const IconComponent = iconComponents[iconName];
+    return <IconComponent className={`w-5 h-5 ${colorClass}`} />;
   };
 
   const getRoleColor = (roleName: string, isManageable: boolean) => {
@@ -195,7 +193,7 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
                             )}
                             
                             {isManageable && (
-                              <Badge variant="outline" className="border-current text-xs">
+                              <Badge variant="outline" className="border-current text-white text-xs">
                                 Manageable
                               </Badge>
                             )}
