@@ -1,7 +1,7 @@
 // Permission checking utilities
 
 import { UserRole, ROLE_LEVELS, PERMISSIONS } from './constants';
-import type { UserPermissions } from '../types/role';
+import type { UserPermissions, RoleHierarchy } from '../types/role';
 
 /**
  * Check if a user role has sufficient level to perform an action on a target role
@@ -170,6 +170,35 @@ export const getEffectivePermissions = (userRole: UserRole) => {
     can_bulk_operations: canPerformBulkOperations(userRole),
     can_manage_system: canManageSystem(userRole),
   };
+};
+
+/**
+ * Get manageable role names for a user based on role hierarchy
+ */
+export const getManageableRoleNames = (
+  currentUserRole: UserRole | null,
+  roleHierarchy: RoleHierarchy | null
+): string[] => {
+  if (!currentUserRole || !roleHierarchy?.levels) {
+    return [];
+  }
+
+  const currentUserRoleLevel = roleHierarchy.levels[currentUserRole] || 0;
+  
+  return Object.keys(roleHierarchy.levels).filter(roleName => {
+    const roleLevel = roleHierarchy.levels[roleName];
+    return roleLevel < currentUserRoleLevel;
+  });
+};
+
+/**
+ * Get manageable role count for a user based on role hierarchy
+ */
+export const getManageableRoleCount = (
+  currentUserRole: UserRole | null,
+  roleHierarchy: RoleHierarchy | null
+): number => {
+  return getManageableRoleNames(currentUserRole, roleHierarchy).length;
 };
 
 /**

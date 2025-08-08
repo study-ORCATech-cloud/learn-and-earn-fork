@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useManagement } from '../context/ManagementContext';
 import { useRoles } from '../hooks/useRoles';
+import { getManageableRoleCount } from '../utils/permissions';
 import RoleHierarchy from '../components/roles/RoleHierarchy';
 import RolePermissions from '../components/roles/RolePermissions';
 import PermissionsMatrix from '../components/roles/PermissionsMatrix';
@@ -36,11 +37,7 @@ const RolesPage: React.FC = () => {
   }
 
   const totalRoles = roleHierarchy?.roles?.length || 0;
-  const currentUserRoleLevel = roleHierarchy?.levels[management.currentUserRole] || 0;
-  const manageableRoleCount = Object.keys(roleHierarchy?.levels || {}).filter(roleName => {
-    const roleLevel = roleHierarchy?.levels[roleName];
-    return roleLevel < currentUserRoleLevel;
-  }).length;
+  const manageableRoleCount = getManageableRoleCount(management.currentUserRole, roleHierarchy);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);

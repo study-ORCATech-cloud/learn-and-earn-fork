@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { useManagement } from '../../context/ManagementContext';
 import { useRoles } from '../../hooks/useRoles';
 import { formatRole } from '../../utils/formatters';
+import { getManageableRoleNames } from '../../utils/permissions';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 interface RoleHierarchyProps {
@@ -54,11 +55,7 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
   };
 
   const sortedRoles = roleHierarchy?.roles?.sort((a, b) => b.level - a.level) || [];
-  const currentUserRoleLevel = roleHierarchy?.levels[management.currentUserRole] || 0;
-  const manageableRoleNames = Object.keys(roleHierarchy?.levels || {}).filter(roleName => {
-    const roleLevel = roleHierarchy?.levels[roleName];
-    return roleLevel < currentUserRoleLevel;
-  });
+  const manageableRoleNames = getManageableRoleNames(management.currentUserRole, roleHierarchy);
 
   if (error) {
     return (
