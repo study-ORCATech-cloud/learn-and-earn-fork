@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useUserManagement } from '../context/UserManagementContext';
 import { useManagement } from '../context/ManagementContext';
-import { userManagementService } from '../services/userManagementService';
+import { useRoles } from './useRoles';
 import { validateCreateUserForm, validateUpdateUserForm } from '../utils/validators';
 import type { 
   ManagementUser, 
@@ -12,7 +12,6 @@ import type {
   CreateUserRequest, 
   UpdateUserRequest 
 } from '../types/user';
-import type { UserRole } from '../types/role';
 
 export interface UseUsersOptions {
   autoLoad?: boolean;
@@ -28,10 +27,12 @@ export interface UseUsersReturn {
   totalPages: number;
   hasNextPage: boolean;
   hasPrevPage: boolean;
+  pagination: any; // PaginationInfo | null
   
   // Loading states
   isLoading: boolean;
   isLoadingUser: boolean;
+  isLoadingNewPage: boolean;
   isCreating: boolean;
   isUpdating: boolean;
   isDeleting: boolean;
@@ -43,7 +44,7 @@ export interface UseUsersReturn {
   // Filters and search
   filters: UserFilters;
   searchQuery: string;
-  searchResults: ManagementUser[];
+  searchResults: Pick<ManagementUser, 'id' | 'email' | 'name' | 'role' | 'avatar_url'>[];
   isSearching: boolean;
   
   // Selection
@@ -54,6 +55,7 @@ export interface UseUsersReturn {
   // Operations
   loadUsers: (page?: number) => Promise<void>;
   loadUser: (userId: string) => Promise<void>;
+  loadNextPage: () => Promise<void>;
   createUser: (userData: CreateUserRequest) => Promise<boolean>;
   updateUser: (userId: string, userData: UpdateUserRequest) => Promise<boolean>;
   deactivateUser: (userId: string, reason?: string) => Promise<boolean>;
@@ -90,17 +92,23 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
   
   const userManagement = useUserManagement();
   const management = useManagement();
+  const { manageableRoles } = useRoles();
   
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Auto-load users on mount
+  // Auto-load users on mount only if not already loaded
   useEffect(() => {
-    if (autoLoad && management.canAccessManagement) {
+    const hasUsersData = userManagement.state.users.length > 0;
+    const hasFirstPage = userManagement.state.cachedPages.has(1);
+    const isCurrentlyLoading = userManagement.state.isLoading;
+    const hasData = hasUsersData || hasFirstPage;
+    
+    if (autoLoad && management.canAccessManagement && !hasData && !isCurrentlyLoading) {
       userManagement.loadUsers(1, pageSize);
     }
-  }, [autoLoad, management.canAccessManagement, pageSize]); // Remove userManagement from deps
+  }, [autoLoad, management.canAccessManagement, pageSize, userManagement.state.users.length, userManagement.state.isLoading]);
 
   const loadUsers = useCallback(async (page: number = 1) => {
     await userManagement.loadUsers(page, pageSize);
@@ -233,9 +241,18 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
   }, []);
 
   const validateCreateForm = useCallback((data: CreateUserRequest) => {
-    const manageableRoles = management.manageableRoles?.manageable_roles || [];
-    return validateCreateUserForm(data, manageableRoles);
-  }, [management.manageableRoles]);
+    const manageableRoleNames = manageableRoles?.manageable_roles || [];
+    
+    // Convert CreateUserRequest to the expected format for validator
+    const formData = {
+      email: data.email,
+      name: data.name,
+      role: data.role || 'user', // Default to 'user' if no role specified
+      avatar_url: data.avatar_url,
+    };
+    
+    return validateCreateUserForm(formData, manageableRoleNames);
+  }, [manageableRoles]);
 
   const validateUpdateForm = useCallback((data: UpdateUserRequest) => {
     return validateUpdateUserForm(data);
@@ -257,10 +274,12 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
     totalPages,
     hasNextPage,
     hasPrevPage,
+    pagination: userManagement.state.pagination,
     
     // Loading states
     isLoading: userManagement.state.isLoading,
     isLoadingUser: userManagement.state.selectedUserLoading,
+    isLoadingNewPage: userManagement.state.isLoadingNewPage,
     isCreating,
     isUpdating,
     isDeleting,
@@ -283,6 +302,7 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
     // Operations
     loadUsers,
     loadUser,
+    loadNextPage: userManagement.loadNextPage,
     createUser,
     updateUser,
     deactivateUser,

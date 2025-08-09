@@ -83,12 +83,7 @@ const ManagementDashboard: React.FC = () => {
     isLoading: healthLoading 
   } = useSystemHealth({ autoRefresh: true });
 
-  // Load initial data
-  React.useEffect(() => {
-    if (management.canPerformOperation('view_all_users')) {
-      loadUsers(1); // Load page 1 for stats
-    }
-  }, [management.canPerformOperation, loadUsers]);
+  // Note: Users are now eagerly loaded by UserManagementProvider
 
   const getHealthStatusColor = (status?: string) => {
     switch (status?.toLowerCase()) {

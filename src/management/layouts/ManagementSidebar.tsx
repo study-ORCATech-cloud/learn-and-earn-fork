@@ -61,22 +61,6 @@ const ManagementSidebar: React.FC<ManagementSidebarProps> = ({
       icon: <Users className="w-5 h-5" />,
       requiredPermission: 'view_all_users',
       description: 'Manage users, roles, and permissions',
-      children: [
-        {
-          id: 'users-list',
-          label: 'All Users',
-          path: '/management/users',
-          icon: <Users className="w-4 h-4" />,
-          requiredPermission: 'view_all_users',
-        },
-        {
-          id: 'users-create',
-          label: 'Add User',
-          path: '/management/users/create',
-          icon: <User className="w-4 h-4" />,
-          requiredPermission: 'create_users',
-        },
-      ],
     },
     {
       id: 'roles',

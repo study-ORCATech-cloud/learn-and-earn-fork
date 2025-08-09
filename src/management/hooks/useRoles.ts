@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useManagement } from '../context/ManagementContext';
 import { roleManagementService } from '../services/roleManagementService';
-import { canManageRole as canManageRoleUtil } from '../utils/permissions';
 import { validateRoleHierarchy, logValidationResults } from '../utils/metadata-validator';
 import type { 
   RoleHierarchy, 
@@ -60,23 +59,25 @@ export const useRoles = (options: UseRolesOptions = {}): UseRolesReturn => {
   
   const management = useManagement();
   
-  const [roleHierarchy, setRoleHierarchy] = useState<RoleHierarchy | null>(null);
+  const [localRoleHierarchy, setLocalRoleHierarchy] = useState<RoleHierarchy | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const [userPermissions, setUserPermissions] = useState<UserPermissions | null>(null);
   const [isLoadingPermissions, setIsLoadingPermissions] = useState(false);
   const [permissionError, setPermissionError] = useState<string | null>(null);
   
   const [isChangingRole, setIsChangingRole] = useState(false);
   const [roleChangeError, setRoleChangeError] = useState<string | null>(null);
 
-  // Auto-load role hierarchy on mount
+  // Use cached data from ManagementContext, only load if missing
+  const roleHierarchy = management.roleHierarchy || localRoleHierarchy;
+
+  // Auto-load role hierarchy on mount only if not available in ManagementContext
   useEffect(() => {
-    if (autoLoad && management.canAccessManagement) {
+    if (autoLoad && management.canAccessManagement && !management.roleHierarchy && !localRoleHierarchy) {
       loadRoleHierarchy();
     }
-  }, [autoLoad, management.canAccessManagement]);
+  }, [autoLoad, management.canAccessManagement, management.roleHierarchy, localRoleHierarchy]);
 
   const loadRoleHierarchy = useCallback(async () => {
     try {
@@ -91,7 +92,7 @@ export const useRoles = (options: UseRolesOptions = {}): UseRolesReturn => {
         logValidationResults(validationResult, 'useRoles');
         
         // Still set the data even if there are warnings, but errors are critical
-        setRoleHierarchy(response.data);
+        setLocalRoleHierarchy(response.data);
         
         if (!validationResult.isValid) {
           console.error('Critical backend metadata errors detected. Some features may not work correctly.');
@@ -107,10 +108,13 @@ export const useRoles = (options: UseRolesOptions = {}): UseRolesReturn => {
   }, []);
 
   const loadManageableRoles = useCallback(async () => {
-    try {
-      await management.refreshPermissions();
-    } catch (err) {
-      console.error('Failed to load manageable roles:', err);
+    // Only refresh if manageable roles are not already available
+    if (!management.manageableRoles) {
+      try {
+        await management.refreshPermissions();
+      } catch (err) {
+        console.error('Failed to load manageable roles:', err);
+      }
     }
   }, [management]);
 
@@ -122,7 +126,6 @@ export const useRoles = (options: UseRolesOptions = {}): UseRolesReturn => {
       const response = await roleManagementService.getUserPermissions(userId);
       
       if (response.success && response.data) {
-        setUserPermissions(response.data);
         return response.data;
       } else {
         setPermissionError(response.message || 'Failed to load user permissions');
@@ -170,12 +173,13 @@ export const useRoles = (options: UseRolesOptions = {}): UseRolesReturn => {
     return management.canManageRole(targetRole);
   }, [management]);
 
-  const canPerformOperation = useCallback((operation: string, targetRole?: UserRole): boolean => {
-    return management.canPerformOperation(operation, targetRole);
+  const canPerformOperation = useCallback((operation: string): boolean => {
+    return management.canPerformOperation(operation);
   }, [management]);
 
   const hasPermission = useCallback((permission: string): boolean => {
-    return management.checkPermission(permission);
+    // Use canPerformOperation for permission checks since checkPermission doesn't exist
+    return management.canPerformOperation(permission);
   }, [management]);
 
   const getRoleLevel = useCallback((role: UserRole): number => {

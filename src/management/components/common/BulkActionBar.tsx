@@ -194,7 +194,7 @@ const BulkActionBar: React.FC<BulkActionBarProps> = ({
                 size="sm"
                 onClick={() => handleBulkAction('ACTIVATE')}
                 disabled={isInProgress}
-                className="border-green-600 text-green-400 hover:bg-green-600 hover:text-white"
+                className="bg-slate-800 border-green-600 text-green-400 hover:bg-green-600 hover:text-white"
               >
                 <UserCheck className="w-4 h-4 mr-1" />
                 Activate
@@ -208,7 +208,7 @@ const BulkActionBar: React.FC<BulkActionBarProps> = ({
                 size="sm"
                 onClick={() => handleBulkAction('DEACTIVATE')}
                 disabled={isInProgress}
-                className="border-orange-600 text-orange-400 hover:bg-orange-600 hover:text-white"
+                className="bg-slate-800 border-orange-600 text-orange-400 hover:bg-orange-600 hover:text-white"
               >
                 <UserX className="w-4 h-4 mr-1" />
                 Deactivate
@@ -246,7 +246,7 @@ const BulkActionBar: React.FC<BulkActionBarProps> = ({
                 size="sm"
                 onClick={() => handleBulkAction('DELETE')}
                 disabled={isInProgress}
-                className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
+                className="bg-slate-800 border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
               >
                 <Trash2 className="w-4 h-4 mr-1" />
                 Delete

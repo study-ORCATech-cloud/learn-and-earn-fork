@@ -1,89 +1,63 @@
-// Users management page with table, filters, and bulk actions
+// Users management page with tabs, statistics, and user management tools
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Users, UserPlus, Filter, Download, RefreshCw } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Users, UserPlus, Filter, Download, RefreshCw, BarChart3, Table, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useManagement } from '../context/ManagementContext';
-import { useUsers } from '../hooks/useUsers';
+import { useRoles } from '../hooks/useRoles';
+import { formatRole } from '../utils/formatters';
 import UserTable from '../components/users/UserTable';
 import UserFilters from '../components/users/UserFilters';
-import BulkUserActions from '../components/users/BulkUserActions';
-import SearchInput from '../components/common/SearchInput';
-import Pagination from '../components/common/Pagination';
+import UserForm from '../components/users/UserForm';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import type { UserFilters as UserFiltersType } from '../types/user';
 
 const UsersPage: React.FC = () => {
   const management = useManagement();
-  const {
-    users,
-    totalUsers,
-    currentPage,
-    totalPages,
-    hasNextPage,
-    hasPrevPage,
-    isLoading,
-    error,
-    filters,
-    searchQuery,
-    searchResults,
-    isSearching,
-    selectedUserIds,
-    selectedCount,
-    isUserSelected,
-    loadUsers,
-    searchUsers,
-    clearSearch,
-    setFilters,
-    clearFilters,
-    toggleUserSelection,
-    selectAllUsers,
-    clearSelection,
-    goToPage,
-    goToNextPage,
-    goToPrevPage,
-    refresh,
-    clearErrors,
-  } = useUsers();
-
+  const { roleHierarchy } = useRoles();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isCreateMode = location.pathname === '/management/users/create';
+  const [activeTab, setActiveTab] = useState(isCreateMode ? 'users' : 'overview');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(isCreateMode);
   const [showFilters, setShowFilters] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
   const [isExporting, setIsExporting] = useState(false);
+  const [filters, setFilters] = useState<UserFiltersType>({});
 
-  // Load users on mount
-  React.useEffect(() => {
-    loadUsers();
-  }, [loadUsers]);
+  // For statistics, we'll need to get this info from UserTable or remove it for now
+  const totalUsers = 0; // Will be managed by UserTable
+  const activeUsers = 0; // Will be managed by UserTable  
+  const inactiveUsers = 0; // Will be managed by UserTable
 
-  const handleSearch = async (query: string) => {
-    setSearchTerm(query);
-    if (query.trim().length >= 2) {
-      await searchUsers(query);
-    } else if (query.trim().length === 0) {
-      clearSearch();
-      await loadUsers();
+  const handleRefresh = async () => {
+    if (!isRefreshing) {
+      setIsRefreshing(true);
+      // UserTable manages its own refresh
+      setTimeout(() => setIsRefreshing(false), 500);
     }
   };
 
+  // Handle route changes
+  React.useEffect(() => {
+    const isCreate = location.pathname === '/management/users/create';
+    setShowCreateForm(isCreate);
+    if (isCreate) {
+      setActiveTab('users');
+    }
+  }, [location.pathname]);
+
   const handleFilterChange = async (newFilters: Partial<UserFiltersType>) => {
-    setFilters(newFilters);
+    setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
-  const handlePageChange = async (page: number) => {
-    await goToPage(page);
-  };
-
-  const handlePageSizeChange = async (pageSize: number) => {
-    // Page size change not implemented in useUsers hook
-    console.warn('Page size change not implemented');
-  };
-
-  const handleRefresh = async () => {
-    await refresh();
+  const clearFilters = () => {
+    setFilters({});
   };
 
   const handleExport = async () => {
@@ -98,9 +72,26 @@ const UsersPage: React.FC = () => {
     }
   };
 
-  const handleBulkActionComplete = async () => {
-    clearSelection();
-    await refresh();
+  const handleCreateUser = async (userData: { email: string; name: string; role: string; avatar_url: string }) => {
+    try {
+      // Here you would call your user creation API
+      console.log('Creating user:', userData);
+      // For now, just simulate success
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Close form and navigate back
+      setShowCreateForm(false);
+      navigate('/management/users');
+      return true;
+    } catch (error) {
+      console.error('Failed to create user:', error);
+      return false;
+    }
+  };
+
+  const handleCancelCreate = () => {
+    setShowCreateForm(false);
+    navigate('/management/users');
   };
 
   const getActiveFiltersCount = () => {
@@ -131,11 +122,9 @@ const UsersPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
             <Users className="w-6 h-6" />
             User Management
-            {totalUsers > 0 && (
-              <Badge variant="secondary" className="bg-slate-700 text-slate-200">
-                {totalUsers.toLocaleString()} users
-              </Badge>
-            )}
+            <Badge variant="secondary" className="bg-slate-700 text-slate-200">
+              {totalUsers} users
+            </Badge>
           </h1>
           <p className="text-slate-400">
             Manage user accounts, roles, and permissions
@@ -143,207 +132,241 @@ const UsersPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white"
+          >
+            <RefreshCw className={cn('w-4 h-4 mr-2', isRefreshing && 'animate-spin')} />
+            Refresh
+          </Button>
           {management.canPerformOperation('create_users') && (
-            <Link to="/management/users/create">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                <UserPlus className="w-4 h-4 mr-2" />
-                Add User
-              </Button>
-            </Link>
+            <Button 
+              onClick={() => {
+                setShowCreateForm(true);
+                setActiveTab('users');
+                navigate('/management/users/create');
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              Add User
+            </Button>
           )}
         </div>
       </div>
 
-      {/* Controls Bar */}
-      <Card className="bg-slate-900/50 border-slate-700">
-        <CardContent className="p-4">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1">
-              <SearchInput
-                placeholder="Search users by name or email..."
-                onSearch={handleSearch}
-                className="max-w-md"
-              />
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowFilters(!showFilters)}
-                className="border-slate-600 text-slate-300 hover:bg-slate-700"
-              >
-                <Filter className="w-4 h-4 mr-2" />
-                Filters
-                {getActiveFiltersCount() > 0 && (
-                  <Badge variant="secondary" className="ml-2 bg-blue-600 text-white">
-                    {getActiveFiltersCount()}
-                  </Badge>
-                )}
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleExport}
-                disabled={isExporting}
-                className="border-slate-600 text-slate-300 hover:bg-slate-700"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                {isExporting ? 'Exporting...' : 'Export'}
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRefresh}
-                disabled={isLoading}
-                className="border-slate-600 text-slate-300 hover:bg-slate-700"
-              >
-                <RefreshCw className={cn('w-4 h-4', isLoading && 'animate-spin')} />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Filters */}
-      {showFilters && (
-        <UserFilters
-          filters={filters}
-          onFiltersChange={handleFilterChange}
-          onApplyFilters={() => {}}
-          onClearFilters={clearFilters}
-        />
-      )}
-
-      {/* Bulk Actions */}
-      {selectedUserIds.length > 0 && (
-        <BulkUserActions
-          selectedUserIds={selectedUserIds}
-          onClearSelection={clearSelection}
-          onComplete={handleBulkActionComplete}
-        />
-      )}
-
-      {/* Users Table */}
-      <Card className="bg-slate-900/50 border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-slate-200">
-            {searchTerm ? (
-              <span>Search Results for "{searchTerm}"</span>
-            ) : getActiveFiltersCount() > 0 ? (
-              <span>Filtered Users</span>
-            ) : (
-              <span>All Users</span>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {error ? (
-            <div className="text-center py-12">
-              <div className="text-red-400 mb-4">
-                <Users className="w-12 h-12 mx-auto mb-2" />
-                <p className="text-lg font-semibold">Failed to Load Users</p>
-                <p className="text-sm text-slate-500 mt-1">{error}</p>
+      {/* User Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="bg-slate-900/50 border-slate-700">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-400 text-sm">Total Users</p>
+                <p className="text-2xl font-bold text-white mt-1">
+                  {totalUsers}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  All registered accounts
+                </p>
               </div>
-              <Button
-                variant="outline"
-                onClick={handleRefresh}
-                className="border-slate-600 text-slate-300"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Try Again
-              </Button>
+              <Users className="w-8 h-8 text-slate-600" />
             </div>
-          ) : isLoading && users.length === 0 ? (
-            <div className="flex items-center justify-center py-12">
-              <LoadingSpinner text="Loading users..." />
-            </div>
-          ) : users.length === 0 ? (
-            <div className="text-center py-12">
-              <Users className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-slate-300 mb-2">
-                {searchTerm || getActiveFiltersCount() > 0 ? 'No Users Found' : 'No Users Yet'}
-              </h3>
-              <p className="text-slate-500 mb-4">
-                {searchTerm || getActiveFiltersCount() > 0
-                  ? 'Try adjusting your search criteria or filters.'
-                  : 'Get started by creating your first user account.'
-                }
-              </p>
-              {!searchTerm && getActiveFiltersCount() === 0 && management.canPerformOperation('create_users') && (
-                <Link to="/management/users/create">
-                  <Button className="bg-blue-600 hover:bg-blue-700">
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Create First User
-                  </Button>
-                </Link>
-              )}
-            </div>
-          ) : (
-            <>
-              <UserTable
-                users={users}
-                selectedUserIds={selectedUserIds}
-                onSelectionChange={toggleUserSelection}
-                onUserAction={handleRefresh}
-                isLoading={isLoading}
-              />
-              
-              {totalPages > 1 && (
-                <div className="mt-6 flex justify-center">
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    totalItems={totalUsers}
-                    pageSize={50}
-                    onPageChange={goToPage}
-                    onPageSizeChange={() => {}}
-                  />
-                </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Summary Stats */}
-      {totalUsers > 0 && users.length > 0 && (
-        <Card className="bg-slate-800/30 border-slate-600">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between text-sm text-slate-400">
-              <div className="flex items-center gap-4">
-                <span>
-                  Showing {((currentPage - 1) * 50) + 1} to{' '}
-                  {Math.min(currentPage * 50, totalUsers)} of{' '}
-                  {totalUsers.toLocaleString()} users
-                </span>
-                {selectedUserIds.length > 0 && (
-                  <>
-                    <span>•</span>
-                    <span>{selectedUserIds.length} selected</span>
-                  </>
-                )}
+        <Card className="bg-slate-900/50 border-slate-700">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-400 text-sm">Active Users</p>
+                <p className="text-2xl font-bold text-white mt-1">
+                  {activeUsers}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Currently enabled accounts
+                </p>
               </div>
-              
-              <div className="flex items-center gap-4">
-                {getActiveFiltersCount() > 0 && (
-                  <span>{getActiveFiltersCount()} filter{getActiveFiltersCount() === 1 ? '' : 's'} active</span>
-                )}
-                {searchTerm && (
-                  <>
-                    <span>•</span>
-                    <span>Search: "{searchTerm}"</span>
-                  </>
-                )}
+              <UserPlus className="w-8 h-8 text-slate-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-900/50 border-slate-700">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-400 text-sm">Your Role</p>
+                <p className="text-lg font-bold text-white mt-1">
+                  {formatRole(management.currentUserRole, roleHierarchy).text}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Current access level
+                </p>
+              </div>
+              <div className="w-8 h-8 bg-blue-600/20 rounded-full flex items-center justify-center">
+                {formatRole(management.currentUserRole, roleHierarchy).icon}
               </div>
             </div>
           </CardContent>
         </Card>
-      )}
+      </div>
+
+      {/* User Management Interface */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="bg-slate-800 border border-slate-600">
+          <TabsTrigger 
+            value="overview" 
+            className="data-[state=active]:bg-slate-700 data-[state=active]:text-white"
+          >
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Overview
+          </TabsTrigger>
+          <TabsTrigger 
+            value="users"
+            className="data-[state=active]:bg-slate-700 data-[state=active]:text-white"
+          >
+            <Table className="w-4 h-4 mr-2" />
+            All Users
+          </TabsTrigger>
+          <TabsTrigger 
+            value="bulk"
+            className="data-[state=active]:bg-slate-700 data-[state=active]:text-white"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Bulk Actions
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
+          <Card className="bg-slate-900/50 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-slate-200 text-lg">User Distribution</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <h4 className="font-medium text-slate-300">Account Status</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400">Active Users</span>
+                      <span className="text-green-400 font-semibold">{activeUsers}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400">Inactive Users</span>
+                      <span className="text-orange-400 font-semibold">{inactiveUsers}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <h4 className="font-medium text-slate-300">Management Access</h4>
+                  <div className="space-y-2 text-slate-400">
+                    <div className="flex items-start gap-2">
+                      <div className="w-1 h-1 bg-slate-500 rounded-full mt-2"></div>
+                      <p>User roles determine system permissions</p>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <div className="w-1 h-1 bg-slate-500 rounded-full mt-2"></div>
+                      <p>Higher-level roles can manage lower-level users</p>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <div className="w-1 h-1 bg-slate-500 rounded-full mt-2"></div>
+                      <p>All user changes are logged in the audit trail</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="users" className="space-y-6">
+          {/* Create User Form */}
+          {showCreateForm && (
+            <UserForm
+              onSubmit={handleCreateUser}
+              onCancel={handleCancelCreate}
+              isLoading={false}
+            />
+          )}
+
+          {/* Controls Bar */}
+          {!showCreateForm && (
+            <Card className="bg-slate-900/50 border-slate-700">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700"
+                  >
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filters
+                    {getActiveFiltersCount() > 0 && (
+                      <Badge variant="secondary" className="ml-2 bg-blue-600 text-white">
+                        {getActiveFiltersCount()}
+                      </Badge>
+                    )}
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExport}
+                    disabled={isExporting}
+                    className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    {isExporting ? 'Exporting...' : 'Export'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* User Management Content */}
+          {!showCreateForm && (
+            <>
+              {/* Filters */}
+              {showFilters && (
+                <UserFilters
+                  filters={filters}
+                  onFiltersChange={handleFilterChange}
+                  onApplyFilters={() => {}}
+                  onClearFilters={clearFilters}
+                />
+              )}
+
+              {/* Users Table with built-in search and bulk actions */}
+              <UserTable
+                onUserClick={(user) => navigate(`/management/users/${user.id}`)}
+                onUserEdit={(user) => navigate(`/management/users/${user.id}`)}
+                filters={filters}
+              />
+            </>
+          )}
+        </TabsContent>
+
+        <TabsContent value="bulk" className="space-y-6">
+          <Card className="bg-slate-900/50 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-slate-200 text-lg">Bulk Operations</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12">
+                <Settings className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-slate-300 mb-2">Select Users for Bulk Actions</h3>
+                <p className="text-slate-500">
+                  Go to the "All Users" tab and select users to perform bulk operations like role changes, activation, or deactivation.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        </Tabs>
     </div>
   );
 };

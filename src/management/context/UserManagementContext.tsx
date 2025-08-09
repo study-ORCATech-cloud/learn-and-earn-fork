@@ -1,7 +1,8 @@
 // User management context for user list state and operations
 
-import React, { createContext, useContext, useReducer, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useEffect, ReactNode } from 'react';
 import { userManagementService } from '../services/userManagementService';
+import { useManagement } from './ManagementContext';
 import type { 
   ManagementUser, 
   UserDetails, 
@@ -21,6 +22,10 @@ interface UserManagementState {
   sort: UserSortConfig;
   isLoading: boolean;
   error: string | null;
+  
+  // Pagination caching
+  cachedPages: Set<number>;
+  isLoadingNewPage: boolean;
 
   // Selected user details
   selectedUser: UserDetails | null;
@@ -34,7 +39,7 @@ interface UserManagementState {
 
   // Search
   searchQuery: string;
-  searchResults: ManagementUser[];
+  searchResults: Pick<ManagementUser, 'id' | 'email' | 'name' | 'role' | 'avatar_url'>[];
   searchLoading: boolean;
 }
 
@@ -42,6 +47,9 @@ type UserManagementAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_USERS'; payload: { users: ManagementUser[]; pagination: PaginationInfo; totalUsers: number } }
+  | { type: 'APPEND_USERS'; payload: { users: ManagementUser[]; pagination: PaginationInfo; totalUsers: number; page: number } }
+  | { type: 'SET_LOADING_NEW_PAGE'; payload: boolean }
+  | { type: 'RESET_PAGINATION_CACHE'; payload?: void }
   | { type: 'SET_FILTERS'; payload: UserFilters }
   | { type: 'SET_SORT'; payload: UserSortConfig }
   | { type: 'SET_SELECTED_USER'; payload: UserDetails | null }
@@ -53,7 +61,7 @@ type UserManagementAction =
   | { type: 'SET_BULK_OPERATION_IN_PROGRESS'; payload: boolean }
   | { type: 'SET_BULK_OPERATION_RESULTS'; payload: BulkOperationResult | null }
   | { type: 'SET_SEARCH_QUERY'; payload: string }
-  | { type: 'SET_SEARCH_RESULTS'; payload: ManagementUser[] }
+  | { type: 'SET_SEARCH_RESULTS'; payload: Pick<ManagementUser, 'id' | 'email' | 'name' | 'role' | 'avatar_url'>[] }
   | { type: 'SET_SEARCH_LOADING'; payload: boolean }
   | { type: 'UPDATE_USER'; payload: ManagementUser }
   | { type: 'REMOVE_USER'; payload: string };
@@ -66,6 +74,8 @@ const initialState: UserManagementState = {
   sort: { field: 'created_at', direction: 'desc' },
   isLoading: false,
   error: null,
+  cachedPages: new Set<number>(),
+  isLoadingNewPage: false,
   selectedUser: null,
   selectedUserLoading: false,
   selectedUserError: null,
@@ -86,6 +96,7 @@ function userManagementReducer(state: UserManagementState, action: UserManagemen
       return { ...state, error: action.payload };
     
     case 'SET_USERS':
+      // Reset users completely (for initial load or filter changes)
       return { 
         ...state, 
         users: action.payload.users,
@@ -93,6 +104,34 @@ function userManagementReducer(state: UserManagementState, action: UserManagemen
         totalUsers: action.payload.totalUsers,
         isLoading: false,
         error: null,
+        cachedPages: new Set([action.payload.pagination.page]),
+        isLoadingNewPage: false,
+      };
+    
+    case 'APPEND_USERS':
+      // Add new users to existing list (for pagination)
+      const newCachedPages = new Set(state.cachedPages);
+      newCachedPages.add(action.payload.page);
+      
+      return {
+        ...state,
+        users: [...state.users, ...action.payload.users],
+        pagination: action.payload.pagination,
+        totalUsers: action.payload.totalUsers,
+        isLoadingNewPage: false,
+        error: null,
+        cachedPages: newCachedPages,
+      };
+    
+    case 'SET_LOADING_NEW_PAGE':
+      return { ...state, isLoadingNewPage: action.payload };
+    
+    case 'RESET_PAGINATION_CACHE':
+      return {
+        ...state,
+        users: [],
+        cachedPages: new Set<number>(),
+        pagination: null,
       };
     
     case 'SET_FILTERS':
@@ -100,6 +139,9 @@ function userManagementReducer(state: UserManagementState, action: UserManagemen
         ...state, 
         filters: action.payload,
         selectedUserIds: [], // Clear selection when filters change
+        users: [], // Reset users when filters change
+        cachedPages: new Set<number>(), // Reset cache when filters change
+        pagination: null,
       };
     
     case 'SET_SORT':
@@ -181,7 +223,8 @@ interface UserManagementContextType {
   state: UserManagementState;
   
   // User list operations
-  loadUsers: (page?: number, limit?: number) => Promise<void>;
+  loadUsers: (page?: number, limit?: number, resetCache?: boolean) => Promise<void>;
+  loadNextPage: () => Promise<void>;
   setFilters: (filters: UserFilters) => void;
   setSort: (sort: UserSortConfig) => void;
   refreshUsers: () => Promise<void>;
@@ -231,32 +274,76 @@ interface UserManagementProviderProps {
 
 export const UserManagementProvider: React.FC<UserManagementProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(userManagementReducer, initialState);
+  const management = useManagement();
 
   const loadUsers = useCallback(async (
     page: number = PAGINATION_DEFAULTS.PAGE,
-    limit: number = PAGINATION_DEFAULTS.LIMIT
+    limit: number = PAGINATION_DEFAULTS.LIMIT,
+    resetCache: boolean = false
   ) => {
     try {
-      dispatch({ type: 'SET_LOADING', payload: true });
+      // Check if we already have this page cached (unless forcing reset)
+      if (!resetCache && state.cachedPages.has(page)) {
+        return; // Page already cached, no need to fetch
+      }
+
+      // For first page or cache reset, use SET_LOADING
+      // For subsequent pages, use SET_LOADING_NEW_PAGE
+      if (page === 1 || resetCache || state.users.length === 0) {
+        dispatch({ type: 'SET_LOADING', payload: true });
+        if (resetCache) {
+          dispatch({ type: 'RESET_PAGINATION_CACHE' });
+        }
+      } else {
+        dispatch({ type: 'SET_LOADING_NEW_PAGE', payload: true });
+      }
       
       const response = await userManagementService.getUsers(page, limit, state.filters);
       
       if (response.success && response.data) {
-        dispatch({
-          type: 'SET_USERS',
-          payload: {
-            users: response.data.users,
-            pagination: response.data.pagination,
-            totalUsers: response.data.pagination.total,
-          },
-        });
+        // If this is the first page or we're resetting, replace users
+        // Otherwise, append to existing users
+        if (page === 1 || resetCache || state.users.length === 0) {
+          dispatch({
+            type: 'SET_USERS',
+            payload: {
+              users: response.data.users,
+              pagination: response.data.pagination,
+              totalUsers: response.data.pagination.total,
+            },
+          });
+        } else {
+          dispatch({
+            type: 'APPEND_USERS',
+            payload: {
+              users: response.data.users,
+              pagination: response.data.pagination,
+              totalUsers: response.data.pagination.total,
+              page,
+            },
+          });
+        }
       } else {
         dispatch({ type: 'SET_ERROR', payload: response.message || 'Failed to load users' });
       }
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load users' });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+      dispatch({ type: 'SET_LOADING_NEW_PAGE', payload: false });
     }
-  }, [state.filters]);
+  }, []);
+
+  const loadNextPage = useCallback(async () => {
+    const currentPage = state.pagination?.page || 0;
+    const nextPage = currentPage + 1;
+    const limit = state.pagination?.per_page || PAGINATION_DEFAULTS.LIMIT;
+    
+    // Check if there are more pages
+    if (state.pagination && state.pagination.has_next) {
+      await loadUsers(nextPage, limit, false);
+    }
+  }, [loadUsers, state.pagination]);
 
   const setFilters = useCallback((filters: UserFilters) => {
     dispatch({ type: 'SET_FILTERS', payload: filters });
@@ -264,13 +351,23 @@ export const UserManagementProvider: React.FC<UserManagementProviderProps> = ({ 
 
   const setSort = useCallback((sort: UserSortConfig) => {
     dispatch({ type: 'SET_SORT', payload: sort });
+    // Reset cache when sort changes as data order will be different
+    dispatch({ type: 'RESET_PAGINATION_CACHE' });
   }, []);
 
   const refreshUsers = useCallback(async () => {
-    const currentPage = state.pagination?.page || 1;
-    const currentLimit = state.pagination?.per_page || PAGINATION_DEFAULTS.LIMIT;
-    await loadUsers(currentPage, currentLimit);
-  }, [loadUsers, state.pagination]);
+    // Refresh by reloading cached pages
+    const cachedPageArray = Array.from(state.cachedPages).sort((a, b) => a - b);
+    const limit = state.pagination?.per_page || PAGINATION_DEFAULTS.LIMIT;
+    
+    // Reset cache and reload from first page
+    await loadUsers(1, limit, true);
+    
+    // Reload subsequent pages that were cached
+    for (const page of cachedPageArray.slice(1)) {
+      await loadUsers(page, limit, false);
+    }
+  }, [loadUsers, state.cachedPages, state.pagination]);
 
   const loadUserDetails = useCallback(async (userId: string) => {
     try {
@@ -444,9 +541,25 @@ export const UserManagementProvider: React.FC<UserManagementProviderProps> = ({ 
     return state.selectedUserIds.length;
   }, [state.selectedUserIds]);
 
+  // Eager loading: Pre-load first page of users when management access becomes available
+  useEffect(() => {
+    const shouldEagerLoad = (
+      management.canAccessManagement && 
+      management.canPerformOperation('view_all_users') &&
+      state.users.length === 0 &&
+      !state.cachedPages.has(1) &&
+      !state.isLoading
+    );
+
+    if (shouldEagerLoad) {
+      loadUsers(1, PAGINATION_DEFAULTS.LIMIT, false);
+    }
+  }, [management.canAccessManagement, management.canPerformOperation, loadUsers, state.users.length, state.isLoading]);
+
   const contextValue: UserManagementContextType = {
     state,
     loadUsers,
+    loadNextPage,
     setFilters,
     setSort,
     refreshUsers,

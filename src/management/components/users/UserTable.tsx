@@ -1,7 +1,8 @@
 // User table component with advanced features
 
 import React from 'react';
-import { Edit2, Eye, UserX, UserCheck, Shield, MoreHorizontal } from 'lucide-react';
+import { Edit2, Eye, UserX, UserCheck, Shield, MoreHorizontal, ChevronDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useUsers } from '../../hooks/useUsers';
 import { useRoles } from '../../hooks/useRoles';
 import { useManagement } from '../../context/ManagementContext';
@@ -48,6 +49,9 @@ const UserTable: React.FC<UserTableProps> = ({
     deactivateUser,
     activateUser,
     refresh,
+    loadNextPage,
+    pagination,
+    isLoadingNewPage,
   } = useUsers();
 
   // Determine if we should show search results or regular users
@@ -297,6 +301,21 @@ const UserTable: React.FC<UserTableProps> = ({
         responsive={true}
         stickyHeader={true}
       />
+
+      {/* Load More Button */}
+      {!searchQuery && pagination && pagination.has_next && displayUsers.length > 0 && (
+        <div className="flex justify-center py-6">
+          <Button
+            variant="outline"
+            onClick={loadNextPage}
+            disabled={isLoadingNewPage}
+            className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700"
+          >
+            <ChevronDown className="w-4 h-4 mr-2" />
+            {isLoadingNewPage ? 'Loading more...' : 'Load More'}
+          </Button>
+        </div>
+      )}
 
       {/* No results state */}
       {!isLoading && displayUsers.length === 0 && !error && (

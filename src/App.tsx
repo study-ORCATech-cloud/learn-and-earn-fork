@@ -79,6 +79,7 @@ const App = () => (
                                   <Routes>
                                     <Route index element={<ManagementDashboard />} />
                                     <Route path="users" element={<UsersPage />} />
+                                    <Route path="users/create" element={<UsersPage />} />
                                     <Route path="users/:id" element={<UserDetailsPage />} />
                                     <Route path="roles" element={<RolesPage />} />
                                     <Route path="system" element={

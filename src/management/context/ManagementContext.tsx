@@ -4,17 +4,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { useAuth } from '../../context/AuthContext';
 import { roleManagementService } from '../services/roleManagementService';
 import { setAuthLogoutCallback } from '../services/managementApiService';
-import type { UserRole } from '../types/role';
-
-interface RoleHierarchy {
-  roles: Array<{
-    name: string;
-    level: number;
-    permissions: string[];
-  }>;
-  levels: Record<string, number>;
-  permissions: Record<string, string[]>;
-}
+import type { UserRole, RoleHierarchy, ManageableRoles } from '../types/role';
 
 interface ManagementState {
   isManagementEnabled: boolean;
@@ -22,6 +12,8 @@ interface ManagementState {
   currentUser: any;
   currentUserRole: UserRole | null;
   roleHierarchy: RoleHierarchy | null;
+  manageableRoles: ManageableRoles | null;
+  currentUserPermissions: any;
   isLoading: boolean;
   error: string | null;
 }
@@ -39,6 +31,8 @@ const initialState: ManagementState = {
   currentUser: null,
   currentUserRole: null,
   roleHierarchy: null,
+  manageableRoles: null,
+  currentUserPermissions: null,
   isLoading: true,
   error: null,
 };
@@ -113,11 +107,18 @@ export const ManagementProvider: React.FC<ManagementProviderProps> = ({ children
           return;
         }
 
-        // Fetch role hierarchy from backend
-        const rolesResponse = await roleManagementService.getRoles();
+        // Fetch role hierarchy and manageable roles from backend
+        const [rolesResponse, manageableRolesResponse] = await Promise.all([
+          roleManagementService.getRoles(),
+          roleManagementService.getManageableRoles(),
+        ]);
 
         if (!rolesResponse.success) {
           throw new Error('Failed to fetch role hierarchy');
+        }
+
+        if (!manageableRolesResponse.success) {
+          throw new Error('Failed to fetch manageable roles');
         }
 
         setState(prev => ({
@@ -127,6 +128,7 @@ export const ManagementProvider: React.FC<ManagementProviderProps> = ({ children
           currentUser: user,
           currentUserRole: userRole,
           roleHierarchy: rolesResponse.data,
+          manageableRoles: manageableRolesResponse.data,
           isLoading: false,
           error: null,
         }));
@@ -153,15 +155,23 @@ export const ManagementProvider: React.FC<ManagementProviderProps> = ({ children
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }));
 
-      const rolesResponse = await roleManagementService.getRoles();
+      const [rolesResponse, manageableRolesResponse] = await Promise.all([
+        roleManagementService.getRoles(),
+        roleManagementService.getManageableRoles(),
+      ]);
 
       if (!rolesResponse.success) {
         throw new Error('Failed to refresh role hierarchy');
       }
 
+      if (!manageableRolesResponse.success) {
+        throw new Error('Failed to refresh manageable roles');
+      }
+
       setState(prev => ({
         ...prev,
         roleHierarchy: rolesResponse.data,
+        manageableRoles: manageableRolesResponse.data,
         isLoading: false,
         error: null,
       }));
