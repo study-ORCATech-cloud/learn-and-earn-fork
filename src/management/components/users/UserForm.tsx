@@ -1,7 +1,7 @@
 // User form component for creating and editing users
 
 import React, { useState, useEffect } from 'react';
-import { Save, X, Upload, User, Mail, Shield, Image } from 'lucide-react';
+import { Save, X, Upload, User, Mail, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,11 +21,12 @@ import { useRoles } from '../../hooks/useRoles';
 import { validateCreateUserForm, validateUpdateUserForm } from '../../utils/validators';
 import { formatRole } from '../../utils/formatters';
 import type { ManagementUser } from '../../types/user';
+import type { UserRole } from '../../types/role';
 
 interface UserFormData {
   email: string;
   name: string;
-  role: string;
+  role: UserRole;
   avatar_url: string;
 }
 
@@ -45,13 +46,14 @@ const UserForm: React.FC<UserFormProps> = ({
   className,
 }) => {
   const management = useManagement();
-  const { manageableRoles, roleHierarchy, isLoading: isLoadingRoles } = useRoles();
+  const { manageableRoles: manageableRolesData, roleHierarchy, isLoading: isLoadingRoles } = useRoles();
+  const manageableRoles = manageableRolesData?.detailed_roles || [];
   
   const isEditMode = !!user;
   const [formData, setFormData] = useState<UserFormData>({
     email: user?.email || '',
     name: user?.name || '',
-    role: user?.role || 'user',
+    role: (user?.role || 'user') as UserRole,
     avatar_url: user?.avatar_url || '',
   });
   
@@ -70,13 +72,14 @@ const UserForm: React.FC<UserFormProps> = ({
       setHasChanges(changed);
     } else {
       // Create mode - check if any fields are filled
-      const hasData = formData.email || formData.name || formData.role !== 'user' || formData.avatar_url;
+      const hasData = formData.email || formData.name || formData.role !== ('user' as UserRole) || formData.avatar_url;
       setHasChanges(!!hasData);
     }
   }, [formData, user, isEditMode]);
 
   const handleInputChange = (field: keyof UserFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    const newValue = field === 'role' ? value as UserRole : value;
+    setFormData(prev => ({ ...prev, [field]: newValue }));
     
     // Clear error for this field when user starts typing
     if (errors[field]) {
@@ -102,7 +105,7 @@ const UserForm: React.FC<UserFormProps> = ({
 
     // Check if user can assign this role
     if (formData.role !== (user?.role || 'user')) {
-      const canManageRole = management.canManageRole(formData.role);
+      const canManageRole = management.canManageRole(formData.role as UserRole);
       if (!canManageRole) {
         setErrors({ role: 'You do not have permission to assign this role' });
         return;
@@ -126,6 +129,7 @@ const UserForm: React.FC<UserFormProps> = ({
     }
     onCancel();
   };
+
 
   const canChangeRole = isEditMode 
     ? management.canManageRole(user.role) 
@@ -280,7 +284,7 @@ const UserForm: React.FC<UserFormProps> = ({
               {formData.role && (
                 <div className="flex items-center">
                   {(() => {
-                    const roleInfo = formatRole(formData.role, roleHierarchy);
+                    const roleInfo = formatRole(formData.role as UserRole, roleHierarchy);
                     return (
                       <div className={cn('px-3 py-2 rounded-md border text-sm', roleInfo.className)}>
                         <span className="mr-1">{roleInfo.icon}</span>

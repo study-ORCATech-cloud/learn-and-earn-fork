@@ -5,6 +5,7 @@ import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { errorLoggingService } from '../../../services/errorLoggingService';
 
 interface Props {
   children: ReactNode;
@@ -30,7 +31,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   static getDerivedStateFromError(error: Error): State {
     // Generate a unique error ID for tracking
-    const errorId = `mgmt-error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const errorId = `mgmt-error-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
     
     return {
       hasError: true,
@@ -39,7 +40,7 @@ class ErrorBoundary extends Component<Props, State> {
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  async componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error for monitoring
     console.error('Management System Error:', error, errorInfo);
     
@@ -47,6 +48,20 @@ class ErrorBoundary extends Component<Props, State> {
       error,
       errorInfo,
     });
+
+    // Log error to backend for support team
+    try {
+      await errorLoggingService.logError(error, errorInfo, {
+        feature: 'management-system',
+        action: 'error-boundary-catch',
+        metadata: {
+          errorBoundaryLocation: 'ManagementErrorBoundary',
+          hasCustomFallback: !!this.props.fallback,
+        },
+      });
+    } catch (loggingError) {
+      console.warn('Failed to log error to backend:', loggingError);
+    }
 
     // Call optional error handler
     this.props.onError?.(error, errorInfo);
@@ -73,7 +88,7 @@ class ErrorBoundary extends Component<Props, State> {
       }
 
       // Default error UI
-      // TODO: send actual error and data to backend for logging
+      // Error has been automatically logged to backend in componentDidCatch
       return (
         <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
           <Card className="max-w-2xl w-full bg-slate-900/50 border-slate-700">
@@ -132,7 +147,7 @@ class ErrorBoundary extends Component<Props, State> {
                 <Button 
                   variant="outline"
                   onClick={this.handleGoHome}
-                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className="flex-1 bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
                 >
                   <Home className="w-4 h-4 mr-2" />
                   Go to Home
