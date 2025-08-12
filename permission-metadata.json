@@ -1,0 +1,251 @@
+{
+  "permission_metadata": {
+    "view_all_users": {
+      "display_name": "View All Users",
+      "description": "View information about all users in the system",
+      "category": "user_management"
+    },
+    "create_users": {
+      "display_name": "Create Users",
+      "description": "Create new user accounts",
+      "category": "user_management"
+    },
+    "edit_all_users": {
+      "display_name": "Edit All Users",
+      "description": "Modify user information for any user",
+      "category": "user_management"
+    },
+    "edit_user_role_only": {
+      "display_name": "Edit User Role Only",
+      "description": "Only edit user role, not other user information",
+      "category": "user_management"
+    },
+    "delete_users": {
+      "display_name": "Delete Users",
+      "description": "Deactivate or delete user accounts",
+      "category": "user_management"
+    },
+    "change_all_roles": {
+      "display_name": "Change All Roles",
+      "description": "Assign any role to any user",
+      "category": "role_management"
+    },
+    "change_admin_and_below_roles": {
+      "display_name": "Change Admin And Below Roles",
+      "description": "Assign admin, moderator, or user roles",
+      "category": "role_management"
+    },
+    "change_user_role_only": {
+      "display_name": "Change User Role Only",
+      "description": "Only assign user role to other users",
+      "category": "role_management"
+    },
+    "view_audit_logs": {
+      "display_name": "View Audit Logs",
+      "description": "Access audit trails and activity logs",
+      "category": "audit_logging"
+    },
+    "manage_system": {
+      "display_name": "Manage System",
+      "description": "Access system administration features",
+      "category": "system_management"
+    },
+    "bulk_operations": {
+      "display_name": "Bulk Operations",
+      "description": "Perform operations on multiple users at once",
+      "category": "bulk_operations"
+    },
+    "view_own_profile": {
+      "display_name": "View Own Profile",
+      "description": "View own user profile information",
+      "category": "user_management"
+    },
+    "edit_own_profile": {
+      "display_name": "Edit Own Profile",
+      "description": "Edit own user profile information",
+      "category": "user_management"
+    },
+    "manage_cache": {
+      "display_name": "Manage Cache",
+      "description": "Clear and manage system cache",
+      "category": "system_management"
+    },
+    "view_system_health": {
+      "display_name": "View System Health",
+      "description": "Monitor system health and performance metrics",
+      "category": "system_management"
+    },
+    "global_logout": {
+      "display_name": "Global Logout",
+      "description": "Trigger system-wide user logout for security purposes",
+      "category": "system_management"
+    },
+    "view_permissions": {
+      "display_name": "View Permissions",
+      "description": "View role and permission information",
+      "category": "role_management"
+    },
+    "manage_permissions": {
+      "display_name": "Manage Permissions",
+      "description": "Modify role permissions and access control",
+      "category": "role_management"
+    }
+  },
+  "category_metadata": {
+    "user_management": {
+      "label": "User Management",
+      "description": "Permissions related to managing users",
+      "icon": "users",
+      "color": "blue",
+      "sort_order": 1
+    },
+    "role_management": {
+      "label": "Role Management",
+      "description": "Permissions for managing roles and permissions",
+      "icon": "shield",
+      "color": "purple",
+      "sort_order": 2
+    },
+    "audit_logging": {
+      "label": "Audit & Logging",
+      "description": "Access to audit trails and logs",
+      "icon": "eye",
+      "color": "orange",
+      "sort_order": 3
+    },
+    "system_management": {
+      "label": "System Management",
+      "description": "System administration and maintenance",
+      "icon": "settings",
+      "color": "red",
+      "sort_order": 4
+    },
+    "bulk_operations": {
+      "label": "Bulk Operations",
+      "description": "Mass operations on multiple resources",
+      "icon": "users",
+      "color": "green",
+      "sort_order": 5
+    },
+    "general": {
+      "label": "General",
+      "description": "Other permissions",
+      "icon": "shield",
+      "color": "slate",
+      "sort_order": 99
+    }
+  },
+  "role_metadata": {
+    "owner": {
+      "display_name": "Owner",
+      "description": "Complete system control. Can manage all users and roles, including admins. Set only at deployment time.",
+      "icon": "crown",
+      "color": "yellow",
+      "level": 99999,
+      "can_be_assigned_via_ui": false
+    },
+    "admin": {
+      "display_name": "Admin",
+      "description": "Full administrative access. Can manage moderators and users, view audit logs, perform bulk operations.",
+      "icon": "shield",
+      "color": "purple",
+      "level": 9000,
+      "can_be_assigned_via_ui": true
+    },
+    "moderator": {
+      "display_name": "Moderator",
+      "description": "Limited administrative access. Can view and manage regular users only.",
+      "icon": "users",
+      "color": "blue",
+      "level": 5000,
+      "can_be_assigned_via_ui": true
+    },
+    "user": {
+      "display_name": "User",
+      "description": "Standard user access. Can manage own profile and access learning content.",
+      "icon": "user",
+      "color": "green",
+      "level": 100,
+      "can_be_assigned_via_ui": true
+    }
+  },
+  "ui_configuration": {
+    "permission_categorization_rules": [
+      {
+        "rule": "contains 'user' or 'profile'",
+        "category": "user_management",
+        "priority": 1
+      },
+      {
+        "rule": "contains 'role' or 'permission'",
+        "category": "role_management",
+        "priority": 2
+      },
+      {
+        "rule": "contains 'audit' or 'log'",
+        "category": "audit_logging",
+        "priority": 3
+      },
+      {
+        "rule": "contains 'system' or 'cache' or 'health' or 'global'",
+        "category": "system_management",
+        "priority": 4
+      },
+      {
+        "rule": "contains 'bulk'",
+        "category": "bulk_operations",
+        "priority": 5
+      },
+      {
+        "rule": "default fallback",
+        "category": "general",
+        "priority": 99
+      }
+    ],
+    "color_mapping": {
+      "blue": {
+        "text": "text-blue-400",
+        "bg": "bg-blue-900/20",
+        "border": "border-blue-500/30"
+      },
+      "purple": {
+        "text": "text-purple-400",
+        "bg": "bg-purple-900/20",
+        "border": "border-purple-500/30"
+      },
+      "orange": {
+        "text": "text-orange-400",
+        "bg": "bg-orange-900/20",
+        "border": "border-orange-500/30"
+      },
+      "red": {
+        "text": "text-red-400",
+        "bg": "bg-red-900/20",
+        "border": "border-red-500/30"
+      },
+      "green": {
+        "text": "text-green-400",
+        "bg": "bg-green-900/20",
+        "border": "border-green-500/30"
+      },
+      "yellow": {
+        "text": "text-yellow-400",
+        "bg": "bg-yellow-900/20",
+        "border": "border-yellow-500/30"
+      },
+      "slate": {
+        "text": "text-slate-400",
+        "bg": "bg-slate-900/20",
+        "border": "border-slate-500/30"
+      }
+    },
+    "icon_mapping": {
+      "users": "Users",
+      "shield": "Shield",
+      "eye": "Eye",
+      "settings": "Settings",
+      "crown": "Crown",
+      "user": "User"
+    }
+  }
+}

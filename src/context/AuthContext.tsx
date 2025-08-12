@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { AuthContextType, AuthState, User } from '../types/auth';
 import { authService } from '../services/authService';
+import { errorLoggingService } from '../services/errorLoggingService';
 
 const initialAuthState: AuthState = {
   user: null,
@@ -96,6 +97,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     initializeAuth();
   }, []);
+
+  // Update error logging service with current user data
+  useEffect(() => {
+    if (authState.user) {
+      errorLoggingService.setCurrentUser({
+        id: authState.user.id,
+        email: authState.user.email,
+        role: authState.user.role,
+      });
+    } else {
+      errorLoggingService.setCurrentUser({});
+    }
+  }, [authState.user]);
 
   // Handle authentication callback (for cookie-based OAuth redirects)
   useEffect(() => {
