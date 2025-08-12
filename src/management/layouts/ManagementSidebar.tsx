@@ -111,11 +111,12 @@ const ManagementSidebar: React.FC<ManagementSidebarProps> = ({
           className={({ isActive: linkActive }) => cn(
             'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
             level === 0 ? 'mx-2' : 'mx-4',
-            linkActive || isActive
+            linkActive
               ? 'bg-blue-600 text-white'
               : 'text-slate-300 hover:text-white hover:bg-slate-700',
             collapsed && level === 0 && 'justify-center px-2'
           )}
+          end={item.path === '/management'}
           title={collapsed ? item.label : undefined}
         >
           <span className={cn('shrink-0', level > 0 && 'ml-2')}>
