@@ -4,6 +4,7 @@ export interface User {
   name: string;
   avatar?: string;
   provider: 'google' | 'github';
+  role?: 'user' | 'moderator' | 'admin' | 'owner';
   createdAt: string;
 }
 

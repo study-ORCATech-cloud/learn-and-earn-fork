@@ -23,6 +23,17 @@ import { BackendDataProvider } from "./context/BackendDataContext";
 import { AuthProvider } from "./context/AuthContext";
 import { useScrollToTop } from "./hooks/useScrollToTop";
 import RoadmapPage from "./pages/RoadmapPage";
+import ManagementDashboard from "./management/pages/ManagementDashboard";
+import UsersPage from "./management/pages/UsersPage";
+import UserDetailsPage from "./management/pages/UserDetailsPage";
+import RolesPage from "./management/pages/RolesPage";
+import SystemPage from "./management/pages/SystemPage";
+import { ManagementProvider } from "./management/context/ManagementContext";
+import { UserManagementProvider } from "./management/context/UserManagementContext";
+import { SystemProvider } from "./management/context/SystemContext";
+import ManagementLayout from "./management/layouts/ManagementLayout";
+import ProtectedRoute from "./management/components/common/ProtectedRoute";
+import ErrorBoundary from "./management/components/common/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +67,36 @@ const App = () => (
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/support" element={<SupportPage />} />
                     <Route path="/contact" element={<ContactPage />} />
+                    
+                    {/* Management Routes */}
+                    <Route path="/management/*" element={
+                      <ErrorBoundary>
+                        <ProtectedRoute requiredRoles={['admin', 'moderator', 'owner']}>
+                          <ManagementProvider>
+                            <UserManagementProvider>
+                              <SystemProvider>
+                                <ManagementLayout>
+                                  <Routes>
+                                    <Route index element={<ManagementDashboard />} />
+                                    <Route path="users" element={<UsersPage />} />
+                                    <Route path="users/create" element={<UsersPage />} />
+                                    <Route path="users/:id" element={<UserDetailsPage />} />
+                                    <Route path="roles" element={<RolesPage />} />
+                                    <Route path="system" element={
+                                      <ProtectedRoute requiredRoles={['admin', 'owner']}>
+                                        <SystemPage />
+                                      </ProtectedRoute>
+                                    } />
+                                    <Route path="*" element={<ManagementDashboard />} />
+                                  </Routes>
+                                </ManagementLayout>
+                              </SystemProvider>
+                            </UserManagementProvider>
+                          </ManagementProvider>
+                        </ProtectedRoute>
+                      </ErrorBoundary>
+                    } />
+                    
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </ScrollToTopWrapper>
