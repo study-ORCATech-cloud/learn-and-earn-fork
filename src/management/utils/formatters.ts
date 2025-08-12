@@ -115,6 +115,16 @@ export const formatRelativeTime = (dateString: string): string => {
  * Format a role with appropriate styling classes using backend metadata
  */
 export const formatRole = (role: UserRole, roleHierarchy?: any): { text: string; className: string; icon: string } => {
+  // Handle undefined or empty role
+  if (!role) {
+    console.error('formatRole called with undefined or empty role');
+    return {
+      text: 'Unknown Role',
+      className: 'text-red-400 bg-red-900/20 border-red-500/30',
+      icon: '❓',
+    };
+  }
+
   // Handle loading state - roleHierarchy is null/undefined while data is being fetched
   if (!roleHierarchy) {
     return {

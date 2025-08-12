@@ -31,12 +31,13 @@ import { useManagement } from '../../context/ManagementContext';
 import { useRoles } from '../../hooks/useRoles';
 import { useBulkOperations } from '../../hooks/useBulkOperations';
 import { formatRole } from '../../utils/formatters';
-import type { BulkOperationType, BulkOperationResult } from '../../types/management';
+import type { BulkOperation } from '../../types/management';
 
 interface BulkUserActionsProps {
   selectedUserIds: string[];
   onClearSelection: () => void;
   onComplete: () => void;
+  onNavigateToUsers?: () => void;
   className?: string;
 }
 
@@ -44,20 +45,21 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
   selectedUserIds,
   onClearSelection,
   onComplete,
+  onNavigateToUsers,
   className,
 }) => {
   const management = useManagement();
   const { manageableRoles, roleHierarchy } = useRoles();
-  const { executeBulkOperation, isExecuting, progress, results } = useBulkOperations();
+  const { performBulkOperation, isInProgress, progress, results, clearResults } = useBulkOperations();
   
-  const [operation, setOperation] = useState<BulkOperationType | ''>('');
+  const [operation, setOperation] = useState<BulkOperation | ''>('');
   const [targetRole, setTargetRole] = useState<string>('');
   const [reason, setReason] = useState<string>('');
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const operationOptions = [
     {
-      value: 'ACTIVATE' as BulkOperationType,
+      value: 'ACTIVATE' as BulkOperation,
       label: 'Activate Users',
       icon: <CheckCircle className="w-4 h-4" />,
       description: 'Reactivate selected inactive users',
@@ -65,7 +67,7 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
       requiredPermission: 'delete_user' as const,
     },
     {
-      value: 'DEACTIVATE' as BulkOperationType,
+      value: 'DEACTIVATE' as BulkOperation,
       label: 'Deactivate Users',
       icon: <UserX className="w-4 h-4" />,
       description: 'Deactivate selected active users',
@@ -73,7 +75,7 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
       requiredPermission: 'delete_user' as const,
     },
     {
-      value: 'ROLE_CHANGE' as BulkOperationType,
+      value: 'ROLE_CHANGE' as BulkOperation,
       label: 'Change Role',
       icon: <Shield className="w-4 h-4" />,
       description: 'Change role for all selected users',
@@ -81,7 +83,7 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
       requiredPermission: 'bulk_operations' as const,
     },
     {
-      value: 'DELETE' as BulkOperationType,
+      value: 'DELETE' as BulkOperation,
       label: 'Delete Users',
       icon: <Trash2 className="w-4 h-4" />,
       description: 'Permanently delete selected users (dangerous)',
@@ -101,19 +103,23 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
 
     const operationData = {
       operation,
-      user_ids: selectedUserIds,
+      userIds: selectedUserIds,
       reason: reason.trim() || undefined,
-      ...(operation === 'ROLE_CHANGE' && targetRole ? { role: targetRole } : {}),
+      ...(operation === 'ROLE_CHANGE' && targetRole ? { role: targetRole as any } : {}),
     };
 
-    const success = await executeBulkOperation(operationData);
-    
-    if (success) {
-      setShowConfirmation(false);
-      setOperation('');
-      setTargetRole('');
-      setReason('');
-      onComplete();
+    try {
+      const success = await performBulkOperation(operationData);
+      
+      if (success) {
+        setShowConfirmation(false);
+        setOperation('');
+        setTargetRole('');
+        setReason('');
+        onComplete();
+      }
+    } catch (error) {
+      console.error('BulkUserActions: Error during performBulkOperation:', error);
     }
   };
 
@@ -129,14 +135,14 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
     let summary = `${selectedOperation.label} for ${selectedUserIds.length} user${selectedUserIds.length === 1 ? '' : 's'}`;
     
     if (operation === 'ROLE_CHANGE' && targetRole) {
-      const roleInfo = formatRole(targetRole, roleHierarchy);
+      const roleInfo = formatRole(targetRole as any, roleHierarchy);
       summary += ` to ${roleInfo.text}`;
     }
     
     return summary;
   };
 
-  if (isExecuting && progress) {
+  if (isInProgress && progress) {
     return (
       <Card className={cn('bg-slate-900/50 border-slate-700', className)}>
         <CardHeader>
@@ -159,17 +165,17 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
             />
           </div>
 
-          {progress.current && (
+          {progress.currentOperation && (
             <div className="text-sm text-slate-400">
-              Processing: {progress.current}
+              Processing: {progress.currentOperation}
             </div>
           )}
 
-          {progress.errors.length > 0 && (
+          {progress.failed > 0 && (
             <Alert className="bg-red-900/20 border-red-500/30">
               <AlertTriangle className="w-4 h-4" />
               <AlertDescription className="text-red-400">
-                {progress.errors.length} error{progress.errors.length === 1 ? '' : 's'} occurred
+                {progress.failed} error{progress.failed === 1 ? '' : 's'} occurred
               </AlertDescription>
             </Alert>
           )}
@@ -178,7 +184,7 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
     );
   }
 
-  if (results && !isExecuting) {
+  if (results && !isInProgress) {
     return (
       <Card className={cn('bg-slate-900/50 border-slate-700', className)}>
         <CardHeader>
@@ -190,16 +196,16 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
         <CardContent className="space-y-4">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div className="bg-slate-800/50 p-3 rounded-lg">
-              <div className="text-2xl font-bold text-green-400">{results.successful_count}</div>
+              <div className="text-2xl font-bold text-green-400">{results.summary.successful_count}</div>
               <div className="text-sm text-slate-400">Successful</div>
             </div>
             <div className="bg-slate-800/50 p-3 rounded-lg">
-              <div className="text-2xl font-bold text-red-400">{results.failed_count}</div>
+              <div className="text-2xl font-bold text-red-400">{results.summary.failed_count}</div>
               <div className="text-sm text-slate-400">Failed</div>
             </div>
             <div className="bg-slate-800/50 p-3 rounded-lg">
               <div className="text-2xl font-bold text-blue-400">
-                {Math.round(results.success_rate)}%
+                {Math.round(results.summary.success_rate)}%
               </div>
               <div className="text-sm text-slate-400">Success Rate</div>
             </div>
@@ -222,17 +228,25 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
           <div className="flex justify-end gap-2">
             <Button
               variant="outline"
-              onClick={onClearSelection}
-              className="border-slate-600 text-slate-300"
+              onClick={() => {
+                clearResults();
+                onClearSelection();
+              }}
+              className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
             >
               Clear Selection
             </Button>
-            <Button
-              onClick={() => window.location.reload()}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Refresh Page
-            </Button>
+            {onNavigateToUsers && (
+              <Button
+                onClick={() => {
+                  clearResults();
+                  onNavigateToUsers();
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Back to Users
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -252,7 +266,7 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
           <Alert className="bg-yellow-900/20 border-yellow-500/30">
             <AlertTriangle className="w-4 h-4" />
             <AlertDescription className="text-yellow-400">
-              <strong>Warning:</strong> This action will affect {selectedUserIds.length} user{selectedUserIds.length === 1 ? '' : 's'} and cannot be easily undone.
+              <strong>Warning:</strong> You are about to perform this operation on {selectedUserIds.length} user{selectedUserIds.length === 1 ? '' : 's'}. This action cannot be easily undone.
             </AlertDescription>
           </Alert>
 
@@ -267,13 +281,13 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
             <Button
               variant="outline"
               onClick={() => setShowConfirmation(false)}
-              className="border-slate-600 text-slate-300"
+              className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
             >
               Cancel
             </Button>
             <Button
               onClick={handleExecute}
-              disabled={isExecuting}
+              disabled={isInProgress}
               className={cn(
                 'text-white',
                 operation === 'DELETE' || operation === 'DEACTIVATE'
@@ -281,8 +295,8 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
                   : 'bg-blue-600 hover:bg-blue-700'
               )}
             >
-              <Play className="w-4 h-4 mr-2" />
-              Execute Operation
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Confirm
             </Button>
           </div>
         </CardContent>
@@ -305,7 +319,10 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={onClearSelection}
+            onClick={() => {
+              clearResults();
+              onClearSelection();
+            }}
             className="text-slate-400 hover:text-white hover:bg-slate-700"
           >
             <X className="w-4 h-4" />
@@ -317,7 +334,7 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
         {/* Operation Selection */}
         <div className="space-y-2">
           <Label className="text-slate-300">Select Operation</Label>
-          <Select value={operation} onValueChange={(value) => setOperation(value as BulkOperationType)}>
+          <Select value={operation} onValueChange={(value) => setOperation(value as BulkOperation)}>
             <SelectTrigger className="bg-slate-800 border-slate-600 text-slate-200">
               <SelectValue placeholder="Choose an operation..." />
             </SelectTrigger>
@@ -350,18 +367,23 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
                 <SelectValue placeholder="Select new role..." />
               </SelectTrigger>
               <SelectContent className="bg-slate-800 border-slate-600">
-                {manageableRoles?.manageable_roles?.map((role) => {
-                  const roleInfo = formatRole(role.name, roleHierarchy);
+                {manageableRoles?.manageable_roles?.map((roleName) => {
+                  const roleInfo = formatRole(roleName, roleHierarchy);
+                  // Find detailed role info for level display
+                  const detailedRole = manageableRoles?.detailed_roles?.find(r => r.name === roleName);
+                  
                   return (
                     <SelectItem
-                      key={role.name}
-                      value={role.name}
+                      key={roleName}
+                      value={roleName}
                       className="text-slate-200 focus:bg-slate-700 focus:text-white"
                     >
                       <div className="flex items-center gap-2">
                         <span>{roleInfo.icon}</span>
                         <span>{roleInfo.text}</span>
-                        <span className="text-xs text-slate-500">(Level {role.level})</span>
+                        {detailedRole && (
+                          <span className="text-xs text-slate-500">(Level {detailedRole.level})</span>
+                        )}
                       </div>
                     </SelectItem>
                   );
@@ -389,8 +411,11 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
         <div className="flex justify-end gap-2 pt-4 border-t border-slate-700">
           <Button
             variant="outline"
-            onClick={onClearSelection}
-            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+            onClick={() => {
+              clearResults();
+              onClearSelection();
+            }}
+            className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
           >
             <X className="w-4 h-4 mr-2" />
             Cancel
@@ -407,7 +432,7 @@ const BulkUserActions: React.FC<BulkUserActionsProps> = ({
             )}
           >
             <Play className="w-4 h-4 mr-2" />
-            Execute Operation
+            Review & Execute
           </Button>
         </div>
 

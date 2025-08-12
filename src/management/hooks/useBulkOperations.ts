@@ -70,7 +70,8 @@ export const useBulkOperations = (): UseBulkOperationsReturn => {
     }
 
     // Check permissions
-    if (!canPerformOperation(operation, role)) {
+    const hasPermission = canPerformOperation(operation, role);
+    if (!hasPermission) {
       setError('You do not have permission to perform this operation');
       return false;
     }
@@ -94,15 +95,8 @@ export const useBulkOperations = (): UseBulkOperationsReturn => {
 
       const success = await userManagement.performBulkOperation(request);
       
-      if (success && userManagement.state.bulkOperationResults) {
-        const results = userManagement.state.bulkOperationResults;
-        setProgress({
-          total: results.total_users,
-          completed: results.summary.successful_count,
-          failed: results.summary.failed_count,
-          inProgress: false,
-        });
-      }
+      // Always set progress to not in progress after operation completes
+      setProgress(prev => prev ? { ...prev, inProgress: false } : null);
 
       return success;
     } catch (err) {
@@ -217,7 +211,9 @@ export const useBulkOperations = (): UseBulkOperationsReturn => {
         return management.canPerformOperation('delete_user');
       
       case 'ROLE_CHANGE':
-        return management.canPerformOperation('change_role', targetRole);
+        // For bulk role changes, we need bulk_operations permission and ability to manage the target role
+        // Individual change_role permission is for single user role changes
+        return targetRole ? management.canManageRole(targetRole) : false;
       
       default:
         return false;
@@ -253,7 +249,7 @@ export const useBulkOperations = (): UseBulkOperationsReturn => {
 
   return {
     // State
-    isInProgress: userManagement.state.bulkOperationInProgress || (progress?.inProgress || false),
+    isInProgress: userManagement.state.bulkOperationInProgress,
     results: userManagement.state.bulkOperationResults,
     progress,
     error,

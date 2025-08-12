@@ -102,6 +102,24 @@ class UserManagementService {
   }
 
   /**
+   * Change user role
+   */
+  async changeUserRole(userId: string, data: { role: string; reason?: string }): Promise<ApiResponse<{
+    success: boolean;
+    message: string;
+    user: ManagementUser;
+    old_role: string;
+    new_role: string;
+    changed_by: string;
+    reason?: string;
+  }>> {
+    return managementApiService.put(
+      MANAGEMENT_API_ENDPOINTS.CHANGE_USER_ROLE(userId),
+      data
+    );
+  }
+
+  /**
    * Search users by name or email
    */
   async searchUsers(query: string): Promise<ApiResponse<SearchUsersResponse>> {

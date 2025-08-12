@@ -1,6 +1,6 @@
 // User table component with advanced features
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Edit2, Eye, UserX, UserCheck, Shield, MoreHorizontal, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUsers } from '../../hooks/useUsers';
@@ -10,6 +10,7 @@ import { formatDate, formatRelativeTime, formatRole, isUserActive } from '../../
 import DataTable from '../common/DataTable';
 import SearchInput from '../common/SearchInput';
 import BulkActionBar from '../common/BulkActionBar';
+import ChangeRoleDialog from './ChangeRoleDialog';
 import type { TableColumn, TableAction } from '../common/DataTable';
 import type { ManagementUser, UserFilters } from '../../types/user';
 import { Badge } from '@/components/ui/badge';
@@ -31,6 +32,10 @@ const UserTable: React.FC<UserTableProps> = ({
 }) => {
   const management = useManagement();
   const { roleHierarchy } = useRoles();
+  
+  // State for Change Role Dialog
+  const [changeRoleDialogOpen, setChangeRoleDialogOpen] = useState(false);
+  const [selectedUserForRoleChange, setSelectedUserForRoleChange] = useState<ManagementUser | null>(null);
   const {
     users,
     isLoading,
@@ -41,6 +46,7 @@ const UserTable: React.FC<UserTableProps> = ({
     toggleUserSelection,
     selectAllUsers,
     clearSelection,
+    setSelectedUserIds,
     searchUsers,
     clearSearch,
     searchQuery,
@@ -84,8 +90,17 @@ const UserTable: React.FC<UserTableProps> = ({
   };
 
   // Determine if we should show search results or regular users, then apply filters
-  const baseUsers = searchQuery ? searchResults : users;
-  const displayUsers = applyFilters(baseUsers);
+  // For search results, we can't apply all filters since searchResults has limited fields
+  const displayUsers = searchQuery ? 
+    // Convert search results to display format and apply basic filters
+    searchResults.filter(user => {
+      if (filters.role && user.role !== filters.role) {
+        return false;
+      }
+      return true;
+    }) as ManagementUser[] : 
+    // Apply full filters to regular users
+    applyFilters(users);
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
@@ -102,6 +117,20 @@ const UserTable: React.FC<UserTableProps> = ({
     } else {
       await activateUser(user.id, 'Reactivated via user table');
     }
+  };
+
+  const handleOpenChangeRoleDialog = (user: ManagementUser) => {
+    setSelectedUserForRoleChange(user);
+    setChangeRoleDialogOpen(true);
+  };
+
+  const handleCloseChangeRoleDialog = () => {
+    setChangeRoleDialogOpen(false);
+    setSelectedUserForRoleChange(null);
+  };
+
+  const handleRoleChangeSuccess = () => {
+    refresh(); // Refresh the users list to show the updated role
   };
 
   // Define table columns
@@ -227,24 +256,28 @@ const UserTable: React.FC<UserTableProps> = ({
       disabled: (user) => !management.canPerformOperation('edit_user'),
     },
     {
-      key: 'toggle_status',
-      label: (user) => isUserActive(user) ? 'Deactivate' : 'Activate',
-      icon: (user) => isUserActive(user) ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />,
+      key: 'deactivate',
+      label: 'Deactivate',
+      icon: <UserX className="w-4 h-4" />,
       onClick: handleUserActivate,
-      disabled: (user) => !management.canPerformOperation('delete_user'),
-      variant: (user) => isUserActive(user) ? 'destructive' : 'default',
-      className: (user) => isUserActive(user)
-        ? 'text-red-400 hover:text-red-300' 
-        : 'text-green-400 hover:text-green-300',
+      disabled: (user: ManagementUser) => !management.canPerformOperation('delete_user') || !isUserActive(user),
+      variant: 'destructive',
+      className: 'text-red-400 hover:text-red-300',
+    },
+    {
+      key: 'activate',
+      label: 'Activate',
+      icon: <UserCheck className="w-4 h-4" />,
+      onClick: handleUserActivate,
+      disabled: (user: ManagementUser) => !management.canPerformOperation('delete_user') || isUserActive(user),
+      variant: 'default',
+      className: 'text-green-400 hover:text-green-300',
     },
     {
       key: 'manage_role',
       label: 'Change Role',
       icon: <Shield className="w-4 h-4" />,
-      onClick: (user) => {
-        // This would open a role change dialog
-        console.log('Change role for user:', user.id);
-      },
+      onClick: handleOpenChangeRoleDialog,
       disabled: (user) => !management.canManageRole(user.role),
     },
   ];
@@ -308,21 +341,7 @@ const UserTable: React.FC<UserTableProps> = ({
         }
         selectable={management.canPerformOperation('bulk_operations')}
         selectedIds={selectedUserIds}
-        onSelectionChange={(ids) => {
-          // Update selection through the useUsers hook
-          ids.forEach(id => {
-            if (!isUserSelected(id)) {
-              toggleUserSelection(id);
-            }
-          });
-          
-          // Remove unselected items
-          selectedUserIds.forEach(id => {
-            if (!ids.includes(id)) {
-              toggleUserSelection(id);
-            }
-          });
-        }}
+        onSelectionChange={setSelectedUserIds}
         getRowId={(user) => user.id}
         onRowClick={onUserClick}
         getRowClassName={(user) => 
@@ -365,6 +384,14 @@ const UserTable: React.FC<UserTableProps> = ({
           )}
         </div>
       )}
+
+      {/* Change Role Dialog */}
+      <ChangeRoleDialog
+        isOpen={changeRoleDialogOpen}
+        onClose={handleCloseChangeRoleDialog}
+        onSuccess={handleRoleChangeSuccess}
+        user={selectedUserForRoleChange}
+      />
     </div>
   );
 };

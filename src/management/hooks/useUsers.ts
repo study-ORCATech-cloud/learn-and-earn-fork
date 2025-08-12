@@ -71,6 +71,7 @@ export interface UseUsersReturn {
   toggleUserSelection: (userId: string) => void;
   selectAllUsers: (selected: boolean) => void;
   clearSelection: () => void;
+  setSelectedUserIds: (userIds: string[]) => void;
   
   // Pagination
   goToPage: (page: number) => Promise<void>;
@@ -195,6 +196,10 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
     userManagement.clearSelection();
   }, []);
 
+  const setSelectedUserIds = useCallback((userIds: string[]) => {
+    userManagement.setSelectedUserIds(userIds);
+  }, []);
+
   const goToPage = useCallback(async (page: number) => {
     await userManagement.loadUsers(page, pageSize);
   }, [pageSize]);
@@ -290,6 +295,7 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
     toggleUserSelection,
     selectAllUsers,
     clearSelection,
+    setSelectedUserIds,
     
     // Pagination
     goToPage,

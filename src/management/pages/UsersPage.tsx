@@ -14,12 +14,13 @@ import { useUsers } from '../hooks/useUsers';
 import { formatRole } from '../utils/formatters';
 import UserTable from '../components/users/UserTable';
 import UserFilters from '../components/users/UserFilters';
+import BulkUserActions from '../components/users/BulkUserActions';
 import type { UserFilters as UserFiltersType } from '../types/user';
 
 const UsersPage: React.FC = () => {
   const management = useManagement();
   const { roleHierarchy } = useRoles();
-  const { refresh } = useUsers();
+  const { refresh, selectedUserIds, selectedCount, clearSelection } = useUsers();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -189,6 +190,11 @@ const UsersPage: React.FC = () => {
           >
             <Settings className="w-4 h-4 mr-2" />
             Bulk Actions
+            {selectedCount > 0 && (
+              <Badge variant="secondary" className="ml-2 bg-blue-600 text-white">
+                {selectedCount}
+              </Badge>
+            )}
           </TabsTrigger>
         </TabsList>
 
@@ -274,20 +280,39 @@ const UsersPage: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="bulk" className="space-y-6">
-          <Card className="bg-slate-900/50 border-slate-700">
-            <CardHeader>
-              <CardTitle className="text-slate-200 text-lg">Bulk Operations</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <Settings className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-slate-300 mb-2">Select Users for Bulk Actions</h3>
-                <p className="text-slate-500">
-                  Go to the "All Users" tab and select users to perform bulk operations like role changes, activation, or deactivation.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          {selectedCount > 0 ? (
+            <BulkUserActions
+              selectedUserIds={selectedUserIds}
+              onClearSelection={clearSelection}
+              onComplete={() => {
+                // Refresh users list after bulk operation completes
+                refresh();
+                // Don't automatically redirect - let user see the results first
+              }}
+              onNavigateToUsers={() => setActiveTab('users')}
+            />
+          ) : (
+            <Card className="bg-slate-900/50 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-slate-200 text-lg">Bulk Operations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12">
+                  <Settings className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-slate-300 mb-2">Select Users for Bulk Actions</h3>
+                  <p className="text-slate-500">
+                    Go to the "All Users" tab and select users to perform bulk operations like role changes, activation, or deactivation.
+                  </p>
+                  <Button
+                    onClick={() => setActiveTab('users')}
+                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    Go to All Users
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
         </Tabs>
     </div>

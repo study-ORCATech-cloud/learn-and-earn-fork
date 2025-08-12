@@ -242,6 +242,7 @@ interface UserManagementContextType {
   toggleUserSelection: (userId: string) => void;
   selectAllUsers: (selected: boolean) => void;
   clearSelection: () => void;
+  setSelectedUserIds: (userIds: string[]) => void;
   
   // Bulk operations
   performBulkOperation: (operation: BulkUserOperationRequest) => Promise<boolean>;
@@ -456,6 +457,10 @@ export const UserManagementProvider: React.FC<UserManagementProviderProps> = ({ 
     dispatch({ type: 'SET_SELECTED_USER_IDS', payload: [] });
   }, []);
 
+  const setSelectedUserIds = useCallback((userIds: string[]) => {
+    dispatch({ type: 'SET_SELECTED_USER_IDS', payload: userIds });
+  }, []);
+
   const performBulkOperation = useCallback(async (operation: BulkUserOperationRequest): Promise<boolean> => {
     try {
       dispatch({ type: 'SET_BULK_OPERATION_IN_PROGRESS', payload: true });
@@ -465,7 +470,7 @@ export const UserManagementProvider: React.FC<UserManagementProviderProps> = ({ 
       if (response.success && response.data) {
         dispatch({ type: 'SET_BULK_OPERATION_RESULTS', payload: response.data });
         await refreshUsers();
-        clearSelection();
+        // Don't auto-clear selection - let user see results first
         return true;
       } else {
         dispatch({ type: 'SET_ERROR', payload: response.message || 'Bulk operation failed' });
@@ -477,7 +482,7 @@ export const UserManagementProvider: React.FC<UserManagementProviderProps> = ({ 
     } finally {
       dispatch({ type: 'SET_BULK_OPERATION_IN_PROGRESS', payload: false });
     }
-  }, [refreshUsers, clearSelection]);
+  }, [refreshUsers]);
 
   const clearBulkResults = useCallback(() => {
     dispatch({ type: 'SET_BULK_OPERATION_RESULTS', payload: null });
@@ -554,6 +559,7 @@ export const UserManagementProvider: React.FC<UserManagementProviderProps> = ({ 
     toggleUserSelection,
     selectAllUsers,
     clearSelection,
+    setSelectedUserIds,
     performBulkOperation,
     clearBulkResults,
     searchUsers,
