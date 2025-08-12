@@ -2,6 +2,7 @@
 
 import { PROVIDER_ICONS } from './constants';
 import type { UserRole } from '../types/role';
+import type { ManagementUser } from '../types/user';
 
 /**
  * Format a date string to a readable format in the client's local timezone
@@ -335,4 +336,25 @@ export const formatMemoryUsage = (used: string, total: string): number => {
   
   if (totalBytes === 0) return 0;
   return Math.round((usedBytes / totalBytes) * 100);
+};
+
+/**
+ * Calculate if a user is active based on their last login
+ * User is considered active if they logged in within the last week
+ */
+export const isUserActive = (user: ManagementUser): boolean => {
+  if (!user.last_login) {
+    return false; // No login = inactive
+  }
+  
+  try {
+    const lastLoginDate = new Date(user.last_login);
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    
+    return lastLoginDate > oneWeekAgo;
+  } catch (error) {
+    // If date parsing fails, consider inactive
+    return false;
+  }
 };

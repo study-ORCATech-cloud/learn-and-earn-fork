@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useUsers } from '../../hooks/useUsers';
 import { useRoles } from '../../hooks/useRoles';
 import { useManagement } from '../../context/ManagementContext';
-import { formatDate, formatRelativeTime, formatRole } from '../../utils/formatters';
+import { formatDate, formatRelativeTime, formatRole, isUserActive } from '../../utils/formatters';
 import DataTable from '../common/DataTable';
 import SearchInput from '../common/SearchInput';
 import BulkActionBar from '../common/BulkActionBar';
@@ -54,8 +54,38 @@ const UserTable: React.FC<UserTableProps> = ({
     isLoadingNewPage,
   } = useUsers();
 
-  // Determine if we should show search results or regular users
-  const displayUsers = searchQuery ? searchResults : users;
+  // Apply filters to users
+  const applyFilters = (userList: ManagementUser[]): ManagementUser[] => {
+    if (!filters || Object.keys(filters).length === 0) {
+      return userList;
+    }
+
+    return userList.filter(user => {
+      // Role filter
+      if (filters.role && user.role !== filters.role) {
+        return false;
+      }
+      
+      // Provider filter
+      if (filters.provider && user.provider !== filters.provider) {
+        return false;
+      }
+      
+      // Status filter (is_active) - calculate based on last_login
+      if (filters.is_active !== undefined) {
+        const userIsActive = isUserActive(user);
+        if (userIsActive !== filters.is_active) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+  };
+
+  // Determine if we should show search results or regular users, then apply filters
+  const baseUsers = searchQuery ? searchResults : users;
+  const displayUsers = applyFilters(baseUsers);
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
@@ -66,7 +96,8 @@ const UserTable: React.FC<UserTableProps> = ({
   };
 
   const handleUserActivate = async (user: ManagementUser) => {
-    if (user.is_active) {
+    const userActive = isUserActive(user);
+    if (userActive) {
       await deactivateUser(user.id, 'Deactivated via user table');
     } else {
       await activateUser(user.id, 'Reactivated via user table');
@@ -92,7 +123,7 @@ const UserTable: React.FC<UserTableProps> = ({
               <p className="text-sm font-medium text-white truncate">
                 {user.name}
               </p>
-              {!user.is_active && (
+              {!isUserActive(user) && (
                 <Badge variant="secondary" className="bg-red-900/20 text-red-400 border-red-500/30">
                   Inactive
                 </Badge>
@@ -179,6 +210,7 @@ const UserTable: React.FC<UserTableProps> = ({
     },
   ];
 
+
   // Define table actions
   const actions: TableAction<ManagementUser>[] = [
     {
@@ -196,12 +228,12 @@ const UserTable: React.FC<UserTableProps> = ({
     },
     {
       key: 'toggle_status',
-      label: (user) => user.is_active ? 'Deactivate' : 'Activate',
-      icon: (user) => user.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />,
+      label: (user) => isUserActive(user) ? 'Deactivate' : 'Activate',
+      icon: (user) => isUserActive(user) ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />,
       onClick: handleUserActivate,
       disabled: (user) => !management.canPerformOperation('delete_user'),
-      variant: (user) => user.is_active ? 'destructive' : 'default',
-      className: (user) => user.is_active 
+      variant: (user) => isUserActive(user) ? 'destructive' : 'default',
+      className: (user) => isUserActive(user)
         ? 'text-red-400 hover:text-red-300' 
         : 'text-green-400 hover:text-green-300',
     },
@@ -294,7 +326,7 @@ const UserTable: React.FC<UserTableProps> = ({
         getRowId={(user) => user.id}
         onRowClick={onUserClick}
         getRowClassName={(user) => 
-          cn(!user.is_active && 'opacity-60')
+          cn(!isUserActive(user) && 'opacity-60')
         }
         sortConfig={null} // We'll implement sorting later
         onSort={() => {}} // Placeholder

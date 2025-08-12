@@ -18,7 +18,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import { useManagement } from '../../context/ManagementContext';
 import { useRoles } from '../../hooks/useRoles';
-import { validateCreateUserForm, validateUpdateUserForm } from '../../utils/validators';
+import { validateUpdateUserForm } from '../../utils/validators';
 import { formatRole } from '../../utils/formatters';
 import type { ManagementUser } from '../../types/user';
 import type { UserRole } from '../../types/role';
@@ -31,7 +31,7 @@ interface UserFormData {
 }
 
 interface UserFormProps {
-  user?: ManagementUser; // undefined for create, populated for edit
+  user: ManagementUser; // Required - edit only
   onSubmit: (data: UserFormData) => Promise<boolean>;
   onCancel: () => void;
   isLoading?: boolean;
@@ -49,12 +49,12 @@ const UserForm: React.FC<UserFormProps> = ({
   const { manageableRoles: manageableRolesData, roleHierarchy, isLoading: isLoadingRoles } = useRoles();
   const manageableRoles = manageableRolesData?.detailed_roles || [];
   
-  const isEditMode = !!user;
+  const isEditMode = true; // Always in edit mode now
   const [formData, setFormData] = useState<UserFormData>({
-    email: user?.email || '',
-    name: user?.name || '',
-    role: (user?.role || 'user') as UserRole,
-    avatar_url: user?.avatar_url || '',
+    email: user.email,
+    name: user.name,
+    role: user.role as UserRole,
+    avatar_url: user.avatar_url || '',
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -62,20 +62,13 @@ const UserForm: React.FC<UserFormProps> = ({
 
   // Track changes for edit mode
   useEffect(() => {
-    if (isEditMode && user) {
-      const changed = (
-        formData.name !== user.name ||
-        formData.role !== user.role ||
-        formData.avatar_url !== (user.avatar_url || '') ||
-        (!isEditMode && formData.email !== user.email) // Email can only change in create mode
-      );
-      setHasChanges(changed);
-    } else {
-      // Create mode - check if any fields are filled
-      const hasData = formData.email || formData.name || formData.role !== ('user' as UserRole) || formData.avatar_url;
-      setHasChanges(!!hasData);
-    }
-  }, [formData, user, isEditMode]);
+    const changed = (
+      formData.name !== user.name ||
+      formData.role !== user.role ||
+      formData.avatar_url !== (user.avatar_url || '')
+    );
+    setHasChanges(changed);
+  }, [formData, user]);
 
   const handleInputChange = (field: keyof UserFormData, value: string) => {
     const newValue = field === 'role' ? value as UserRole : value;
@@ -90,13 +83,11 @@ const UserForm: React.FC<UserFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate form
-    const validation = isEditMode 
-      ? validateUpdateUserForm({
-          name: formData.name,
-          avatar_url: formData.avatar_url,
-        })
-      : validateCreateUserForm(formData, manageableRoles.map(r => r.name));
+    // Validate form (edit mode only)
+    const validation = validateUpdateUserForm({
+      name: formData.name,
+      avatar_url: formData.avatar_url,
+    });
     
     if (!validation.isValid) {
       setErrors(validation.errors);
@@ -104,7 +95,7 @@ const UserForm: React.FC<UserFormProps> = ({
     }
 
     // Check if user can assign this role
-    if (formData.role !== (user?.role || 'user')) {
+    if (formData.role !== user.role) {
       const canManageRole = management.canManageRole(formData.role as UserRole);
       if (!canManageRole) {
         setErrors({ role: 'You do not have permission to assign this role' });
@@ -131,16 +122,14 @@ const UserForm: React.FC<UserFormProps> = ({
   };
 
 
-  const canChangeRole = isEditMode 
-    ? management.canManageRole(user.role) 
-    : management.canPerformOperation('create_user');
+  const canChangeRole = management.canManageRole(user.role);
 
   return (
     <Card className={cn('bg-slate-900/50 border-slate-700', className)}>
       <CardHeader>
         <CardTitle className="text-slate-200 flex items-center gap-2">
           <User className="w-5 h-5" />
-          {isEditMode ? `Edit User: ${user.name}` : 'Create New User'}
+          Edit User: {user.name}
         </CardTitle>
       </CardHeader>
       
@@ -202,15 +191,13 @@ const UserForm: React.FC<UserFormProps> = ({
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   placeholder="user@example.com"
                   className="pl-10 bg-slate-800 border-slate-600 text-slate-200 placeholder:text-slate-500"
-                  disabled={isLoading || isEditMode} // Email cannot be edited (SSO only)
+                  disabled={true} // Email cannot be edited (SSO only)
                   required
                 />
               </div>
-              {isEditMode && (
-                <p className="text-xs text-slate-500">
-                  Email cannot be changed (managed by OAuth providers)
-                </p>
-              )}
+              <p className="text-xs text-slate-500">
+                Email cannot be changed (managed by OAuth providers)
+              </p>
               {errors.email && (
                 <p className="text-sm text-red-400">{errors.email}</p>
               )}
@@ -344,7 +331,7 @@ const UserForm: React.FC<UserFormProps> = ({
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               <Save className="w-4 h-4 mr-2" />
-              {isLoading ? 'Saving...' : isEditMode ? 'Update User' : 'Create User'}
+              {isLoading ? 'Saving...' : 'Update User'}
             </Button>
           </div>
 

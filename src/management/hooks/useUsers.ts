@@ -4,12 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { useUserManagement } from '../context/UserManagementContext';
 import { useManagement } from '../context/ManagementContext';
 import { useRoles } from './useRoles';
-import { validateCreateUserForm, validateUpdateUserForm } from '../utils/validators';
+import { validateUpdateUserForm } from '../utils/validators';
 import type { 
   ManagementUser, 
   UserDetails, 
   UserFilters, 
-  CreateUserRequest, 
+ 
   UpdateUserRequest 
 } from '../types/user';
 
@@ -56,7 +56,6 @@ export interface UseUsersReturn {
   loadUsers: (page?: number) => Promise<void>;
   loadUser: (userId: string) => Promise<void>;
   loadNextPage: () => Promise<void>;
-  createUser: (userData: CreateUserRequest) => Promise<boolean>;
   updateUser: (userId: string, userData: UpdateUserRequest) => Promise<boolean>;
   deactivateUser: (userId: string, reason?: string) => Promise<boolean>;
   activateUser: (userId: string, reason?: string) => Promise<boolean>;
@@ -83,7 +82,6 @@ export interface UseUsersReturn {
   clearErrors: () => void;
   
   // Form validation
-  validateCreateForm: (data: CreateUserRequest) => { isValid: boolean; errors: Record<string, string> };
   validateUpdateForm: (data: UpdateUserRequest) => { isValid: boolean; errors: Record<string, string> };
 }
 
@@ -118,19 +116,6 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
     await userManagement.loadUserDetails(userId);
   }, []);
 
-  const createUser = useCallback(async (userData: CreateUserRequest): Promise<boolean> => {
-    if (!management.canPerformOperation('create_user')) {
-      return false;
-    }
-
-    setIsCreating(true);
-    try {
-      const result = await userManagement.createUser(userData);
-      return result;
-    } finally {
-      setIsCreating(false);
-    }
-  }, []);
 
   const updateUser = useCallback(async (userId: string, userData: UpdateUserRequest): Promise<boolean> => {
     if (!management.canPerformOperation('edit_user')) {
@@ -240,19 +225,6 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
     userManagement.clearError();
   }, []);
 
-  const validateCreateForm = useCallback((data: CreateUserRequest) => {
-    const manageableRoleNames = manageableRoles?.manageable_roles || [];
-    
-    // Convert CreateUserRequest to the expected format for validator
-    const formData = {
-      email: data.email,
-      name: data.name,
-      role: data.role || 'user', // Default to 'user' if no role specified
-      avatar_url: data.avatar_url,
-    };
-    
-    return validateCreateUserForm(formData, manageableRoleNames);
-  }, [manageableRoles]);
 
   const validateUpdateForm = useCallback((data: UpdateUserRequest) => {
     return validateUpdateUserForm(data);
@@ -303,7 +275,6 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
     loadUsers,
     loadUser,
     loadNextPage: userManagement.loadNextPage,
-    createUser,
     updateUser,
     deactivateUser,
     activateUser,
@@ -330,7 +301,6 @@ export const useUsers = (options: UseUsersOptions = {}): UseUsersReturn => {
     clearErrors,
     
     // Form validation
-    validateCreateForm,
     validateUpdateForm,
   };
 };

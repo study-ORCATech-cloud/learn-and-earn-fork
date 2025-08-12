@@ -234,7 +234,6 @@ interface UserManagementContextType {
   clearSelectedUser: () => void;
   
   // User CRUD operations
-  createUser: (userData: any) => Promise<boolean>;
   updateUser: (userId: string, userData: any) => Promise<boolean>;
   deactivateUser: (userId: string, reason?: string) => Promise<boolean>;
   activateUser: (userId: string, reason?: string) => Promise<boolean>;
@@ -393,22 +392,6 @@ export const UserManagementProvider: React.FC<UserManagementProviderProps> = ({ 
     dispatch({ type: 'SET_SELECTED_USER_ERROR', payload: null });
   }, []);
 
-  const createUser = useCallback(async (userData: any): Promise<boolean> => {
-    try {
-      const response = await userManagementService.createUser(userData);
-      
-      if (response.success) {
-        await refreshUsers();
-        return true;
-      } else {
-        dispatch({ type: 'SET_ERROR', payload: response.message || 'Failed to create user' });
-        return false;
-      }
-    } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to create user' });
-      return false;
-    }
-  }, [refreshUsers]);
 
   const updateUser = useCallback(async (userId: string, userData: any): Promise<boolean> => {
     try {
@@ -565,7 +548,6 @@ export const UserManagementProvider: React.FC<UserManagementProviderProps> = ({ 
     refreshUsers,
     loadUserDetails,
     clearSelectedUser,
-    createUser,
     updateUser,
     deactivateUser,
     activateUser,

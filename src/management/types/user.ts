@@ -10,6 +10,7 @@ export interface ManagementUser {
   created_at: string;
   updated_at: string;
   last_login?: string;
+  provider?: 'google' | 'github'; // OAuth provider
   provider_count?: number; // For admins only
   last_login_ago?: string; // For admins only
 }

@@ -48,20 +48,6 @@ class UserManagementService {
     );
   }
 
-  /**
-   * Create a new user
-   */
-  async createUser(userData: CreateUserRequest): Promise<ApiResponse<{
-    success: boolean;
-    message: string;
-    user: ManagementUser;
-    created_by: string;
-  }>> {
-    return managementApiService.post(
-      MANAGEMENT_API_ENDPOINTS.USERS,
-      userData
-    );
-  }
 
   /**
    * Update user information

@@ -1,8 +1,8 @@
 // Users management page with tabs, statistics, and user management tools
 
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Users, UserPlus, Filter, Download, RefreshCw, BarChart3, Table, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, Download, RefreshCw, BarChart3, Table, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,23 +10,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useManagement } from '../context/ManagementContext';
 import { useRoles } from '../hooks/useRoles';
+import { useUsers } from '../hooks/useUsers';
 import { formatRole } from '../utils/formatters';
 import UserTable from '../components/users/UserTable';
 import UserFilters from '../components/users/UserFilters';
-import UserForm from '../components/users/UserForm';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 import type { UserFilters as UserFiltersType } from '../types/user';
 
 const UsersPage: React.FC = () => {
   const management = useManagement();
   const { roleHierarchy } = useRoles();
-  const location = useLocation();
+  const { refresh } = useUsers();
   const navigate = useNavigate();
-  const isCreateMode = location.pathname === '/management/users/create';
-  const [activeTab, setActiveTab] = useState(isCreateMode ? 'users' : 'overview');
+  const [activeTab, setActiveTab] = useState('overview');
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(isCreateMode);
-  const [showFilters, setShowFilters] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [filters, setFilters] = useState<UserFiltersType>({});
 
@@ -38,19 +34,14 @@ const UsersPage: React.FC = () => {
   const handleRefresh = async () => {
     if (!isRefreshing) {
       setIsRefreshing(true);
-      // UserTable manages its own refresh
-      setTimeout(() => setIsRefreshing(false), 500);
+      try {
+        await refresh();
+      } finally {
+        setIsRefreshing(false);
+      }
     }
   };
 
-  // Handle route changes
-  React.useEffect(() => {
-    const isCreate = location.pathname === '/management/users/create';
-    setShowCreateForm(isCreate);
-    if (isCreate) {
-      setActiveTab('users');
-    }
-  }, [location.pathname]);
 
   const handleFilterChange = async (newFilters: Partial<UserFiltersType>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
@@ -72,33 +63,8 @@ const UsersPage: React.FC = () => {
     }
   };
 
-  const handleCreateUser = async (userData: { email: string; name: string; role: string; avatar_url: string }) => {
-    try {
-      // Here you would call your user creation API
-      console.log('Creating user:', userData);
-      // For now, just simulate success
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Close form and navigate back
-      setShowCreateForm(false);
-      navigate('/management/users');
-      return true;
-    } catch (error) {
-      console.error('Failed to create user:', error);
-      return false;
-    }
-  };
 
-  const handleCancelCreate = () => {
-    setShowCreateForm(false);
-    navigate('/management/users');
-  };
 
-  const getActiveFiltersCount = () => {
-    return Object.values(filters).filter(value => 
-      value !== undefined && value !== null && value !== ''
-    ).length;
-  };
 
   if (!management.canPerformOperation('view_all_users')) {
     return (
@@ -141,19 +107,6 @@ const UsersPage: React.FC = () => {
             <RefreshCw className={cn('w-4 h-4 mr-2', isRefreshing && 'animate-spin')} />
             Refresh
           </Button>
-          {management.canPerformOperation('create_users') && (
-            <Button 
-              onClick={() => {
-                setShowCreateForm(true);
-                setActiveTab('users');
-                navigate('/management/users/create');
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <UserPlus className="w-4 h-4 mr-2" />
-              Add User
-            </Button>
-          )}
         </div>
       </div>
 
@@ -188,7 +141,7 @@ const UsersPage: React.FC = () => {
                   Currently enabled accounts
                 </p>
               </div>
-              <UserPlus className="w-8 h-8 text-slate-600" />
+              <Users className="w-8 h-8 text-slate-600" />
             </div>
           </CardContent>
         </Card>
@@ -283,34 +236,10 @@ const UsersPage: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="users" className="space-y-6">
-          {/* Create User Form */}
-          {showCreateForm && (
-            <UserForm
-              onSubmit={handleCreateUser}
-              onCancel={handleCancelCreate}
-              isLoading={false}
-            />
-          )}
-
           {/* Controls Bar */}
-          {!showCreateForm && (
             <Card className="bg-slate-900/50 border-slate-700">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowFilters(!showFilters)}
-                    className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700"
-                  >
-                    <Filter className="w-4 h-4 mr-2" />
-                    Filters
-                    {getActiveFiltersCount() > 0 && (
-                      <Badge variant="secondary" className="ml-2 bg-blue-600 text-white">
-                        {getActiveFiltersCount()}
-                      </Badge>
-                    )}
-                  </Button>
 
                   <Button
                     variant="outline"
@@ -325,29 +254,23 @@ const UsersPage: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
-          )}
 
           {/* User Management Content */}
-          {!showCreateForm && (
-            <>
-              {/* Filters */}
-              {showFilters && (
-                <UserFilters
-                  filters={filters}
-                  onFiltersChange={handleFilterChange}
-                  onApplyFilters={() => {}}
-                  onClearFilters={clearFilters}
-                />
-              )}
+          <>
+            {/* Filters */}
+            <UserFilters
+              filters={filters}
+              onFiltersChange={handleFilterChange}
+              onClearFilters={clearFilters}
+            />
 
-              {/* Users Table with built-in search and bulk actions */}
-              <UserTable
-                onUserClick={(user) => navigate(`/management/users/${user.id}`)}
-                onUserEdit={(user) => navigate(`/management/users/${user.id}`)}
-                filters={filters}
-              />
-            </>
-          )}
+            {/* Users Table with built-in search and bulk actions */}
+            <UserTable
+              onUserClick={(user) => navigate(`/management/users/${user.id}`)}
+              onUserEdit={(user) => navigate(`/management/users/${user.id}`)}
+              filters={filters}
+            />
+          </>
         </TabsContent>
 
         <TabsContent value="bulk" className="space-y-6">

@@ -21,7 +21,6 @@ import { OAUTH_PROVIDERS } from '../../utils/constants';
 interface UserFiltersProps {
   filters: UserFiltersType;
   onFiltersChange: (filters: UserFiltersType) => void;
-  onApplyFilters: () => void;
   onClearFilters: () => void;
   isLoading?: boolean;
   className?: string;
@@ -30,48 +29,28 @@ interface UserFiltersProps {
 const UserFilters: React.FC<UserFiltersProps> = ({
   filters,
   onFiltersChange,
-  onApplyFilters,
   onClearFilters,
   isLoading = false,
   className,
 }) => {
   const { roleHierarchy } = useRoles();
-  const [localFilters, setLocalFilters] = useState<UserFiltersType>(filters);
-  const [hasChanges, setHasChanges] = useState(false);
-
-  // Update local filters when prop filters change
-  useEffect(() => {
-    setLocalFilters(filters);
-    setHasChanges(false);
-  }, [filters]);
-
-  // Check for changes
-  useEffect(() => {
-    const changed = JSON.stringify(localFilters) !== JSON.stringify(filters);
-    setHasChanges(changed);
-  }, [localFilters, filters]);
 
   const handleFilterChange = (key: keyof UserFiltersType, value: any) => {
     // Convert special "all" values to undefined to clear the filter
     let filterValue = value;
     if (value === 'all_roles' || value === 'all_providers' || value === 'all_statuses' || value === '') {
       filterValue = undefined;
+    } else if (key === 'is_active') {
+      // Convert string boolean values to actual booleans
+      filterValue = value === 'true';
     }
     
-    const newFilters = { ...localFilters, [key]: filterValue };
-    setLocalFilters(newFilters);
+    const newFilters = { ...filters, [key]: filterValue };
     onFiltersChange(newFilters);
   };
 
-  const handleApply = () => {
-    onApplyFilters();
-    setHasChanges(false);
-  };
-
   const handleClear = () => {
-    setLocalFilters({});
     onClearFilters();
-    setHasChanges(false);
   };
 
   const getActiveFiltersCount = () => {
@@ -118,7 +97,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({
           <div className="space-y-2">
             <Label className="text-slate-300 text-sm">Role</Label>
             <Select
-              value={localFilters.role || ''}
+              value={filters.role || ''}
               onValueChange={(value) => handleFilterChange('role', value)}
               disabled={isLoading}
             >
@@ -149,7 +128,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({
           <div className="space-y-2">
             <Label className="text-slate-300 text-sm">Provider</Label>
             <Select
-              value={localFilters.provider || ''}
+              value={filters.provider || ''}
               onValueChange={(value) => handleFilterChange('provider', value)}
               disabled={isLoading}
             >
@@ -183,10 +162,8 @@ const UserFilters: React.FC<UserFiltersProps> = ({
           <div className="space-y-2">
             <Label className="text-slate-300 text-sm">Status</Label>
             <Select
-              value={localFilters.is_active === undefined ? '' : String(localFilters.is_active)}
-              onValueChange={(value) => 
-                handleFilterChange('is_active', value === '' ? undefined : value === 'true')
-              }
+              value={filters.is_active === undefined ? 'all_statuses' : String(filters.is_active)}
+              onValueChange={(value) => handleFilterChange('is_active', value)}
               disabled={isLoading}
             >
               <SelectTrigger className="bg-slate-800 border-slate-600 text-slate-200">
@@ -215,16 +192,6 @@ const UserFilters: React.FC<UserFiltersProps> = ({
             </Select>
           </div>
 
-          {/* Apply/Reset Actions */}
-          <div className="flex items-end gap-2">
-            <Button
-              onClick={handleApply}
-              disabled={!hasChanges || isLoading}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Apply
-            </Button>
-          </div>
         </div>
 
         {/* Active Filters Display */}
