@@ -11,6 +11,7 @@ import DataTable from '../common/DataTable';
 import SearchInput from '../common/SearchInput';
 import BulkActionBar from '../common/BulkActionBar';
 import ChangeRoleDialog from './ChangeRoleDialog';
+import UserDetailsModal from './UserDetailsModal';
 import type { TableColumn, TableAction } from '../common/DataTable';
 import type { ManagementUser, UserFilters } from '../../types/user';
 import { Badge } from '@/components/ui/badge';
@@ -33,9 +34,11 @@ const UserTable: React.FC<UserTableProps> = ({
   const management = useManagement();
   const { roleHierarchy } = useRoles();
   
-  // State for Change Role Dialog
+  // State for dialogs
   const [changeRoleDialogOpen, setChangeRoleDialogOpen] = useState(false);
   const [selectedUserForRoleChange, setSelectedUserForRoleChange] = useState<ManagementUser | null>(null);
+  const [userDetailsModalOpen, setUserDetailsModalOpen] = useState(false);
+  const [selectedUserForDetails, setSelectedUserForDetails] = useState<ManagementUser | null>(null);
   const {
     users,
     isLoading,
@@ -131,6 +134,16 @@ const UserTable: React.FC<UserTableProps> = ({
 
   const handleRoleChangeSuccess = () => {
     refresh(); // Refresh the users list to show the updated role
+  };
+
+  const handleOpenUserDetailsModal = (user: ManagementUser) => {
+    setSelectedUserForDetails(user);
+    setUserDetailsModalOpen(true);
+  };
+
+  const handleCloseUserDetailsModal = () => {
+    setUserDetailsModalOpen(false);
+    setSelectedUserForDetails(null);
   };
 
   // Define table columns
@@ -246,7 +259,7 @@ const UserTable: React.FC<UserTableProps> = ({
       key: 'view',
       label: 'View Details',
       icon: <Eye className="w-4 h-4" />,
-      onClick: (user) => onUserClick?.(user),
+      onClick: (user) => handleOpenUserDetailsModal(user),
     },
     {
       key: 'edit',
@@ -343,7 +356,7 @@ const UserTable: React.FC<UserTableProps> = ({
         selectedIds={selectedUserIds}
         onSelectionChange={setSelectedUserIds}
         getRowId={(user) => user.id}
-        onRowClick={onUserClick}
+        onRowClick={(user) => toggleUserSelection(user.id)}
         getRowClassName={(user) => 
           cn(!isUserActive(user) && 'opacity-60')
         }
@@ -391,6 +404,13 @@ const UserTable: React.FC<UserTableProps> = ({
         onClose={handleCloseChangeRoleDialog}
         onSuccess={handleRoleChangeSuccess}
         user={selectedUserForRoleChange}
+      />
+
+      {/* User Details Modal */}
+      <UserDetailsModal
+        isOpen={userDetailsModalOpen}
+        onClose={handleCloseUserDetailsModal}
+        user={selectedUserForDetails}
       />
     </div>
   );

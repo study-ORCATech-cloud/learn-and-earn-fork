@@ -272,8 +272,6 @@ const UsersPage: React.FC = () => {
 
             {/* Users Table with built-in search and bulk actions */}
             <UserTable
-              onUserClick={(user) => navigate(`/management/users/${user.id}`)}
-              onUserEdit={(user) => navigate(`/management/users/${user.id}`)}
               filters={filters}
             />
           </>
