@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -36,10 +37,15 @@ interface UserProfileProps {
 
 export const UserProfile: React.FC<UserProfileProps> = ({ className = '' }) => {
   const { user, logout, isLoading } = useAuth();
+  const navigate = useNavigate();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   if (!user) return null;
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -127,6 +133,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className = '' }) => {
           <DropdownMenuSeparator className="bg-slate-700" />
           
           <DropdownMenuItem 
+            onClick={handleProfileClick}
             className="text-slate-300 hover:bg-slate-800 focus:bg-slate-800 cursor-pointer"
           >
             <User className="w-4 h-4 mr-2" />
