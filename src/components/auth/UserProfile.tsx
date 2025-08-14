@@ -47,6 +47,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className = '' }) => {
     navigate('/profile');
   };
 
+  const handleSettingsClick = () => {
+    navigate('/settings');
+  };
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
@@ -141,6 +145,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className = '' }) => {
           </DropdownMenuItem>
           
           <DropdownMenuItem 
+            onClick={handleSettingsClick}
             className="text-slate-300 hover:bg-slate-800 focus:bg-slate-800 cursor-pointer"
           >
             <Settings className="w-4 h-4 mr-2" />
