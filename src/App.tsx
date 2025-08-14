@@ -17,6 +17,8 @@ import ContactPage from "./pages/ContactPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import LabViewerPage from "./pages/LabViewerPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import { UserProgressProvider } from "./context/UserProgressContext";
 import { SearchProvider } from "./context/SearchContext";
 import { BackendDataProvider } from "./context/BackendDataContext";
@@ -64,6 +66,8 @@ const App = () => (
                     <Route path="/course/:courseId" element={<CoursePage />} />
                     <Route path="/course/:courseId/lab/:labId" element={<LabViewerPage />} />
                     <Route path="/auth/callback" element={<AuthCallbackPage />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/settings" element={<Settings />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/support" element={<SupportPage />} />
                     <Route path="/contact" element={<ContactPage />} />
