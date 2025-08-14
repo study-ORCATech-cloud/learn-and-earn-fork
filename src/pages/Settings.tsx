@@ -4,23 +4,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
-  Monitor, 
-  Moon, 
-  Sun, 
-  Globe, 
   Bell, 
-  Shield, 
   BookOpen, 
   BarChart3,
   Save,
   RotateCcw,
-  Eye,
-  EyeOff,
   Mail,
   Smartphone,
-  Users,
-  Lock,
-  TrendingUp,
   Target,
   Brain,
   Zap
@@ -34,21 +24,11 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 
 // Settings state interface
 interface SettingsState {
-  // Display preferences
-  theme: 'light' | 'dark' | 'system';
-  language: string;
   
   // Notification preferences
   emailNotifications: boolean;
@@ -57,24 +37,11 @@ interface SettingsState {
   achievementNotifications: boolean;
   weeklyProgress: boolean;
   
-  // Privacy settings
-  profileVisibility: 'public' | 'private' | 'friends';
-  showProgress: boolean;
-  showAchievements: boolean;
-  allowDataSharing: boolean;
-  allowAnalytics: boolean;
-  
   // Learning preferences
   difficultyLevel: 'beginner' | 'intermediate' | 'advanced' | 'mixed';
   topicsOfInterest: string[];
   learningPace: number; // 1-5 scale
   preferredContentType: string[];
-  
-  // Progress tracking
-  progressVisibility: 'public' | 'private' | 'friends';
-  showDetailedStats: boolean;
-  allowLeaderboard: boolean;
-  shareCompletions: boolean;
 }
 
 const Settings: React.FC = () => {
@@ -83,40 +50,21 @@ const Settings: React.FC = () => {
 
   // Initialize settings state (in real app, this would come from backend)
   const [settings, setSettings] = useState<SettingsState>({
-    theme: 'dark',
-    language: 'en',
     emailNotifications: true,
     systemAlerts: true,
     courseReminders: true,
     achievementNotifications: true,
     weeklyProgress: false,
-    profileVisibility: 'public',
-    showProgress: true,
-    showAchievements: true,
-    allowDataSharing: false,
-    allowAnalytics: true,
     difficultyLevel: 'intermediate',
     topicsOfInterest: ['javascript', 'react'],
     learningPace: 3,
     preferredContentType: ['videos', 'hands-on'],
-    progressVisibility: 'public',
-    showDetailedStats: true,
-    allowLeaderboard: true,
-    shareCompletions: true,
   });
 
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   // Available options
-  const languages = [
-    { value: 'en', label: 'English' },
-    { value: 'es', label: 'Español' },
-    { value: 'fr', label: 'Français' },
-    { value: 'de', label: 'Deutsch' },
-    { value: 'it', label: 'Italiano' },
-    { value: 'pt', label: 'Português' },
-  ];
 
   const topics = [
     'JavaScript', 'React', 'Node.js', 'Python', 'TypeScript', 
@@ -237,68 +185,6 @@ const Settings: React.FC = () => {
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="space-y-8">
           
-          {/* Display Preferences */}
-          <Card className="bg-slate-900/50 border-slate-700">
-            <CardHeader>
-              <CardTitle className="text-slate-200 flex items-center gap-2">
-                <Monitor className="w-5 h-5" />
-                Display Preferences
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-slate-300 text-sm font-medium">Theme</Label>
-                  <RadioGroup 
-                    value={settings.theme} 
-                    onValueChange={(value) => updateSettings('theme', value)}
-                    className="mt-2"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="light" id="light" className="border-slate-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" />
-                      <Label htmlFor="light" className="text-slate-300 flex items-center gap-2">
-                        <Sun className="w-4 h-4" />
-                        Light
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="dark" id="dark" className="border-slate-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" />
-                      <Label htmlFor="dark" className="text-slate-300 flex items-center gap-2">
-                        <Moon className="w-4 h-4" />
-                        Dark
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="system" id="system" className="border-slate-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" />
-                      <Label htmlFor="system" className="text-slate-300 flex items-center gap-2">
-                        <Monitor className="w-4 h-4" />
-                        System
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <div>
-                  <Label className="text-slate-300 text-sm font-medium">Language</Label>
-                  <Select value={settings.language} onValueChange={(value) => updateSettings('language', value)}>
-                    <SelectTrigger className="mt-2 bg-slate-800 border-slate-600 text-slate-200">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-slate-600">
-                      {languages.map((lang) => (
-                        <SelectItem key={lang.value} value={lang.value} className="text-slate-200">
-                          <div className="flex items-center gap-2">
-                            <Globe className="w-4 h-4" />
-                            {lang.label}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Notification Preferences */}
           <Card className="bg-slate-900/50 border-slate-700">
@@ -383,109 +269,6 @@ const Settings: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Privacy Settings */}
-          <Card className="bg-slate-900/50 border-slate-700">
-            <CardHeader>
-              <CardTitle className="text-slate-200 flex items-center gap-2">
-                <Shield className="w-5 h-5" />
-                Privacy Settings
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-slate-300 text-sm font-medium">Profile Visibility</Label>
-                  <RadioGroup 
-                    value={settings.profileVisibility} 
-                    onValueChange={(value) => updateSettings('profileVisibility', value)}
-                    className="mt-2"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="public" id="public" className="border-slate-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" />
-                      <Label htmlFor="public" className="text-slate-300 flex items-center gap-2">
-                        <Eye className="w-4 h-4" />
-                        Public - Anyone can see your profile
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="friends" id="friends" className="border-slate-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" />
-                      <Label htmlFor="friends" className="text-slate-300 flex items-center gap-2">
-                        <Users className="w-4 h-4" />
-                        Friends - Only connected users can see your profile
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="private" id="private" className="border-slate-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" />
-                      <Label htmlFor="private" className="text-slate-300 flex items-center gap-2">
-                        <EyeOff className="w-4 h-4" />
-                        Private - Only you can see your profile
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <Separator className="bg-slate-700" />
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <BarChart3 className="w-4 h-4 text-slate-400" />
-                      <div>
-                        <Label className="text-slate-300">Show Progress</Label>
-                        <p className="text-sm text-slate-500">Display learning progress on profile</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={settings.showProgress}
-                      onCheckedChange={(checked) => updateSettings('showProgress', checked)}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Target className="w-4 h-4 text-slate-400" />
-                      <div>
-                        <Label className="text-slate-300">Show Achievements</Label>
-                        <p className="text-sm text-slate-500">Display earned badges and certificates</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={settings.showAchievements}
-                      onCheckedChange={(checked) => updateSettings('showAchievements', checked)}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Users className="w-4 h-4 text-slate-400" />
-                      <div>
-                        <Label className="text-slate-300">Allow Data Sharing</Label>
-                        <p className="text-sm text-slate-500">Share anonymized data for research</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={settings.allowDataSharing}
-                      onCheckedChange={(checked) => updateSettings('allowDataSharing', checked)}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <BarChart3 className="w-4 h-4 text-slate-400" />
-                      <div>
-                        <Label className="text-slate-300">Allow Analytics</Label>
-                        <p className="text-sm text-slate-500">Help improve the platform with usage data</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={settings.allowAnalytics}
-                      onCheckedChange={(checked) => updateSettings('allowAnalytics', checked)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Learning Preferences */}
           <Card className="bg-slate-900/50 border-slate-700">
@@ -603,95 +386,6 @@ const Settings: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Progress Tracking */}
-          <Card className="bg-slate-900/50 border-slate-700">
-            <CardHeader>
-              <CardTitle className="text-slate-200 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" />
-                Progress Tracking
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-slate-300 text-sm font-medium">Progress Visibility</Label>
-                  <RadioGroup 
-                    value={settings.progressVisibility} 
-                    onValueChange={(value) => updateSettings('progressVisibility', value)}
-                    className="mt-2"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="public" id="progress-public" className="border-slate-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" />
-                      <Label htmlFor="progress-public" className="text-slate-300 flex items-center gap-2">
-                        <Eye className="w-4 h-4" />
-                        Public - Anyone can see your progress
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="friends" id="progress-friends" className="border-slate-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" />
-                      <Label htmlFor="progress-friends" className="text-slate-300 flex items-center gap-2">
-                        <Users className="w-4 h-4" />
-                        Friends - Only connected users can see your progress
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="private" id="progress-private" className="border-slate-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" />
-                      <Label htmlFor="progress-private" className="text-slate-300 flex items-center gap-2">
-                        <Lock className="w-4 h-4" />
-                        Private - Only you can see your progress
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <Separator className="bg-slate-700" />
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <BarChart3 className="w-4 h-4 text-slate-400" />
-                      <div>
-                        <Label className="text-slate-300">Show Detailed Statistics</Label>
-                        <p className="text-sm text-slate-500">Display time spent, completion rates, etc.</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={settings.showDetailedStats}
-                      onCheckedChange={(checked) => updateSettings('showDetailedStats', checked)}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <TrendingUp className="w-4 h-4 text-slate-400" />
-                      <div>
-                        <Label className="text-slate-300">Allow Leaderboard</Label>
-                        <p className="text-sm text-slate-500">Participate in community leaderboards</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={settings.allowLeaderboard}
-                      onCheckedChange={(checked) => updateSettings('allowLeaderboard', checked)}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Target className="w-4 h-4 text-slate-400" />
-                      <div>
-                        <Label className="text-slate-300">Share Completions</Label>
-                        <p className="text-sm text-slate-500">Announce when you complete courses</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={settings.shareCompletions}
-                      onCheckedChange={(checked) => updateSettings('shareCompletions', checked)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Save Actions */}
           {hasChanges && (
