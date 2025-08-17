@@ -1,21 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, FileText, Folder, FolderOpen, Download, Clock, AlertCircle } from 'lucide-react';
+import { ArrowLeft, FileText, Folder, FolderOpen, Download, AlertCircle, Lock, Coins, Eye } from 'lucide-react';
 import Header from '../components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Badge } from '@/components/ui/badge';
 import { apiService } from '../services/apiService';
 import { LabContent, LabFile } from '../types/lab';
-import { sampleLabData } from '../data/sampleLabData';
+import { PurchaseRequest } from '../types/orcaCoins';
 import { useBackendData } from '../context/BackendDataContext';
 import { useAuth } from '../context/AuthContext';
+import { useOrcaWallet } from '../context/OrcaWalletContext';
+import PurchaseConfirmationDialog from '../components/lab/PurchaseConfirmationDialog';
+import { useToast } from '@/hooks/use-toast';
+import { errorLoggingService } from '../services/errorLoggingService';
+
+// Combine regular lab files with premium preview files
+const combineLabFiles = (labContent: LabContent | null): LabFile[] => {
+  if (!labContent?.content) return [];
+  
+  const regularFiles = labContent.content.lab_files || [];
+  const previewFiles = labContent.content.premium_preview || [];
+  
+  // Mark preview files with a special indicator
+  const markedPreviewFiles = previewFiles.map(file => ({
+    ...file,
+    is_premium: true,
+    access_granted: false, // Preview files are not fully accessible
+    access_message: 'Premium preview - purchase for full access'
+  }));
+  
+  return [...regularFiles, ...markedPreviewFiles];
+};
 
 const LabViewerPage: React.FC = () => {
   const { courseId, labId } = useParams<{ courseId: string; labId: string }>();
   const { data } = useBackendData();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { 
+    purchaseLabAccess, 
+    isPurchasing, 
+    purchaseError, 
+    clearErrors,
+    refreshBalance
+  } = useOrcaWallet();
+  const { toast } = useToast();
   
   // Find the course and lab resource
   const course = data.courses.find(c => c.id === courseId);
@@ -28,8 +58,8 @@ const LabViewerPage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<LabFile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [usingFallback, setUsingFallback] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  const [showPurchaseDialog, setShowPurchaseDialog] = useState(false);
 
   // Check authentication and redirect if not authenticated
   useEffect(() => {
@@ -39,62 +69,79 @@ const LabViewerPage: React.FC = () => {
     }
   }, [isAuthenticated, authLoading, courseId, navigate]);
 
-  // Fetch lab content (must be before any conditional returns)
-  useEffect(() => {
-    const fetchLabContent = async () => {
-      if (!labUrl || !labResource) {
-        setError('Lab not found or invalid lab configuration');
-        setIsLoading(false);
-        return;
-      }
+  // Fetch lab content and access info
+  const fetchLabData = async () => {
+    if (!labUrl || !labResource) {
+      setError('Lab not found or invalid lab configuration');
+      setIsLoading(false);
+      return;
+    }
 
-      try {
-        setIsLoading(true);
-        setError(null);
-        const response = await apiService.getLabContent(labUrl);
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const contentResponse = await apiService.getLabContent(labUrl);
+      
+      if (contentResponse.success && contentResponse.data) {
+        setLabContent(contentResponse.data);
         
-        if (response.success) {
-          setLabContent(response.data);
-          setUsingFallback(false);
-          // Auto-select the main instruction file if it exists
-          const mainFile = response.data.files.find(f => 
+        // Auto-select the main instruction file if it exists
+        const allFiles = combineLabFiles(contentResponse.data);
+        if (allFiles.length > 0) {
+          const mainFile = allFiles.find(f => 
             f.name.toLowerCase().includes('readme') || 
             f.name.toLowerCase().includes('instruction')
           );
           if (mainFile) {
             setSelectedFile(mainFile);
           }
-        } else {
-          // Use fallback sample data when backend fails
-          console.warn('Backend failed, using sample lab data');
-          setLabContent(sampleLabData);
-          setUsingFallback(true);
-          setError(null);
-          // Auto-select README from sample data
-          const readmeFile = sampleLabData.files.find(f => f.name === 'README.md');
-          if (readmeFile) {
-            setSelectedFile(readmeFile);
+        }
+      } else {
+        const errorMsg = contentResponse.error || 'Failed to load lab content';
+        setError(errorMsg);
+        
+        // Log API response error to backend
+        const apiError = new Error(`Lab content API error: ${errorMsg}`);
+        errorLoggingService.logError(apiError, undefined, {
+          action: 'fetch_lab_content_api_error',
+          metadata: {
+            lab_url: labUrl,
+            course_id: courseId,
+            lab_id: labId,
+            api_response: contentResponse,
+            timestamp: new Date().toISOString()
           }
-        }
-      } catch (err) {
-        // Use fallback sample data when request fails
-        console.warn('Network error, using sample lab data:', err);
-        setLabContent(sampleLabData);
-        setUsingFallback(true);
-        setError(null);
-        // Auto-select README from sample data
-        const readmeFile = sampleLabData.files.find(f => f.name === 'README.md');
-        if (readmeFile) {
-          setSelectedFile(readmeFile);
-        }
-      } finally {
-        setIsLoading(false);
+        }).catch(logErr => {
+          console.warn('Failed to log API error to backend:', logErr);
+        });
       }
-    };
+    } catch (err) {
+      console.error('Failed to load lab content:', err);
+      
+      // Log error to backend
+      const errorToLog = err instanceof Error ? err : new Error(typeof err === 'string' ? err : 'Failed to load lab content');
+      errorLoggingService.logError(errorToLog, undefined, {
+        action: 'fetch_lab_content',
+        metadata: {
+          lab_url: labUrl,
+          course_id: courseId,
+          lab_id: labId,
+          timestamp: new Date().toISOString()
+        }
+      }).catch(logErr => {
+        console.warn('Failed to log error to backend:', logErr);
+      });
+      
+      setError('Failed to load lab content. Please ensure the backend API is running.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    // Only fetch content if user is authenticated
+  useEffect(() => {
     if (!authLoading && isAuthenticated) {
-      fetchLabContent();
+      fetchLabData();
     }
   }, [labUrl, labResource, authLoading, isAuthenticated]);
 
@@ -123,43 +170,116 @@ const LabViewerPage: React.FC = () => {
     }
   };
 
+  const handlePurchaseClick = () => {
+    clearErrors();
+    setShowPurchaseDialog(true);
+  };
+
+  const handlePurchaseConfirm = async () => {
+    if (!labContent || !labResource) return;
+
+    const purchaseData: PurchaseRequest = {
+      lab_url: labUrl,
+      lab_title: labContent.lab_info?.title || 'Lab',
+      lab_description: labResource?.description || '',
+      lab_difficulty: labContent.lab_info?.difficulty || 'beginner',
+      lab_category: labContent.lab_info?.category || 'programming',
+      lab_tags: labContent.lab_info?.tags || []
+    };
+
+    try {
+      const response = await purchaseLabAccess(purchaseData);
+      
+      if (response.success) {
+        setShowPurchaseDialog(false);
+        toast({
+          title: "Purchase Successful!",
+          description: `You now have premium access to ${labContent.lab_info?.title || 'this'} lab`,
+          className: "bg-slate-800 border-slate-700 text-white",
+        });
+        
+        // Refetch lab content to get the updated premium files
+        await fetchLabData();
+        
+        // Refresh wallet balance to update the header
+        await refreshBalance();
+      } else {
+        toast({
+          title: "Purchase Failed",
+          description: response.error || response.message || "Unable to purchase lab access",
+          variant: "destructive",
+          className: "bg-red-900 border-red-700 text-white",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Purchase Error",
+        description: "An unexpected error occurred while processing your purchase",
+        variant: "destructive",
+        className: "bg-red-900 border-red-700 text-white",
+      });
+    }
+  };
+
+  // Check if file is premium based on API response
+  const isPremiumFile = (file: LabFile) => {
+    return file.is_premium;
+  };
+
   const renderFileTree = (files: LabFile[], level = 0) => {
+
     return (
       <div className={`${level > 0 ? 'ml-4' : ''}`}>
-        {files.map((file, index) => (
-          <div key={`${file.path}-${index}`} className="mb-1">
-            <button
-              onClick={() => handleFileSelect(file)}
-              className={`flex items-center gap-2 p-2 rounded-lg w-full text-left transition-colors ${
-                selectedFile?.path === file.path
-                  ? 'bg-blue-600 text-white'
-                  : 'hover:bg-slate-700 text-slate-300'
-              }`}
-            >
-              {file.type === 'directory' ? (
-                expandedFolders.has(file.path) ? (
-                  <FolderOpen className="w-4 h-4 text-blue-400" />
+        {files.map((file, index) => {
+          const isPremium = file.type === 'file' && isPremiumFile(file);
+          const hasFileAccess = file.access_granted;
+          
+          return (
+            <div key={`${file.path}-${index}`} className="mb-1">
+              <button
+                onClick={() => handleFileSelect(file)}
+                className={`flex items-center gap-2 p-2 rounded-lg w-full text-left transition-colors relative ${
+                  selectedFile?.path === file.path
+                    ? 'bg-blue-600 text-white'
+                    : 'hover:bg-slate-700 text-slate-300'
+                }`}
+              >
+                {file.type === 'directory' ? (
+                  expandedFolders.has(file.path) ? (
+                    <FolderOpen className="w-4 h-4 text-blue-400" />
+                  ) : (
+                    <Folder className="w-4 h-4 text-blue-400" />
+                  )
                 ) : (
-                  <Folder className="w-4 h-4 text-blue-400" />
-                )
-              ) : (
-                <FileText className="w-4 h-4 text-slate-400" />
+                  <FileText className="w-4 h-4 text-slate-400" />
+                )}
+                <span className="text-sm flex-1">{file.name}</span>
+                
+                {isPremium && !hasFileAccess && (
+                  <>
+                    {file.access_message?.includes('Premium preview') ? (
+                      <span className="text-xs bg-blue-600 text-white px-1 rounded">PREVIEW</span>
+                    ) : (
+                      <Lock className="w-3 h-3 text-amber-400" />
+                    )}
+                  </>
+                )}
+                
+                {file.type === 'file' && (
+                  <span className="text-xs text-slate-500">
+                    {(file.size / 1024).toFixed(1)}KB
+                  </span>
+                )}
+              </button>
+              
+              {file.type === 'directory' && file.children && expandedFolders.has(file.path) && (
+                <div className="ml-4">
+                  {renderFileTree(file.children, level + 1)}
+                </div>
               )}
-              <span className="text-sm">{file.name}</span>
-              {file.type === 'file' && (
-                <span className="text-xs text-slate-500 ml-auto">
-                  {(file.size / 1024).toFixed(1)}KB
-                </span>
-              )}
-            </button>
-            
-            {file.type === 'directory' && file.children && expandedFolders.has(file.path) && (
-              <div className="ml-4">
-                {renderFileTree(file.children, level + 1)}
-              </div>
-            )}
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
     );
   };
@@ -194,6 +314,16 @@ const LabViewerPage: React.FC = () => {
     return languageMap[ext || ''] || 'text';
   };
 
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'beginner': return 'bg-green-900/30 border-green-500/30 text-green-300';
+      case 'intermediate': return 'bg-blue-900/30 border-blue-500/30 text-blue-300';
+      case 'professional': return 'bg-purple-900/30 border-purple-500/30 text-purple-300';
+      case 'expert': return 'bg-red-900/30 border-red-500/30 text-red-300';
+      default: return 'bg-gray-900/30 border-gray-500/30 text-gray-300';
+    }
+  };
+
   // Show loading while checking authentication or loading lab content
   if (authLoading || isLoading) {
     return (
@@ -208,7 +338,6 @@ const LabViewerPage: React.FC = () => {
       </div>
     );
   }
-
 
   if (error || !labContent) {
     return (
@@ -229,11 +358,15 @@ const LabViewerPage: React.FC = () => {
     );
   }
 
+  const hasPremiumFiles = labContent?.content?.premium_files_count > 0;
+  const hasAccess = labContent?.access?.has_premium_access || false;
+  const labCost = labContent?.access?.premium_cost;
+
   return (
     <>
       <Helmet>
-        <title>{labContent.labName} - Lab Viewer</title>
-        <meta name="description" content={labContent.description} />
+        <title>{labContent?.lab_info?.title || 'Lab Viewer'}</title>
+        <meta name="description" content={labResource?.description || 'Lab content viewer'} />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">
@@ -254,12 +387,21 @@ const LabViewerPage: React.FC = () => {
               <div className="flex items-center gap-4 text-sm text-slate-400">
                 <div className="flex items-center gap-1">
                   <FileText className="w-4 h-4" />
-                  {labContent.metadata.totalFiles} files
+                  {combineLabFiles(labContent).length} files
                 </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  Updated {new Date(labContent.metadata.lastUpdated).toLocaleDateString()}
-                </div>
+                {hasPremiumFiles && (
+                  hasAccess ? (
+                    <div className="flex items-center gap-2 text-green-300">
+                      <span>✓</span>
+                      <span>Premium content unlocked</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      <Lock className="w-4 h-4 text-amber-400" />
+                      <span>Premium content available</span>
+                    </div>
+                  )
+                )}
               </div>
             </div>
           </div>
@@ -277,26 +419,63 @@ const LabViewerPage: React.FC = () => {
             </div>
             
             <div className="flex items-center gap-3 mb-4">
-              <h1 className="text-3xl font-bold text-white">{labContent.labName}</h1>
-              {usingFallback && (
-                <span className="px-3 py-1 bg-orange-900/30 border border-orange-500/30 text-orange-300 text-sm rounded-full">
-                  Demo Mode
-                </span>
+              <h1 className="text-3xl font-bold text-white">{labContent?.lab_info?.title || 'Lab'}</h1>
+              {labContent?.lab_info?.difficulty && (
+                <Badge className={getDifficultyColor(labContent.lab_info.difficulty)}>
+                  {labContent.lab_info.difficulty.charAt(0).toUpperCase() + labContent.lab_info.difficulty.slice(1)}
+                </Badge>
               )}
             </div>
-            <p className="text-slate-300 text-lg mb-4">{labContent.description}</p>
-            {usingFallback && (
-              <div className="bg-orange-900/20 border border-orange-500/30 rounded-lg p-4 mb-4">
-                <p className="text-orange-300 text-sm">
-                  ⚠️ This is sample lab content shown because the backend is not available. In production, this would load actual lab files from your backend service.
-                </p>
+            
+            <p className="text-slate-300 text-lg mb-4">{labResource?.description || 'Lab description not available'}</p>
+            
+            {/* Premium Access Section */}
+            {hasPremiumFiles && !hasAccess && (
+              <div className="bg-gradient-to-r from-amber-900/20 to-orange-900/20 border border-amber-500/30 rounded-lg p-6 mb-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Lock className="w-5 h-5 text-amber-400" />
+                      <h3 className="text-lg font-semibold text-amber-300">Premium Content Available</h3>
+                    </div>
+                    <p className="text-amber-200 mb-3">
+                      This lab contains premium files, unlock them to get the complete learning experience.
+                    </p>
+                    <div className="flex items-center gap-4 text-sm text-amber-300">
+                      {(() => {
+                        return labContent.content.premium_preview.map((file, index) => (
+                          <span key={index}>✓ {file.name}</span>
+                        ));
+                      })()}
+                    </div>
+                  </div>
+                  <div className="ml-6 text-center">
+                    <div className="flex items-center gap-1 text-amber-400 text-xl font-bold mb-2">
+                      <Coins className="w-6 h-6" />
+                      <span>{labCost}</span>
+                    </div>
+                    <Button
+                      onClick={handlePurchaseClick}
+                      className="bg-amber-600 hover:bg-amber-700 text-white"
+                    >
+                      <Coins className="w-4 h-4 mr-2" />
+                      Purchase for {labCost} Coins
+                    </Button>
+                  </div>
+                </div>
               </div>
             )}
-            {labContent.metadata.mainInstruction && (
-              <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
-                <p className="text-blue-300">{labContent.metadata.mainInstruction}</p>
+            
+            {/* Success message for premium access */}
+            {hasPremiumFiles && hasAccess && (
+              <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4 mb-4">
+                <div className="flex items-center gap-2 text-green-300">
+                  <span>✓</span>
+                  <span>You have premium access to all content in this lab!</span>
+                </div>
               </div>
             )}
+            
           </div>
 
           {/* Main Content Area */}
@@ -306,12 +485,17 @@ const LabViewerPage: React.FC = () => {
               <Card className="p-4 bg-slate-900/50 border-slate-800">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-white">Lab Files</h3>
-                  <Button size="sm" variant="outline">
+                  {/* <Button size="sm" variant="outline">
                     <Download className="w-4 h-4" />
-                  </Button>
+                  </Button> */}
                 </div>
                 <div className="max-h-96 overflow-y-auto">
-                  {renderFileTree(labContent.files)}
+                  {(() => {
+                    const allFiles = combineLabFiles(labContent);
+                    return allFiles.length > 0 ? 
+                      renderFileTree(allFiles) : 
+                      <p className="text-slate-400 text-sm">No files available</p>;
+                  })()}
                 </div>
               </Card>
             </div>
@@ -322,7 +506,15 @@ const LabViewerPage: React.FC = () => {
                 {selectedFile ? (
                   <>
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-white">{selectedFile.name}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-semibold text-white">{selectedFile.name}</h3>
+                        {isPremiumFile(selectedFile) && !selectedFile.access_granted && (
+                          <Badge className="bg-amber-900/30 border-amber-500/30 text-amber-300">
+                            <Lock className="w-3 h-3 mr-1" />
+                            Premium
+                          </Badge>
+                        )}
+                      </div>
                       <div className="flex items-center gap-2 text-sm text-slate-400">
                         <span>{getLanguageFromExtension(selectedFile.name)}</span>
                         <span>•</span>
@@ -330,11 +522,49 @@ const LabViewerPage: React.FC = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-slate-950 rounded-lg p-4 overflow-x-auto">
-                      <pre className="text-sm text-slate-300 whitespace-pre-wrap">
-                        {selectedFile.content || 'File content not available'}
-                      </pre>
-                    </div>
+                    {isPremiumFile(selectedFile) && !selectedFile.access_granted ? (
+                      <div className="bg-slate-950 rounded-lg p-6">
+                        {selectedFile.access_message?.includes('Premium preview') ? (
+                          // This is a preview file - show content with preview indicator
+                          <div>
+                            <div className="flex items-center gap-2 mb-4 justify-center">
+                              <Eye className="w-5 h-5 text-blue-400" />
+                              <h3 className="text-lg font-semibold text-blue-400">Premium Preview</h3>
+                            </div>
+                            <p className="text-slate-300 mb-4 text-center">
+                              This is a preview of premium content. Purchase access to unlock the complete version.
+                            </p>
+                            <div className="bg-slate-900 rounded-lg p-4 text-left border border-blue-500/30">
+                              <pre className="text-sm text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                                {selectedFile.content || 'Preview content not available'}
+                              </pre>
+                            </div>
+                          </div>
+                        ) : (
+                          // This is a locked premium file - show lock icon
+                          <div className="text-center">
+                            <Lock className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold text-white mb-2">Premium Content</h3>
+                            <p className="text-slate-300 mb-4">
+                              This file contains premium content. Purchase access to view the complete file.
+                            </p>
+                          </div>
+                        )}
+                        <Button
+                          onClick={handlePurchaseClick}
+                          className="bg-amber-600 hover:bg-amber-700 text-white"
+                        >
+                          <Coins className="w-4 h-4 mr-2" />
+                          Purchase for {labCost} Coins
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="bg-slate-950 rounded-lg p-4 overflow-x-auto">
+                        <pre className="text-sm text-slate-300 whitespace-pre-wrap">
+                          {selectedFile.content || 'File content not available'}
+                        </pre>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <div className="text-center py-12">
@@ -348,6 +578,24 @@ const LabViewerPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Purchase Confirmation Dialog */}
+      {labContent && (
+        <PurchaseConfirmationDialog
+          isOpen={showPurchaseDialog}
+          onClose={() => setShowPurchaseDialog(false)}
+          onConfirm={handlePurchaseConfirm}
+          labData={{
+            title: labContent.lab_info?.title || 'Lab',
+            difficulty: labContent.lab_info?.difficulty || 'beginner',
+            cost: labCost,
+            description: labResource?.description || '',
+            premiumFilesCount: labContent.content?.premium_files_count
+          }}
+          isPurchasing={isPurchasing}
+          purchaseError={purchaseError}
+        />
+      )}
     </>
   );
 };

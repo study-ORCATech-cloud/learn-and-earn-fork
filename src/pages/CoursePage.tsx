@@ -35,8 +35,8 @@ const CoursePage = () => {
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-white mb-4">Course Not Found</h1>
-          <Link to="/" className="text-blue-400 hover:text-blue-300">
-            ← Back to Home
+          <Link to="/courses" className="text-blue-400 hover:text-blue-300">
+            ← Back to Courses
           </Link>
         </div>
       </div>
@@ -59,11 +59,11 @@ const CoursePage = () => {
         <div className="border-b border-slate-800">
           <div className="container mx-auto px-4 py-4">
             <Link 
-              to="/" 
+              to="/courses" 
               className="inline-flex items-center text-slate-400 hover:text-white transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Home
+              Back to Courses
             </Link>
           </div>
         </div>

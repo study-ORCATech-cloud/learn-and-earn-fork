@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Mail, Globe, Clock, Shield, ExternalLink, Settings, ArrowLeft } from 'lucide-react';
+import { User, Mail, Globe, Clock, Shield, ExternalLink, Settings, ArrowLeft, Coins, Wallet } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useOrcaWallet } from '../context/OrcaWalletContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -38,6 +39,7 @@ const formatRelativeTime = (dateString: string) => {
 
 const Profile: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
+  const { balance, walletDetails, formatCoins } = useOrcaWallet();
   const navigate = useNavigate();
 
   if (!isAuthenticated || !user) {
@@ -300,6 +302,7 @@ const Profile: React.FC = () => {
                 
                 <Button
                   variant="outline"
+                  onClick={() => navigate('/settings')}
                   className="w-full bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
                 >
                   <User className="w-4 h-4 mr-2" />
@@ -311,6 +314,96 @@ const Profile: React.FC = () => {
                     Profile settings and preferences are managed through your {user.provider} account.
                   </p>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Wallet Information */}
+        <div className="mt-8">
+          <Card className="bg-slate-900/50 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-slate-200 flex items-center gap-2">
+                <Wallet className="w-5 h-5 text-amber-400" />
+                Orca Coins Wallet
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2 text-2xl font-bold text-amber-400 mb-2">
+                    <Coins className="w-6 h-6" />
+                    {balance !== null ? balance : '--'}
+                  </div>
+                  <div className="text-sm text-slate-400">Current Balance</div>
+                </div>
+                
+                {walletDetails && (
+                  <>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-400 mb-2">
+                        {walletDetails.wallet.total_orca_earned}
+                      </div>
+                      <div className="text-sm text-slate-400">Total Earned</div>
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-slate-300 mb-2">
+                        {walletDetails.wallet.total_orca_spent}
+                      </div>
+                      <div className="text-sm text-slate-400">Total Spent</div>
+                    </div>
+                  </>
+                )}
+              </div>
+              
+              {walletDetails && (
+                <div className="pt-4 border-t border-slate-700">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-slate-400">Labs Purchased:</span>
+                      <span className="text-slate-200 ml-2">{walletDetails.purchased_labs_count}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Lifetime Purchases:</span>
+                      <span className="text-slate-200 ml-2">{walletDetails.wallet.lifetime_purchases}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Member Since:</span>
+                      <span className="text-slate-200 ml-2">
+                        {new Date(walletDetails.wallet.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Last Updated:</span>
+                      <span className="text-slate-200 ml-2">
+                        {new Date(walletDetails.wallet.updated_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex gap-4 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/wallet')}
+                  className="flex-1 bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+                >
+                  <Wallet className="w-4 h-4 mr-2" />
+                  View Full Wallet
+                </Button>
+                
+                {balance !== null && balance > 0 && (
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate('/courses')}
+                    className="flex-1 bg-amber-800 border-amber-600 text-amber-300 hover:bg-amber-700 hover:text-white"
+                  >
+                    <Coins className="w-4 h-4 mr-2" />
+                    Use Coins
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>

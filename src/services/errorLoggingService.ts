@@ -10,6 +10,7 @@ export interface ErrorLogData {
   userId?: string;
   timestamp: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
+  errorType: 'general' | 'orca_coins_error' | 'lab_access_error' | 'analytics_error';
   context: {
     route: string;
     userRole?: string;
@@ -107,7 +108,7 @@ class ErrorLoggingService {
   private async buildErrorLogData(
     error: Error, 
     errorInfo?: React.ErrorInfo, 
-    context?: Partial<ErrorLogData['context']>
+    context?: Partial<ErrorLogData['context']> & { errorType?: ErrorLogData['errorType'] }
   ): Promise<ErrorLogRequest> {
     const errorId = `error-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
     
@@ -125,6 +126,7 @@ class ErrorLoggingService {
         userId: userData.id,
         timestamp: new Date().toISOString(),
         severity: this.determineSeverity(error),
+        errorType: context?.errorType || 'general',
         context: {
           route: window.location.pathname,
           userRole: userData.role,
@@ -280,6 +282,76 @@ class ErrorLoggingService {
     if (ua.includes('Android')) return 'Android';
     if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
     return 'Unknown';
+  }
+
+  /**
+   * Log Orca Coins related errors
+   */
+  async logOrcaCoinsError(
+    error: Error,
+    context: {
+      feature: string;
+      action: string;
+      walletBalance?: number;
+      transactionId?: string;
+      labUrl?: string;
+    }
+  ) {
+    await this.logError(error, undefined, {
+      ...context,
+      errorType: 'orca_coins_error',
+      metadata: {
+        walletBalance: context.walletBalance,
+        transactionId: context.transactionId,
+        labUrl: context.labUrl,
+      }
+    });
+  }
+
+  /**
+   * Log lab access related errors
+   */
+  async logLabAccessError(
+    error: Error,
+    context: {
+      feature: string;
+      action: string;
+      labUrl?: string;
+      hasAccess?: boolean;
+      premiumCost?: number;
+    }
+  ) {
+    await this.logError(error, undefined, {
+      ...context,
+      errorType: 'lab_access_error',
+      metadata: {
+        labUrl: context.labUrl,
+        hasAccess: context.hasAccess,
+        premiumCost: context.premiumCost,
+      }
+    });
+  }
+
+  /**
+   * Log analytics related errors
+   */
+  async logAnalyticsError(
+    error: Error,
+    context: {
+      feature: string;
+      action: string;
+      dashboardSection?: string;
+      dataType?: string;
+    }
+  ) {
+    await this.logError(error, undefined, {
+      ...context,
+      errorType: 'analytics_error',
+      metadata: {
+        dashboardSection: context.dashboardSection,
+        dataType: context.dataType,
+      }
+    });
   }
 }
 

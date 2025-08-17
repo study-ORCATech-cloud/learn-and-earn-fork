@@ -11,7 +11,9 @@ import {
   User,
   Activity,
   Database,
-  LogOut
+  LogOut,
+  BarChart3,
+  Coins
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -69,6 +71,22 @@ const ManagementSidebar: React.FC<ManagementSidebarProps> = ({
       icon: <Shield className="w-5 h-5" />,
       requiredPermission: 'view_all_users',
       description: 'Role hierarchy and permissions',
+    },
+    {
+      id: 'analytics',
+      label: 'Analytics',
+      path: '/management/analytics',
+      icon: <BarChart3 className="w-5 h-5" />,
+      requiredPermission: 'view_all_users',
+      description: 'Orca Coins economy and platform analytics'
+    },
+    {
+      id: 'orca-coins',
+      label: 'Orca Coins',
+      path: '/management/orca-coins',
+      icon: <Coins className="w-5 h-5" />,
+      requiredPermission: 'view_all_users',
+      description: 'Orca Coins transactions and management'
     },
     {
       id: 'system',

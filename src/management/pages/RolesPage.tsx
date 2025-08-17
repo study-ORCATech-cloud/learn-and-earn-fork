@@ -55,19 +55,10 @@ const RolesPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Shield className="w-6 h-6" />
-            Role Management
-            <Badge variant="secondary" className="bg-slate-700 text-slate-200">
-              {totalRoles} roles
-            </Badge>
-          </h1>
-          <p className="text-slate-400">
-            Manage role hierarchy, permissions, and access control
-          </p>
-        </div>
+      <div className="flex items-center justify-between mb-6">
+        <Badge variant="secondary" className="bg-slate-700 text-slate-200">
+          {totalRoles} roles
+        </Badge>
 
         <div className="flex items-center gap-3">
           <Button
@@ -172,21 +163,21 @@ const RolesPage: React.FC = () => {
           <TabsList className="bg-slate-800 border border-slate-600">
             <TabsTrigger 
               value="hierarchy" 
-              className="data-[state=active]:bg-slate-700 data-[state=active]:text-white"
+              className="text-slate-300 data-[state=active]:bg-slate-700 data-[state=active]:text-white"
             >
               <Shield className="w-4 h-4 mr-2" />
               Role Hierarchy
             </TabsTrigger>
             <TabsTrigger 
               value="permissions"
-              className="data-[state=active]:bg-slate-700 data-[state=active]:text-white"
+              className="text-slate-300 data-[state=active]:bg-slate-700 data-[state=active]:text-white"
             >
               <Eye className="w-4 h-4 mr-2" />
               Permissions
             </TabsTrigger>
             <TabsTrigger 
               value="matrix"
-              className="data-[state=active]:bg-slate-700 data-[state=active]:text-white"
+              className="text-slate-300 data-[state=active]:bg-slate-700 data-[state=active]:text-white"
             >
               <Grid3X3 className="w-4 h-4 mr-2" />
               Permissions Matrix

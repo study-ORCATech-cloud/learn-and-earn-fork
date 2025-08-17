@@ -19,10 +19,12 @@ import LabViewerPage from "./pages/LabViewerPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import WalletPage from "./pages/WalletPage";
 import { UserProgressProvider } from "./context/UserProgressContext";
 import { SearchProvider } from "./context/SearchContext";
 import { BackendDataProvider } from "./context/BackendDataContext";
 import { AuthProvider } from "./context/AuthContext";
+import { OrcaWalletProvider } from "./context/OrcaWalletContext";
 import { useScrollToTop } from "./hooks/useScrollToTop";
 import RoadmapPage from "./pages/RoadmapPage";
 import ManagementDashboard from "./management/pages/ManagementDashboard";
@@ -30,6 +32,8 @@ import UsersPage from "./management/pages/UsersPage";
 import UserDetailsPage from "./management/pages/UserDetailsPage";
 import RolesPage from "./management/pages/RolesPage";
 import SystemPage from "./management/pages/SystemPage";
+import AnalyticsPage from "./management/pages/AnalyticsPage";
+import OrcaCoinsPage from "./management/pages/OrcaCoinsPage";
 import { ManagementProvider } from "./management/context/ManagementContext";
 import { UserManagementProvider } from "./management/context/UserManagementContext";
 import { SystemProvider } from "./management/context/SystemContext";
@@ -49,8 +53,9 @@ const App = () => (
     <HelmetProvider>
       <AuthProvider>
         <BackendDataProvider>
-          <UserProgressProvider>
-            <SearchProvider>
+          <OrcaWalletProvider>
+            <UserProgressProvider>
+              <SearchProvider>
               <TooltipProvider>
               <Toaster />
               <Sonner />
@@ -68,6 +73,7 @@ const App = () => (
                     <Route path="/auth/callback" element={<AuthCallbackPage />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/settings" element={<Settings />} />
+                    <Route path="/wallet" element={<WalletPage />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/support" element={<SupportPage />} />
                     <Route path="/contact" element={<ContactPage />} />
@@ -86,6 +92,8 @@ const App = () => (
                                     <Route path="users/create" element={<UsersPage />} />
                                     <Route path="users/:id" element={<UserDetailsPage />} />
                                     <Route path="roles" element={<RolesPage />} />
+                                    <Route path="analytics" element={<AnalyticsPage />} />
+                                    <Route path="orca-coins" element={<OrcaCoinsPage />} />
                                     <Route path="system" element={
                                       <ProtectedRoute requiredRoles={['admin', 'owner']}>
                                         <SystemPage />
@@ -106,8 +114,9 @@ const App = () => (
                 </ScrollToTopWrapper>
               </Router>
               </TooltipProvider>
-            </SearchProvider>
-          </UserProgressProvider>
+              </SearchProvider>
+            </UserProgressProvider>
+          </OrcaWalletProvider>
         </BackendDataProvider>
       </AuthProvider>
     </HelmetProvider>
