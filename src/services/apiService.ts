@@ -88,19 +88,42 @@ class ApiService {
       return {
         success: false,
         data: {
-          labName: '',
-          description: '',
-          files: [],
-          metadata: {
-            lastUpdated: '',
-            totalFiles: 0,
-            mainInstruction: ''
+          repository: {
+            owner: '',
+            name: '',
+            branch: '',
+            is_public: false
+          },
+          content: {
+            files: [],
+            tree: [],
+            premium_files: [],
+            free_files: []
+          },
+          access: {
+            has_premium_access: false,
+            wallet_balance: 0,
+            premium_cost: 5,
+            can_afford_premium: false,
+            purchase_info: null
+          },
+          lab_config: {
+            title: '',
+            difficulty: 'beginner',
+            category: '',
+            tags: [],
+            pricing: {
+              base_price: 5,
+              difficulty_multiplier: 1.0,
+              final_price: 5
+            }
           }
         },
         error: error instanceof Error ? error.message : 'Failed to fetch lab content'
       };
     }
   }
+
 
   async refreshData(): Promise<BackendResponse> {
     return this.getAllData();

@@ -1,6 +1,6 @@
-import { LabContent } from '../types/lab';
+import { LegacyLabContent } from '../types/lab';
 
-export const sampleLabData: LabContent = {
+export const sampleLabData: LegacyLabContent = {
   labName: "Docker Container Management Lab",
   description: "Learn how to build, run, and manage Docker containers with practical examples. This lab covers basic Docker commands, Dockerfile creation, and container networking.",
   files: [
@@ -10,6 +10,8 @@ export const sampleLabData: LabContent = {
       type: "file",
       size: 2048,
       language: "markdown",
+      is_premium: false,
+      access_granted: true,
       content: `# Docker Container Management Lab
 
 ## Overview
@@ -53,6 +55,8 @@ Happy containerizing! 🐳`
       type: "file",
       size: 512,
       language: "dockerfile",
+      is_premium: false,
+      access_granted: true,
       content: `# Use Python 3.9 slim image as base
 FROM python:3.9-slim
 

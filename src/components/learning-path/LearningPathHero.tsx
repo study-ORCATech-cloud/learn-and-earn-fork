@@ -11,7 +11,7 @@ const LearningPathHero: React.FC<LearningPathHeroProps> = ({ learningPath }) => 
   return (
     <>
       <Link 
-        to="/" 
+        to="/learning-paths" 
         className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />

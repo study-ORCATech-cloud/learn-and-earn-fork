@@ -107,29 +107,20 @@ const SystemPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Settings className="w-6 h-6" />
-            System Management
-            {health && (
-              <Badge 
-                variant="secondary" 
-                className={cn(
-                  'border',
-                  health.status === 'healthy' 
-                    ? 'bg-green-900/20 border-green-500/30 text-green-400'
-                    : 'bg-red-900/20 border-red-500/30 text-red-400'
-                )}
-              >
-                {health.status?.toUpperCase()}
-              </Badge>
+      <div className="flex items-center justify-between mb-6">
+        {health && (
+          <Badge 
+            variant="secondary" 
+            className={cn(
+              'border',
+              health.status === 'healthy' 
+                ? 'bg-green-900/20 border-green-500/30 text-green-400'
+                : 'bg-red-900/20 border-red-500/30 text-red-400'
             )}
-          </h1>
-          <p className="text-slate-400">
-            Monitor system health and perform maintenance operations
-          </p>
-        </div>
+          >
+            {health.status?.toUpperCase()}
+          </Badge>
+        )}
 
         <div className="flex items-center gap-3">
           <Button

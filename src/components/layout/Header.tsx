@@ -6,6 +6,7 @@ import SearchBar from './SearchBar';
 import { useAuth } from '../../context/AuthContext';
 import { UserProfile } from '../auth/UserProfile';
 import { LoginModal } from '../auth/LoginModal';
+import WalletBalance from './WalletBalance';
 import { Button } from '@/components/ui/button';
 import { LogIn, Loader2 } from 'lucide-react';
 
@@ -26,7 +27,8 @@ const Header = () => {
     // Show user profile if authenticated
     if (isAuthenticated && user) {
       return (
-        <div className="flex items-center justify-end w-32">
+        <div className="flex items-center justify-end gap-3">
+          <WalletBalance />
           <UserProfile />
         </div>
       );

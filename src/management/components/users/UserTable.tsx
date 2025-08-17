@@ -1,7 +1,7 @@
 // User table component with advanced features
 
 import React, { useState } from 'react';
-import { Edit2, Eye, UserX, UserCheck, Shield, MoreHorizontal, ChevronDown } from 'lucide-react';
+import { Edit2, Eye, UserX, UserCheck, Shield, MoreHorizontal, ChevronDown, Coins } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUsers } from '../../hooks/useUsers';
 import { useRoles } from '../../hooks/useRoles';
@@ -12,6 +12,7 @@ import SearchInput from '../common/SearchInput';
 import BulkActionBar from '../common/BulkActionBar';
 import ChangeRoleDialog from './ChangeRoleDialog';
 import UserDetailsModal from './UserDetailsModal';
+import GrantCoinsDialog from './GrantCoinsDialog';
 import type { TableColumn, TableAction } from '../common/DataTable';
 import type { ManagementUser, UserFilters } from '../../types/user';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +40,8 @@ const UserTable: React.FC<UserTableProps> = ({
   const [selectedUserForRoleChange, setSelectedUserForRoleChange] = useState<ManagementUser | null>(null);
   const [userDetailsModalOpen, setUserDetailsModalOpen] = useState(false);
   const [selectedUserForDetails, setSelectedUserForDetails] = useState<ManagementUser | null>(null);
+  const [grantCoinsDialogOpen, setGrantCoinsDialogOpen] = useState(false);
+  const [selectedUserForCoins, setSelectedUserForCoins] = useState<ManagementUser | null>(null);
   const {
     users,
     isLoading,
@@ -144,6 +147,22 @@ const UserTable: React.FC<UserTableProps> = ({
   const handleCloseUserDetailsModal = () => {
     setUserDetailsModalOpen(false);
     setSelectedUserForDetails(null);
+  };
+
+  const handleOpenGrantCoinsDialog = (user: ManagementUser) => {
+    setSelectedUserForCoins(user);
+    setGrantCoinsDialogOpen(true);
+  };
+
+  const handleCloseGrantCoinsDialog = () => {
+    setGrantCoinsDialogOpen(false);
+    setSelectedUserForCoins(null);
+  };
+
+  const handleGrantCoinsSuccess = () => {
+    // Refresh could be added here if needed
+    // For now, just close the dialog
+    handleCloseGrantCoinsDialog();
   };
 
   // Define table columns
@@ -293,6 +312,14 @@ const UserTable: React.FC<UserTableProps> = ({
       onClick: handleOpenChangeRoleDialog,
       disabled: (user) => !management.canManageRole(user.role),
     },
+    {
+      key: 'grant_coins',
+      label: 'Grant Coins',
+      icon: <Coins className="w-4 h-4" />,
+      onClick: handleOpenGrantCoinsDialog,
+      disabled: (user) => !(management.currentUserRole === 'admin' || management.currentUserRole === 'owner'),
+      className: 'text-amber-400 hover:text-amber-300',
+    },
   ];
 
   if (error) {
@@ -411,6 +438,14 @@ const UserTable: React.FC<UserTableProps> = ({
         isOpen={userDetailsModalOpen}
         onClose={handleCloseUserDetailsModal}
         user={selectedUserForDetails}
+      />
+
+      {/* Grant Coins Dialog */}
+      <GrantCoinsDialog
+        isOpen={grantCoinsDialogOpen}
+        onClose={handleCloseGrantCoinsDialog}
+        user={selectedUserForCoins}
+        onSuccess={handleGrantCoinsSuccess}
       />
     </div>
   );

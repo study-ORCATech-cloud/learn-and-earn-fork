@@ -84,19 +84,10 @@ const UsersPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Users className="w-6 h-6" />
-            User Management
-            <Badge variant="secondary" className="bg-slate-700 text-slate-200">
-              {totalUsers} users
-            </Badge>
-          </h1>
-          <p className="text-slate-400">
-            Manage user accounts, roles, and permissions
-          </p>
-        </div>
+      <div className="flex items-center justify-between mb-6">
+        <Badge variant="secondary" className="bg-slate-700 text-slate-200">
+          {totalUsers} users
+        </Badge>
 
         <div className="flex items-center gap-3">
           <Button

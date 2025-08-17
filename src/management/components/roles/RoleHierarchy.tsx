@@ -182,7 +182,7 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
                         
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <h4 className="font-semibold text-lg capitalize">
+                            <h4 className="font-semibold text-lg capitalize text-white">
                               {role.name}
                             </h4>
                             
@@ -199,7 +199,7 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
                             )}
                           </div>
                           
-                          <div className="flex items-center gap-2 text-sm opacity-80">
+                          <div className="flex items-center gap-2 text-sm text-slate-300 opacity-80">
                             <span>Level {role.level.toLocaleString()}</span>
                             {index < sortedRoles.length - 1 && (
                               <>
@@ -219,7 +219,7 @@ const RoleHierarchy: React.FC<RoleHierarchyProps> = ({ className }) => {
                     </div>
 
                     {/* Role Description */}
-                    <div className="mt-3 ml-8 text-sm opacity-90">
+                    <div className="mt-3 ml-8 text-sm text-slate-300 opacity-90">
                       <p>{getRoleDescription(role.name)}</p>
                     </div>
 

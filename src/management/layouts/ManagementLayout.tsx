@@ -8,8 +8,12 @@ import {
   ChevronRight, 
   Home, 
   ArrowLeft,
-  Bell,
-  HelpCircle
+  HelpCircle,
+  Settings,
+  Coins,
+  BarChart3,
+  Shield,
+  Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +28,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useManagement } from '../context/ManagementContext';
 import ManagementSidebar from './ManagementSidebar';
+import HelpModal from '../components/common/HelpModal';
 
 interface BreadcrumbSegment {
   label: string;
@@ -40,6 +45,7 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({ children }) => {
   const management = useManagement();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [helpModalOpen, setHelpModalOpen] = useState(false);
 
   const generateBreadcrumbs = (): BreadcrumbSegment[] => {
     const pathSegments = location.pathname.split('/').filter(Boolean);
@@ -75,6 +81,14 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({ children }) => {
           breadcrumbs.push({ label: 'Roles', path: '/management/roles', isCurrentPage: true });
           break;
           
+        case 'analytics':
+          breadcrumbs.push({ label: 'Analytics', path: '/management/analytics', isCurrentPage: true });
+          break;
+          
+        case 'orca-coins':
+          breadcrumbs.push({ label: 'Orca Coins', path: '/management/orca-coins', isCurrentPage: true });
+          break;
+          
         case 'system':
           breadcrumbs.push({ label: 'System', path: '/management/system' });
           if (pathSegments[2] === 'health') {
@@ -99,6 +113,16 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({ children }) => {
   const breadcrumbs = generateBreadcrumbs();
   const currentPageTitle = breadcrumbs.find(b => b.isCurrentPage)?.label || 'Management';
 
+  const getPageIcon = () => {
+    const path = location.pathname;
+    if (path === '/management/system') return <Settings className="w-6 h-6" />;
+    if (path === '/management/orca-coins') return <Coins className="w-6 h-6" />;
+    if (path === '/management/analytics') return <BarChart3 className="w-6 h-6" />;
+    if (path === '/management/roles') return <Shield className="w-6 h-6" />;
+    if (path === '/management/users') return <Users className="w-6 h-6" />;
+    return null;
+  };
+
   const getPageDescription = () => {
     const path = location.pathname;
     const descriptions = {
@@ -106,6 +130,8 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({ children }) => {
       '/management/users': 'Manage users, roles, and permissions',
       '/management/users/create': 'Create a new user account',
       '/management/roles': 'View and manage role hierarchy and permissions',
+      '/management/analytics': 'Orca Coins economy and platform analytics',
+      '/management/orca-coins': 'Orca Coins transactions and management',
       '/management/system': 'System health monitoring and maintenance',
     };
     return descriptions[path] || 'Management system administration';
@@ -220,28 +246,14 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({ children }) => {
 
             {/* Header Actions */}
             <div className="flex items-center gap-3">
-              {/* Notifications */}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-slate-400 hover:text-white relative"
-              >
-                <Bell className="w-5 h-5" />
-                <Badge 
-                  variant="destructive" 
-                  className="absolute -top-1 -right-1 w-5 h-5 p-0 text-xs flex items-center justify-center"
-                >
-                  2
-                </Badge>
-              </Button>
-
               {/* Help */}
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-slate-400 hover:text-white"
+                onClick={() => setHelpModalOpen(true)}
+                className="text-slate-400 hover:bg-slate-800 hover:text-slate-300"
               >
-                <HelpCircle className="w-5 h-5" />
+                <HelpCircle className="w-5 h-5 text-slate-400 hover:text-slate-300" />
               </Button>
 
               {/* Return to App */}
@@ -262,7 +274,10 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({ children }) => {
         {/* Page Header */}
         <div className="bg-slate-900/50 border-b border-slate-700 px-6 py-4">
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold text-white">{currentPageTitle}</h1>
+            <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+              {getPageIcon()}
+              {currentPageTitle}
+            </h1>
             <p className="text-slate-400 text-sm">{getPageDescription()}</p>
           </div>
         </div>
@@ -294,6 +309,13 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({ children }) => {
           </div>
         </footer>
       </div>
+
+      {/* Help Modal */}
+      <HelpModal
+        isOpen={helpModalOpen}
+        onClose={() => setHelpModalOpen(false)}
+        currentPath={location.pathname}
+      />
     </div>
   );
 };

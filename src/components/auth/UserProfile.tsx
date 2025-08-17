@@ -18,7 +18,8 @@ import {
   Github, 
   Chrome,
   Loader2,
-  ChevronDown 
+  ChevronDown,
+  Wallet
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -49,6 +50,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className = '' }) => {
 
   const handleSettingsClick = () => {
     navigate('/settings');
+  };
+
+  const handleWalletClick = () => {
+    navigate('/wallet');
   };
 
   const handleLogout = async () => {
@@ -142,6 +147,14 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className = '' }) => {
           >
             <User className="w-4 h-4 mr-2" />
             Profile
+          </DropdownMenuItem>
+          
+          <DropdownMenuItem 
+            onClick={handleWalletClick}
+            className="text-slate-300 hover:bg-slate-800 focus:bg-slate-800 cursor-pointer"
+          >
+            <Wallet className="w-4 h-4 mr-2" />
+            Wallet
           </DropdownMenuItem>
           
           <DropdownMenuItem 

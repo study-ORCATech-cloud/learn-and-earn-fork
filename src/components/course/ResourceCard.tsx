@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Clock, Play, ExternalLink, Lock } from 'lucide-react';
+import { Clock, Play, ExternalLink, Lock, Coins } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -81,6 +81,21 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
               {resource.duration}
             </span>
             <span>{resource.type}</span>
+            {resource.type === 'lab' && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="flex items-center gap-1 text-amber-400">
+                      <Coins className="w-4 h-4" />
+                      Premium Available
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>This lab may contain premium content that requires Orca Coins</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
 
           {resource.tags.length > 0 && (
