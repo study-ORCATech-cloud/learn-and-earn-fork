@@ -1,0 +1,35 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write  # <-- this grants the GitHub Actions bot permission to write to the repo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          npm ci
+
+      - name: Build the project
+        run: |
+          npm run build
+        env:
+          VITE_BACKEND_BASE_PATH: ${{ secrets.VITE_BACKEND_BASE_PATH || 'https://engine.learn-and-earn.online' }}
+          VITE_APP_TITLE: ${{ secrets.VITE_APP_TITLE || 'ORCA Tech Learning Platform' }}
+          VITE_API_VERSION: ${{ secrets.VITE_API_VERSION || 'v1' }}
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
