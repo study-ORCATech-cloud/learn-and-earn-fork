@@ -66,16 +66,55 @@ class ApiService {
 
   async getLabContent(labUrl: string): Promise<LabContentResponse> {
     try {
-      const response = await this.fetchWithRetry(
+      // Make the request without retry for 403 errors
+      const response = await fetch(
         `${BASE_URL}/api/v1/lab/content`,
-        {
+        this.enhanceRequestWithAuth({
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'X-Lab-Url': labUrl
           }
-        }
+        })
       );
+
+      // Handle 403 Forbidden specifically
+      if (response.status === 403) {
+        return {
+          success: false,
+          data: undefined,
+          error: 'LAB_UNDER_CONSTRUCTION',
+          statusCode: 403
+        };
+      }
+
+      // Handle authentication errors
+      if (response.status === 401) {
+        await this.handleAuthError();
+        throw new Error('Authentication failed');
+      }
+
+      // For other errors, use the retry mechanism
+      if (!response.ok) {
+        const response = await this.fetchWithRetry(
+          `${BASE_URL}/api/v1/lab/content`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Lab-Url': labUrl
+            }
+          }
+        );
+        const data = await response.json();
+        
+        return {
+          success: true,
+          data: data.data || data,
+          error: undefined
+        };
+      }
+
       const data = await response.json();
       
       return {

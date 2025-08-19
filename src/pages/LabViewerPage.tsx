@@ -13,6 +13,7 @@ import { useBackendData } from '../context/BackendDataContext';
 import { useAuth } from '../context/AuthContext';
 import { useOrcaWallet } from '../context/OrcaWalletContext';
 import PurchaseConfirmationDialog from '../components/lab/PurchaseConfirmationDialog';
+import LabUnderConstruction from '../components/lab/LabUnderConstruction';
 import { useToast } from '@/hooks/use-toast';
 import { errorLoggingService } from '../services/errorLoggingService';
 
@@ -58,6 +59,7 @@ const LabViewerPage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<LabFile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isUnderConstruction, setIsUnderConstruction] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [showPurchaseDialog, setShowPurchaseDialog] = useState(false);
 
@@ -80,6 +82,7 @@ const LabViewerPage: React.FC = () => {
     try {
       setIsLoading(true);
       setError(null);
+      setIsUnderConstruction(false);
       
       const contentResponse = await apiService.getLabContent(labUrl);
       
@@ -98,6 +101,12 @@ const LabViewerPage: React.FC = () => {
           }
         }
       } else {
+        // Check if it's a 403 error (lab under construction)
+        if (contentResponse.statusCode === 403 || contentResponse.error === 'LAB_UNDER_CONSTRUCTION') {
+          setIsUnderConstruction(true);
+          return;
+        }
+        
         const errorMsg = contentResponse.error || 'Failed to load lab content';
         setError(errorMsg);
         
@@ -335,6 +344,20 @@ const LabViewerPage: React.FC = () => {
             <p className="text-slate-300">Loading lab content...</p>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  // Show lab under construction page for 403 errors
+  if (isUnderConstruction) {
+    return (
+      <div className="min-h-screen bg-slate-950">
+        <Header />
+        <LabUnderConstruction
+          courseName={course?.title}
+          courseId={courseId}
+          labName={labResource?.title}
+        />
       </div>
     );
   }

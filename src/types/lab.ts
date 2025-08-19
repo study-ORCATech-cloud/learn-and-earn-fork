@@ -55,6 +55,7 @@ export interface LabContent {
 
 export interface LabContentResponse {
   success: boolean;
-  data: LabContent;
+  data: LabContent | undefined;
   error?: string;
+  statusCode?: number;
 }
