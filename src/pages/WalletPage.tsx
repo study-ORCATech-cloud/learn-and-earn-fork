@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   Coins,
@@ -236,6 +236,28 @@ const WalletPage: React.FC = () => {
               </Card>
             </div>
           )}
+
+          {/* Get Orca Coins CTA */}
+          <div className="mb-6">
+            <Card className="bg-slate-900/50 border-slate-800">
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-center sm:text-left">
+                    <h3 className="text-lg font-semibold text-white mb-2">Need More Orca Coins?</h3>
+                    <p className="text-slate-300 text-sm">
+                      Get access to premium solutions, advanced tutorials, and exclusive content
+                    </p>
+                  </div>
+                  <Link to="/coins">
+                    <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600 transition-all duration-300">
+                      <Coins className="w-4 h-4 mr-2" />
+                      Get Orca Coins
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Tabs for different sections */}
           <Tabs defaultValue="transactions" className="w-full">

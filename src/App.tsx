@@ -20,6 +20,7 @@ import AuthCallbackPage from "./pages/AuthCallbackPage";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import WalletPage from "./pages/WalletPage";
+import GetOrcaCoinsPage from "./pages/GetOrcaCoinsPage";
 import { UserProgressProvider } from "./context/UserProgressContext";
 import { SearchProvider } from "./context/SearchContext";
 import { BackendDataProvider } from "./context/BackendDataContext";
@@ -40,6 +41,7 @@ import { SystemProvider } from "./management/context/SystemContext";
 import ManagementLayout from "./management/layouts/ManagementLayout";
 import ProtectedRoute from "./management/components/common/ProtectedRoute";
 import ErrorBoundary from "./management/components/common/ErrorBoundary";
+import Footer from "./components/layout/Footer";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +76,7 @@ const App = () => (
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/wallet" element={<WalletPage />} />
+                    <Route path="/coins" element={<GetOrcaCoinsPage />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/support" element={<SupportPage />} />
                     <Route path="/contact" element={<ContactPage />} />
@@ -111,6 +114,7 @@ const App = () => (
                     
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>
+                  <Footer />
                 </ScrollToTopWrapper>
               </Router>
               </TooltipProvider>

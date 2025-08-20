@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '../../context/AuthContext';
 import { Github, Chrome, Loader2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import TermsOfServiceModal from '../legal/TermsOfServiceModal';
+import PrivacyPolicyModal from '../legal/PrivacyPolicyModal';
+import GdprAgreementModal from '../legal/GdprAgreementModal';
+import CopyrightAgreementModal from '../legal/CopyrightAgreementModal';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -12,6 +16,10 @@ interface LoginModalProps {
 
 export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   const { login, isLoading, error, clearError } = useAuth();
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [showGdprModal, setShowGdprModal] = useState(false);
+  const [showCopyrightModal, setShowCopyrightModal] = useState(false);
 
   const handleLogin = (provider: 'google' | 'github') => {
     clearError();
@@ -86,8 +94,36 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           </div>
 
           <div className="text-center text-xs text-slate-400 space-y-1">
-            <p>By signing in, you agree to our Terms of Service</p>
-            <p>and Privacy Policy</p>
+            <p>
+              By signing in, you acknowledge and agree to our{' '}
+              <button
+                onClick={() => setShowTermsModal(true)}
+                className="text-blue-400 hover:text-blue-300 underline underline-offset-2 transition-colors"
+              >
+                Terms of Service
+              </button>
+              ,{' '}
+              <button
+                onClick={() => setShowPrivacyModal(true)}
+                className="text-blue-400 hover:text-blue-300 underline underline-offset-2 transition-colors"
+              >
+                Privacy Policy
+              </button>
+              ,{' '}
+              <button
+                onClick={() => setShowCopyrightModal(true)}
+                className="text-blue-400 hover:text-blue-300 underline underline-offset-2 transition-colors"
+              >
+                Copyright Agreement
+              </button>
+              {' '}and{' '}
+              <button
+                onClick={() => setShowGdprModal(true)}
+                className="text-blue-400 hover:text-blue-300 underline underline-offset-2 transition-colors"
+              >
+                GDPR Agreement
+              </button>
+            </p>
           </div>
         </div>
 
@@ -100,6 +136,27 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           </div>
         )}
       </DialogContent>
+
+      {/* Legal Document Modals */}
+      <TermsOfServiceModal
+        isOpen={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+      />
+      
+      <PrivacyPolicyModal
+        isOpen={showPrivacyModal}
+        onClose={() => setShowPrivacyModal(false)}
+      />
+
+      <GdprAgreementModal
+        isOpen={showGdprModal}
+        onClose={() => setShowGdprModal(false)}
+      />
+
+      <CopyrightAgreementModal
+        isOpen={showCopyrightModal}
+        onClose={() => setShowCopyrightModal(false)}
+      />
     </Dialog>
   );
 };

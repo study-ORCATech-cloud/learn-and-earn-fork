@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, Settings } from 'lucide-react';
+import { Menu, Settings, Coins } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import {
   DropdownMenu,
@@ -29,6 +29,7 @@ const Navigation = () => {
     { path: '/about', label: 'About' },
     { path: '/contact', label: 'Contact Us' },
     { path: '/support', label: 'Support Us' },
+    ...(isAuthenticated ? [{ path: '/coins', label: 'Get Orca Coins', icon: Coins }] : []),
   ];
   
   // Add management link for admin/moderator users

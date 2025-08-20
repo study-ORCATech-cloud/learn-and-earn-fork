@@ -17,9 +17,11 @@ const SupportPage = () => {
     },
     {
       name: 'Patreon',
-      description: 'One-time or recurring donations',
+      // description: 'One-time or recurring donations',
+      description: 'Coming soon',
       icon: Users,
-      url: 'https://patreon.com/ORCATechCloud',
+      // url: 'https://patreon.com/ORCATechCloud',
+      url: '',
       bgColor: 'from-orange-500 to-red-500',
       hoverColor: 'hover:from-orange-600 hover:to-red-600'
     },
@@ -54,8 +56,8 @@ const SupportPage = () => {
   return (
     <>
       <Helmet>
-        <title>Support ORCATech - Help Us Keep Learning Free</title>
-        <meta name="description" content="Support ORCATech's mission to provide free, high-quality tech education. Your donations help us maintain the platform and create new learning resources." />
+        <title>Support ORCATech - Help Us Keep Learning Accessible</title>
+        <meta name="description" content="Support ORCATech's mission to provide accessible, high-quality tech education. Your donations help us maintain the platform and create new learning resources." />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">
@@ -75,8 +77,8 @@ const SupportPage = () => {
               </span>
             </h1>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-              Help us keep ORCATech free and accessible for everyone. Your support enables us to 
-              maintain the platform, create new content, and build the future of tech education.
+              Help us keep ORCATech accessible for everyone. Your support enables us to 
+              maintain the platform, create new content, and keep core learning resources available to all.
             </p>
           </div>
         </section>
@@ -87,7 +89,7 @@ const SupportPage = () => {
             <div className="max-w-4xl mx-auto">
               <h2 className="text-4xl font-bold text-white mb-8 text-center">Your Impact</h2>
               <p className="text-lg text-slate-300 text-center mb-12">
-                Every donation, no matter the size, helps us continue our mission of democratizing tech education.
+                Every donation helps us continue providing accessible tech education while maintaining our free core content and labs.
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -115,9 +117,11 @@ const SupportPage = () => {
                 {donationOptions.map((option, index) => (
                   <a
                     key={index}
-                    href={option.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    {...(option.url && option.url.trim() !== '' && {
+                      href: option.url,
+                      target: "_blank",
+                      rel: "noopener noreferrer"
+                    })}
                     className={`block p-6 bg-gradient-to-r ${option.bgColor} rounded-lg ${option.hoverColor} transition-all duration-300 transform hover:scale-105`}
                   >
                     <div className="text-center">
@@ -159,16 +163,14 @@ const SupportPage = () => {
                 <div className="p-6 bg-slate-900/50 rounded-lg border border-slate-800">
                   <h3 className="text-2xl font-semibold text-white mb-4">Contribute Content</h3>
                   <p className="text-slate-300 mb-4">
-                    Help us create better learning materials by contributing to our open-source content repository.
+                    Help us create better learning materials by contributing to our content repository.
                   </p>
-                  <a 
-                    href="https://github.com/study-ORCATech-cloud"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link 
+                    to="/contact"
                     className="inline-block px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
                   >
-                    View on GitHub
-                  </a>
+                    Contact Us
+                  </Link>
                 </div>
               </div>
             </div>
@@ -180,8 +182,8 @@ const SupportPage = () => {
           <div className="container mx-auto text-center">
             <h2 className="text-4xl font-bold text-white mb-6">Thank You!</h2>
             <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-              Your support makes it possible for us to continue providing free, high-quality tech education 
-              to learners around the world. Together, we're building the future of learning.
+              Your support makes it possible for us to continue providing high-quality tech education 
+              to learners around the world. Core labs remain free, while premium content helps sustain our platform.
             </p>
             <div className="flex justify-center">
               <Link to="/">
