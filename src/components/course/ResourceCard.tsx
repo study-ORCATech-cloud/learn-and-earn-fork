@@ -20,19 +20,24 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleLabStart = () => {
-    if (resource.type === 'lab') {
-      // Check authentication for labs
+    if (resource.type === 'lab' || resource.type === 'article') {
+      // Check authentication for labs and articles
       if (!isAuthenticated) {
         setShowLoginModal(true);
         return;
       }
       
-      // Navigate to the new lab path structure
+      // Navigate to the appropriate viewer
       const courseId = course.id;
-      const labId = resource.id;
-      navigate(`/course/${courseId}/lab/${labId}`);
+      const resourceId = resource.id;
+      
+      if (resource.type === 'lab') {
+        navigate(`/course/${courseId}/lab/${resourceId}`);
+      } else if (resource.type === 'article') {
+        navigate(`/course/${courseId}/article/${resourceId}`);
+      }
     } else {
-      // For non-lab resources, open external link
+      // For other resource types (video, etc.), open external link
       window.open(resource.url, '_blank', 'noopener,noreferrer');
     }
   };
@@ -57,10 +62,10 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
   };
 
   return (
-    <Card className="p-6 bg-slate-900/50 border-slate-800 hover:border-slate-700 transition-colors">
-      <div className="flex items-start gap-4">
+    <Card className="p-6 bg-slate-900/50 border-slate-800 hover:border-slate-700 transition-colors h-full flex flex-col">
+      <div className="flex items-start gap-4 flex-1">
         <div className="text-2xl">{getTypeIcon(resource.type)}</div>
-        <div className="flex-1">
+        <div className="flex-1 flex flex-col h-full">
           <div className="flex items-start justify-between mb-3">
             <div>
               <h3 className="text-xl font-semibold text-white mb-2">
@@ -81,7 +86,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
               {resource.duration}
             </span>
             <span>{resource.type}</span>
-            {resource.type === 'lab' && (
+            {/* {resource.type === 'lab' && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -95,7 +100,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            )}
+            )} */}
           </div>
 
           {resource.tags.length > 0 && (
@@ -108,36 +113,42 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
             </div>
           )}
 
-          {resource.type === 'lab' && !isAuthenticated ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="inline-block">
-                    <Button 
-                      onClick={handleLabStart}
-                      className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 cursor-pointer"
-                    >
-                      <Lock className="w-4 h-4 mr-1" />
-                      <Play className="w-4 h-4" />
-                      Start {resource.type}
-                    </Button>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent className="bg-slate-800 border-slate-700">
-                  <p className="text-slate-200">Please sign in to access labs</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            <Button 
-              onClick={handleLabStart}
-              className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
-            >
-              <Play className="w-4 h-4" />
-              Start {resource.type}
-              {resource.type !== 'lab' && <ExternalLink className="w-4 h-4" />}
-            </Button>
-          )}
+          {/* Spacer to push button to bottom */}
+          <div className="flex-1"></div>
+
+          {/* Button section - always at bottom */}
+          <div className="mt-4">
+            {(resource.type === 'lab' || resource.type === 'article') && !isAuthenticated ? (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="inline-block">
+                      <Button 
+                        onClick={handleLabStart}
+                        className="w-full bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 cursor-pointer"
+                      >
+                        <Lock className="w-4 h-4 mr-1" />
+                        <Play className="w-4 h-4" />
+                        Start {resource.type}
+                      </Button>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-slate-800 border-slate-700">
+                    <p className="text-slate-200">Please sign in to access this content</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <Button 
+                onClick={handleLabStart}
+                className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
+              >
+                <Play className="w-4 h-4" />
+                Start {resource.type}
+                {resource.type !== 'lab' && <ExternalLink className="w-4 h-4" />}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
       

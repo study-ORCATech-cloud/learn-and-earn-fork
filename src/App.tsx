@@ -72,6 +72,7 @@ const App = () => (
                     <Route path="/learning-path/:pathId" element={<LearningPathPage />} />
                     <Route path="/course/:courseId" element={<CoursePage />} />
                     <Route path="/course/:courseId/lab/:labId" element={<LabViewerPage />} />
+                    <Route path="/course/:courseId/article/:articleId" element={<LabViewerPage />} />
                     <Route path="/auth/callback" element={<AuthCallbackPage />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/settings" element={<Settings />} />

@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Coins, Lock, AlertTriangle, Loader2 } from 'lucide-react';
+import { Coins, Lock, AlertTriangle, Loader2, Plus } from 'lucide-react';
 import { useOrcaWallet } from '../../context/OrcaWalletContext';
 import { PurchaseRequest } from '../../types/orcaCoins';
 
@@ -26,6 +26,7 @@ interface PurchaseConfirmationDialogProps {
   };
   isPurchasing: boolean;
   purchaseError: string | null;
+  onGetMoreCoins?: () => void;
 }
 
 const PurchaseConfirmationDialog: React.FC<PurchaseConfirmationDialogProps> = ({
@@ -34,7 +35,8 @@ const PurchaseConfirmationDialog: React.FC<PurchaseConfirmationDialogProps> = ({
   onConfirm,
   labData,
   isPurchasing,
-  purchaseError
+  purchaseError,
+  onGetMoreCoins
 }) => {
   const { balance, canAffordLab, formatCoins } = useOrcaWallet();
 
@@ -148,7 +150,7 @@ const PurchaseConfirmationDialog: React.FC<PurchaseConfirmationDialogProps> = ({
           </div>
         </div>
 
-        <DialogFooter>
+        <div className="flex justify-between items-center pt-6">
           <Button
             variant="outline"
             onClick={onClose}
@@ -157,24 +159,34 @@ const PurchaseConfirmationDialog: React.FC<PurchaseConfirmationDialogProps> = ({
           >
             Cancel
           </Button>
-          <Button
-            onClick={onConfirm}
-            disabled={!canAfford || isPurchasing}
-            className="bg-amber-600 hover:bg-amber-700 text-white"
-          >
-            {isPurchasing ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Purchasing...
-              </>
-            ) : (
-              <>
-                <Coins className="w-4 h-4 mr-2" />
-                Purchase for {labData.cost} Coins
-              </>
-            )}
-          </Button>
-        </DialogFooter>
+          {canAfford ? (
+            <Button
+              onClick={onConfirm}
+              disabled={isPurchasing}
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+            >
+              {isPurchasing ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Purchasing...
+                </>
+              ) : (
+                <>
+                  <Coins className="w-4 h-4 mr-2" />
+                  Purchase for {labData.cost} Coins
+                </>
+              )}
+            </Button>
+          ) : (
+            <Button
+              onClick={onGetMoreCoins || (() => window.open('/coins', '_blank'))}
+              className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Get More Coins
+            </Button>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

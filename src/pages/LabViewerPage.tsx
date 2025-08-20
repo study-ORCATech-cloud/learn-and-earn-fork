@@ -36,7 +36,11 @@ const combineLabFiles = (labContent: LabContent | null): LabFile[] => {
 };
 
 const LabViewerPage: React.FC = () => {
-  const { courseId, labId } = useParams<{ courseId: string; labId: string }>();
+  const { courseId, labId, articleId } = useParams<{ courseId: string; labId?: string; articleId?: string }>();
+  
+  // Determine content type and ID
+  const contentType = labId ? 'lab' : 'article';
+  const contentId = labId || articleId;
   const { data } = useBackendData();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { 
@@ -50,10 +54,10 @@ const LabViewerPage: React.FC = () => {
   
   // Find the course and lab resource
   const course = data.courses.find(c => c.id === courseId);
-  const labResource = course?.resources?.find(r => r.id === labId && r.type === 'lab') ||
-                     course?.resourceGroups?.flatMap(g => g.resources).find(r => r.id === labId && r.type === 'lab');
+  const contentResource = course?.resources?.find(r => r.id === contentId && r.type === contentType) ||
+                         course?.resourceGroups?.flatMap(g => g.resources).find(r => r.id === contentId && r.type === contentType);
   
-  const labUrl = labResource?.url || '';
+  const contentUrl = contentResource?.url || '';
   const navigate = useNavigate();
   const [labContent, setLabContent] = useState<LabContent | null>(null);
   const [selectedFile, setSelectedFile] = useState<LabFile | null>(null);
@@ -73,8 +77,8 @@ const LabViewerPage: React.FC = () => {
 
   // Fetch lab content and access info
   const fetchLabData = async () => {
-    if (!labUrl || !labResource) {
-      setError('Lab not found or invalid lab configuration');
+    if (!contentUrl || !contentResource) {
+      setError(`${contentType === 'lab' ? 'Lab' : 'Article'} not found or invalid ${contentType} configuration`);
       setIsLoading(false);
       return;
     }
@@ -84,7 +88,7 @@ const LabViewerPage: React.FC = () => {
       setError(null);
       setIsUnderConstruction(false);
       
-      const contentResponse = await apiService.getLabContent(labUrl);
+      const contentResponse = await apiService.getLabContent(contentUrl);
       
       if (contentResponse.success && contentResponse.data) {
         setLabContent(contentResponse.data);
@@ -92,12 +96,16 @@ const LabViewerPage: React.FC = () => {
         // Auto-select the main instruction file if it exists
         const allFiles = combineLabFiles(contentResponse.data);
         if (allFiles.length > 0) {
-          const mainFile = allFiles.find(f => 
-            f.name.toLowerCase().includes('readme') || 
-            f.name.toLowerCase().includes('instruction')
-          );
-          if (mainFile) {
-            setSelectedFile(mainFile);
+          if (allFiles.length === 1) {
+            setSelectedFile(allFiles[0]);
+          } else {
+            const mainFile = allFiles.find(f => 
+              f.name.toLowerCase().includes('readme') || 
+              f.name.toLowerCase().includes('instruction')
+            );
+            if (mainFile) {
+              setSelectedFile(mainFile);
+            }
           }
         }
       } else {
@@ -115,9 +123,9 @@ const LabViewerPage: React.FC = () => {
         errorLoggingService.logError(apiError, undefined, {
           action: 'fetch_lab_content_api_error',
           metadata: {
-            lab_url: labUrl,
+            lab_url: contentUrl,
             course_id: courseId,
-            lab_id: labId,
+            lab_id: contentId,
             api_response: contentResponse,
             timestamp: new Date().toISOString()
           }
@@ -133,9 +141,9 @@ const LabViewerPage: React.FC = () => {
       errorLoggingService.logError(errorToLog, undefined, {
         action: 'fetch_lab_content',
         metadata: {
-          lab_url: labUrl,
+          lab_url: contentUrl,
           course_id: courseId,
-          lab_id: labId,
+          lab_id: contentId,
           timestamp: new Date().toISOString()
         }
       }).catch(logErr => {
@@ -152,7 +160,7 @@ const LabViewerPage: React.FC = () => {
     if (!authLoading && isAuthenticated) {
       fetchLabData();
     }
-  }, [labUrl, labResource, authLoading, isAuthenticated]);
+  }, [contentUrl, contentResource, authLoading, isAuthenticated]);
 
   // Early return for non-authenticated users (after all hooks)
   if (!authLoading && !isAuthenticated) {
@@ -185,12 +193,12 @@ const LabViewerPage: React.FC = () => {
   };
 
   const handlePurchaseConfirm = async () => {
-    if (!labContent || !labResource) return;
+    if (!labContent || !contentResource) return;
 
     const purchaseData: PurchaseRequest = {
-      lab_url: labUrl,
+      lab_url: contentUrl,
       lab_title: labContent.lab_info?.title || 'Lab',
-      lab_description: labResource?.description || '',
+      lab_description: contentResource?.description || '',
       lab_difficulty: labContent.lab_info?.difficulty || 'beginner',
       lab_category: labContent.lab_info?.category || 'programming',
       lab_tags: labContent.lab_info?.tags || []
@@ -356,7 +364,7 @@ const LabViewerPage: React.FC = () => {
         <LabUnderConstruction
           courseName={course?.title}
           courseId={courseId}
-          labName={labResource?.title}
+          labName={contentResource?.title}
         />
       </div>
     );
@@ -369,8 +377,8 @@ const LabViewerPage: React.FC = () => {
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
             <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-white mb-2">Lab Not Found</h1>
-            <p className="text-slate-300 mb-4">{error || 'The requested lab could not be loaded.'}</p>
+            <h1 className="text-2xl font-bold text-white mb-2">{contentType === 'lab' ? 'Lab' : 'Article'} Not Found</h1>
+            <p className="text-slate-300 mb-4">{error || `The requested ${contentType} could not be loaded.`}</p>
             <Button onClick={() => navigate(-1)} variant="outline">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Go Back
@@ -389,7 +397,7 @@ const LabViewerPage: React.FC = () => {
     <>
       <Helmet>
         <title>{labContent?.lab_info?.title || 'Lab Viewer'}</title>
-        <meta name="description" content={labResource?.description || 'Lab content viewer'} />
+        <meta name="description" content={contentResource?.description || `${contentType} content viewer`} />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">
@@ -438,7 +446,7 @@ const LabViewerPage: React.FC = () => {
             <div className="flex items-center gap-2 text-sm text-slate-400 mb-4">
               <span>{course?.title}</span>
               <span>›</span>
-              <span>{labResource?.title || 'Lab'}</span>
+              <span>{contentResource?.title || contentType}</span>
             </div>
             
             <div className="flex items-center gap-3 mb-4">
@@ -450,7 +458,7 @@ const LabViewerPage: React.FC = () => {
               )}
             </div>
             
-            <p className="text-slate-300 text-lg mb-4">{labResource?.description || 'Lab description not available'}</p>
+            <p className="text-slate-300 text-lg mb-4">{contentResource?.description || `${contentType} description not available`}</p>
             
             {/* Premium Access Section */}
             {hasPremiumFiles && !hasAccess && (
@@ -612,11 +620,12 @@ const LabViewerPage: React.FC = () => {
             title: labContent.lab_info?.title || 'Lab',
             difficulty: labContent.lab_info?.difficulty || 'beginner',
             cost: labCost,
-            description: labResource?.description || '',
+            description: contentResource?.description || '',
             premiumFilesCount: labContent.content?.premium_files_count
           }}
           isPurchasing={isPurchasing}
           purchaseError={purchaseError}
+          onGetMoreCoins={() => navigate('/coins')}
         />
       )}
     </>
