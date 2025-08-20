@@ -145,7 +145,6 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
               >
                 <Play className="w-4 h-4" />
                 Start {resource.type}
-                {resource.type !== 'lab' && <ExternalLink className="w-4 h-4" />}
               </Button>
             )}
           </div>
