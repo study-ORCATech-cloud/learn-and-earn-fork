@@ -48,6 +48,12 @@ const newsItems: NewsItem[] = [
     description: 'We\'re excited to announce that ORCATech Learning Platform will be going live in August 2025. Get ready for comprehensive hands-on learning experiences in DevOps, Cloud Computing, and Programming.',
     date: '2025-07-26',
     category: 'announcement'
+  },
+  {
+    title: '🎉 ORCATech Learning Platform is Now Live!',
+    description: 'We\'re thrilled to announce that the ORCATech Learning Platform is officially live! Start your Tech journey today with our comprehensive hands-on labs, interactive courses, and real-world projects. Welcome to the future of technical education!',
+    date: '2025-08-21',
+    category: 'announcement'
   }
 ];
 
