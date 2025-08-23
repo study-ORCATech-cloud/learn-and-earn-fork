@@ -426,7 +426,7 @@ const Logo = () => {
     <Link to="/" className="flex items-center space-x-2">
       {/* Image logo */}
       <img 
-        src="/assets/your-logo.png" 
+        src="/resources/your-logo.png" 
         alt="Your Brand" 
         className="h-8 w-auto"
       />
@@ -468,8 +468,8 @@ const Logo = () => {
 Update `index.html`:
 
 ```html
-<link rel="icon" href="/assets/your-favicon.png" type="image/png">
-<link rel="apple-touch-icon" href="/assets/your-apple-touch-icon.png">
+<link rel="icon" href="/resources/your-favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/resources/your-apple-touch-icon.png">
 ```
 
 ## Dark Mode Configuration
