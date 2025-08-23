@@ -16,7 +16,7 @@ class ManagementApiService {
   private timeout: number;
 
   constructor() {
-    this.baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+    this.baseUrl = import.meta.env.VITE_BACKEND_BASE_PATH || 'http://localhost:5000';
     this.timeout = parseInt(import.meta.env.VITE_MANAGEMENT_API_TIMEOUT || '30000');
   }
 
