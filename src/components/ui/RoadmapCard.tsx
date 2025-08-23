@@ -59,11 +59,13 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({ item, className = '' }) => {
       <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5 hover:opacity-10 transition-opacity duration-300`} />
       
       {/* Priority Badge */}
+      {priority && (
       <div className="absolute top-4 right-4 z-10">
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(priority)}`}>
           {priority}
         </span>
       </div>
+      )}
 
       <div className="p-6 flex flex-col flex-1">
         {/* Header */}
@@ -83,10 +85,12 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({ item, className = '' }) => {
 
         {/* Stats */}
         <div className="flex items-center gap-4 mb-4 text-sm text-slate-400">
+          {topicCount && (
           <div className="flex items-center gap-1">
             <BookOpen className="w-4 h-4" />
             {type === 'course' ? `${topicCount} Estimated topics` : `${topicCount} Estimated deliverables`}
           </div>
+          )}
           <div className="flex items-center gap-1">
             <Calendar className="w-4 h-4" />
             {plannedReleaseDate}
@@ -116,9 +120,11 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({ item, className = '' }) => {
         {/* Bottom section */}
         <div className="flex items-center justify-between mt-auto">
           <div className="flex items-center gap-2">
-            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getDifficultyColor(difficulty)}`}>
-              {difficulty}
-            </span>
+            {difficulty && (
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${getDifficultyColor(difficulty)}`}>
+                {difficulty}
+              </span>
+            )}
             <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(status)}`}>
               {status}
             </span>

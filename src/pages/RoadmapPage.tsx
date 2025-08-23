@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
-import { Filter, Search, Calendar, TrendingUp, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
+import { Filter, Search, Calendar, TrendingUp, BookOpen, ChevronDown, ChevronUp, Zap } from 'lucide-react';
 import Header from '../components/layout/Header';
 import RoadmapCard from '../components/ui/RoadmapCard';
 import { useBackendData } from '../context/BackendDataContext';
@@ -29,6 +29,7 @@ const RoadmapPage = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [coursesExpanded, setCoursesExpanded] = useState(false);
   const [projectsExpanded, setProjectsExpanded] = useState(false);
+  const [featuresExpanded, setFeaturesExpanded] = useState(false);
 
   const filteredCourses = data.roadmapItems.filter(item => {
     const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
@@ -52,6 +53,18 @@ const RoadmapPage = () => {
     const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
     
     return matchesCategory && matchesSearch && matchesPriority && matchesStatus && item.type === 'project';
+  });
+
+  const filteredFeatures = data.roadmapItems.filter(item => {
+    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+    const matchesSearch = !searchTerm || 
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesPriority = priorityFilter === 'all' || item.priority === priorityFilter;
+    const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+    
+    return matchesCategory && matchesSearch && matchesPriority && matchesStatus && item.type === 'feature';
   });
 
   const totalEstimatedTopics = data.roadmapItems.reduce((sum, item) => sum + (item.type === 'course' ? item.topicCount : 0), 0) || 0;
@@ -118,6 +131,10 @@ const RoadmapPage = () => {
               <div className="bg-slate-800/50 rounded-lg p-4 min-w-[120px]">
                 <div className="text-2xl font-bold text-green-400">{data.roadmapItems.filter(item => item.type === 'project').length || 0}</div>
                 <div className="text-sm text-slate-400">Planned Projects</div>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg p-4 min-w-[120px]">
+                <div className="text-2xl font-bold text-orange-400">{data.roadmapItems.filter(item => item.type === 'feature').length || 0}</div>
+                <div className="text-sm text-slate-400">Planned Features</div>
               </div>
               <div className="bg-slate-800/50 rounded-lg p-4 min-w-[120px]">
                 <div className="text-2xl font-bold text-purple-400">{totalEstimatedTopics}</div>
@@ -263,6 +280,48 @@ const RoadmapPage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {filteredProjects.map((project) => (
                       <RoadmapCard key={project.id} item={project} />
+                    ))}
+                  </div>
+                )}
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* Features Section */}
+            <Collapsible open={featuresExpanded} onOpenChange={setFeaturesExpanded}>
+              <CollapsibleTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="flex items-center justify-between w-full p-6 bg-slate-900/50 border border-slate-800 rounded-lg hover:bg-slate-800/50 text-left"
+                >
+                  <div className="flex items-center gap-4">
+                    <Zap className="w-6 h-6 text-orange-400" />
+                    <div>
+                      <h2 className="text-2xl font-bold text-white">Planned Features</h2>
+                      <p className="text-slate-400 text-sm">
+                        {filteredFeatures.length} feature{filteredFeatures.length !== 1 ? 's' : ''} planned for development
+                      </p>
+                    </div>
+                  </div>
+                  {featuresExpanded ? (
+                    <ChevronUp className="w-5 h-5 text-slate-400" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-slate-400" />
+                  )}
+                </Button>
+              </CollapsibleTrigger>
+              
+              <CollapsibleContent className="mt-6">
+                {filteredFeatures.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="text-slate-400 text-lg">No features found matching your filters.</div>
+                    <div className="text-slate-500 text-sm mt-2">
+                      Check back soon - we're constantly adding new features to enhance your learning experience!
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {filteredFeatures.map((feature) => (
+                      <RoadmapCard key={feature.id} item={feature} />
                     ))}
                   </div>
                 )}

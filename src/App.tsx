@@ -21,6 +21,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import WalletPage from "./pages/WalletPage";
 import GetOrcaCoinsPage from "./pages/GetOrcaCoinsPage";
+import LabIDEPage from "./pages/LabIDEPage";
 import { UserProgressProvider } from "./context/UserProgressContext";
 import { SearchProvider } from "./context/SearchContext";
 import { BackendDataProvider } from "./context/BackendDataContext";
@@ -73,6 +74,8 @@ const App = () => (
                     <Route path="/course/:courseId" element={<CoursePage />} />
                     <Route path="/course/:courseId/lab/:labId" element={<LabViewerPage />} />
                     <Route path="/course/:courseId/article/:articleId" element={<LabViewerPage />} />
+                    <Route path="/course/:courseId/lab/:labId/ide" element={<LabIDEPage />} />
+                    <Route path="/course/:courseId/article/:articleId/ide" element={<LabIDEPage />} />
                     <Route path="/auth/callback" element={<AuthCallbackPage />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/settings" element={<Settings />} />

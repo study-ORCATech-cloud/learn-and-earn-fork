@@ -1,0 +1,598 @@
+ANALYTICS & ADMIN DASHBOARD API DOCUMENTATION
+===============================================
+
+This document describes all the Analytics and Admin Dashboard API endpoints for monitoring,
+business intelligence, and administrative operations in the Orca Coins system.
+
+BASE URL: /api/analytics
+AUTHENTICATION: JWT token required
+AUTHORIZATION: Admin/Owner role required for all endpoints
+
+===============================================
+1. DASHBOARD OVERVIEW
+===============================================
+
+ENDPOINT: GET /api/analytics/dashboard/overview
+DESCRIPTION: Get comprehensive dashboard overview with key metrics and trends
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Admin/Owner role required
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <admin_jwt_token>
+- Body: None
+- Query Parameters: None
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "data": {
+    "date": "2025-08-14",
+    "today_metrics": {
+      "total_users": 150,
+      "new_users": 12,
+      "active_users": 45,
+      "total_coins_in_circulation": 2500,
+      "coins_granted_today": 60,
+      "coins_spent_today": 85,
+      "welcome_bonuses_given": 12,
+      "total_lab_purchases": 17,
+      "unique_labs_accessed": 23,
+      "total_lab_accesses": 156
+    },
+    "yesterday_metrics": {
+      "total_users": 138,
+      "new_users": 8,
+      "active_users": 38,
+      "coins_spent_today": 65,
+      "total_lab_purchases": 13
+    },
+    "changes": {
+      "total_users": {
+        "value": 150,
+        "change": 8.7,
+        "direction": "up"
+      },
+      "new_users": {
+        "value": 12,
+        "change": 50.0,
+        "direction": "up"
+      },
+      "coins_spent_today": {
+        "value": 85,
+        "change": 30.8,
+        "direction": "up"
+      }
+    },
+    "top_labs": [
+      {
+        "lab_url": "https://github.com/...",
+        "lab_title": "Python Basics",
+        "lab_difficulty": "beginner",
+        "total_revenue": 125,
+        "total_purchases": 25,
+        "completion_rate": 78.5,
+        "user_rating_average": 4.3
+      }
+    ],
+    "user_overview": {
+      "total_users": 150,
+      "total_wallets": 150,
+      "average_balance": 16.67
+    },
+    "recent_transactions": [
+      {
+        "id": "transaction-uuid",
+        "user_id": "user-uuid",
+        "transaction_type": "LAB_PURCHASE",
+        "amount": -10,
+        "description": "Purchased premium access: Docker Intermediate",
+        "created_at": "2025-08-14T15:45:00Z"
+      }
+    ]
+  }
+}
+
+===============================================
+2. REVENUE ANALYTICS
+===============================================
+
+ENDPOINT: GET /api/analytics/revenue
+DESCRIPTION: Get detailed revenue analytics with breakdowns and trends
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Admin/Owner role required
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <admin_jwt_token>
+- Query Parameters:
+  - days: Number of days to analyze (default: 30, max: 365)
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "data": {
+    "period_days": 30,
+    "total_revenue": 1250,
+    "daily_revenue": [
+      {
+        "date": "2025-08-14",
+        "revenue": 85
+      },
+      {
+        "date": "2025-08-13",
+        "revenue": 65
+      }
+    ],
+    "revenue_by_difficulty": [
+      {
+        "difficulty": "beginner",
+        "revenue": 500,
+        "purchases": 100
+      },
+      {
+        "difficulty": "intermediate",
+        "revenue": 600,
+        "purchases": 60
+      },
+      {
+        "difficulty": "professional",
+        "revenue": 150,
+        "purchases": 10
+      }
+    ],
+    "revenue_by_category": [
+      {
+        "category": "programming",
+        "revenue": 750,
+        "purchases": 95
+      },
+      {
+        "category": "devops",
+        "revenue": 400,
+        "purchases": 55
+      },
+      {
+        "category": "cloud",
+        "revenue": 100,
+        "purchases": 20
+      }
+    ]
+  }
+}
+
+===============================================
+3. USER BEHAVIOR ANALYTICS
+===============================================
+
+ENDPOINT: GET /api/analytics/users
+DESCRIPTION: Get user behavior analytics and lifecycle insights
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Admin/Owner role required
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <admin_jwt_token>
+- Query Parameters:
+  - days: Number of days to analyze (default: 30, max: 365)
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "data": {
+    "period_days": 30,
+    "lifecycle_distribution": [
+      {
+        "stage": "new",
+        "count": 45
+      },
+      {
+        "stage": "active",
+        "count": 78
+      },
+      {
+        "stage": "at_risk",
+        "count": 18
+      },
+      {
+        "stage": "churned",
+        "count": 9
+      }
+    ],
+    "spending_patterns": [
+      {
+        "pattern": "conservative",
+        "count": 89
+      },
+      {
+        "pattern": "moderate",
+        "count": 45
+      },
+      {
+        "pattern": "heavy",
+        "count": 16
+      }
+    ],
+    "at_risk_users": 18,
+    "conversion_metrics": {
+      "new_users": 45,
+      "users_with_purchases": 12,
+      "conversion_rate": 26.7
+    }
+  }
+}
+
+===============================================
+4. LAB PERFORMANCE ANALYTICS
+===============================================
+
+ENDPOINT: GET /api/analytics/labs/performance
+DESCRIPTION: Get detailed lab performance metrics and rankings
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Admin/Owner role required
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <admin_jwt_token>
+- Query Parameters:
+  - limit: Number of labs to return (default: 50, max: 200)
+  - sort: Sort by metric (total_revenue, total_purchases, completion_rate, user_rating_average)
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "data": {
+    "labs": [
+      {
+        "id": "lab-metrics-uuid",
+        "lab_url": "https://github.com/...",
+        "lab_title": "Python Basics Variables",
+        "lab_difficulty": "beginner",
+        "lab_category": "programming",
+        "current_price": 5,
+        "total_purchases": 25,
+        "total_revenue": 125,
+        "total_accesses": 78,
+        "unique_users_accessed": 45,
+        "completion_rate": 76.5,
+        "user_rating_average": 4.2,
+        "user_rating_count": 18,
+        "first_purchase_at": "2025-07-15T10:30:00Z",
+        "last_purchase_at": "2025-08-14T15:45:00Z",
+        "last_access_at": "2025-08-14T16:20:00Z"
+      }
+    ],
+    "summary": {
+      "total_labs_tracked": 156,
+      "average_revenue_per_lab": 8.2,
+      "average_purchases_per_lab": 2.1,
+      "average_completion_rate": 68.4
+    },
+    "sort_by": "total_revenue",
+    "limit": 50
+  }
+}
+
+===============================================
+5. SYSTEM HEALTH MONITORING
+===============================================
+
+ENDPOINT: GET /api/analytics/system/health
+DESCRIPTION: Get system health metrics and performance indicators
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Admin/Owner role required
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <admin_jwt_token>
+- Body: None
+- Query Parameters: None
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "data": {
+    "cache_performance": {
+      "labs_cache": {
+        "is_cached": true,
+        "total_labs": 326,
+        "cached_at": "2025-08-14T19:07:26.812128",
+        "is_valid": true
+      },
+      "data_cache": {
+        "is_cached": true,
+        "cache_enabled": true,
+        "max_age_hours": 0,
+        "total_entries": 57
+      }
+    },
+    "database_metrics": {
+      "total_users": 150,
+      "total_wallets": 150,
+      "total_transactions": 345,
+      "total_purchases": 89
+    },
+    "recent_activity_24h": {
+      "new_users": 12,
+      "new_transactions": 23,
+      "new_purchases": 17
+    },
+    "coins_economy": {
+      "total_coins_in_circulation": 2500,
+      "total_coins_spent": 1280,
+      "total_coins_earned": 3780,
+      "coins_velocity": 0.34
+    },
+    "timestamp": "2025-08-14T19:30:45.123456"
+  }
+}
+
+===============================================
+6. AT-RISK USERS IDENTIFICATION
+===============================================
+
+ENDPOINT: GET /api/analytics/users/at-risk
+DESCRIPTION: Get users with high churn probability for retention efforts
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Admin/Owner role required
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <admin_jwt_token>
+- Query Parameters:
+  - threshold: Risk score threshold (default: 0.7, range: 0-1)
+  - limit: Number of users to return (default: 50, max: 200)
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "data": {
+    "at_risk_users": [
+      {
+        "id": "user-uuid",
+        "email": "user@example.com",
+        "name": "John Doe",
+        "role": "user",
+        "created_at": "2025-07-01T10:30:00Z",
+        "behavior_metrics": {
+          "user_id": "user-uuid",
+          "total_labs_purchased": 0,
+          "total_coins_spent": 0,
+          "total_coins_earned": 5,
+          "last_activity_at": "2025-07-05T14:20:00Z",
+          "user_stage": "at_risk",
+          "risk_score": 0.8,
+          "spending_pattern": "conservative"
+        }
+      }
+    ],
+    "total_at_risk": 18,
+    "threshold": 0.7
+  }
+}
+
+===============================================
+7. CALCULATE DAILY METRICS
+===============================================
+
+ENDPOINT: POST /api/analytics/daily-metrics/calculate
+DESCRIPTION: Manually trigger daily metrics calculation for a specific date
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Admin/Owner role required
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <admin_jwt_token>
+  Content-Type: application/json
+- Body (Optional):
+{
+  "date": "2025-08-14"  // YYYY-MM-DD format, defaults to today
+}
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "message": "Daily metrics calculated for 2025-08-14",
+  "data": {
+    "id": "daily-metrics-uuid",
+    "date": "2025-08-14",
+    "total_users": 150,
+    "new_users": 12,
+    "active_users": 45,
+    "total_coins_in_circulation": 2500,
+    "coins_granted_today": 60,
+    "coins_spent_today": 85,
+    "welcome_bonuses_given": 12,
+    "total_lab_purchases": 17,
+    "unique_labs_accessed": 23,
+    "total_lab_accesses": 156,
+    "created_at": "2025-08-14T19:30:45Z",
+    "updated_at": "2025-08-14T19:30:45Z"
+  }
+}
+
+===============================================
+8. BULK GRANT ORCA COINS
+===============================================
+
+ENDPOINT: POST /api/analytics/bulk-operations/grant-coins
+DESCRIPTION: Grant Orca Coins to multiple users in a single operation
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Admin/Owner role required
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <admin_jwt_token>
+  Content-Type: application/json
+- Body:
+{
+  "user_emails": [
+    "user1@example.com",
+    "user2@example.com",
+    "user3@example.com"
+  ],
+  "amount": 10,
+  "reason": "Holiday bonus for active users"
+}
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "message": "Bulk operation completed: 2/3 grants successful",
+  "data": {
+    "results": [
+      {
+        "email": "user1@example.com",
+        "status": "success",
+        "new_balance": 25
+      },
+      {
+        "email": "user2@example.com",
+        "status": "success",
+        "new_balance": 18
+      },
+      {
+        "email": "user3@example.com",
+        "status": "failed",
+        "message": "User not found"
+      }
+    ],
+    "successful_grants": 2,
+    "total_attempted": 3,
+    "amount_per_user": 10
+  }
+}
+
+===============================================
+9. EXPORT TRANSACTION DATA
+===============================================
+
+ENDPOINT: GET /api/analytics/export/transactions
+DESCRIPTION: Export transaction data for external analysis
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Admin/Owner role required
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <admin_jwt_token>
+- Query Parameters:
+  - start_date: Start date for export (YYYY-MM-DD format)
+  - end_date: End date for export (YYYY-MM-DD format)
+  - type: Transaction type filter (WELCOME_BONUS, LAB_PURCHASE, ADMIN_GRANT)
+  - format: Export format (json, csv) - default: json
+
+RESPONSE (200 Success - JSON Format):
+{
+  "success": true,
+  "data": {
+    "format": "json",
+    "transactions": [
+      {
+        "id": "transaction-uuid",
+        "user_id": "user-uuid",
+        "transaction_type": "LAB_PURCHASE",
+        "amount": -10,
+        "description": "Purchased premium access: Docker Intermediate",
+        "balance_before": 25,
+        "balance_after": 15,
+        "reference_url": "https://github.com/...",
+        "created_at": "2025-08-14T15:45:00Z"
+      }
+    ],
+    "total_records": 245
+  }
+}
+
+RESPONSE (200 Success - CSV Format):
+{
+  "success": true,
+  "data": {
+    "format": "csv",
+    "content": "ID,User ID,Type,Amount,Description,Balance Before,Balance After,Reference URL,Created At\ntransaction-uuid,user-uuid,LAB_PURCHASE,-10,Purchased premium access: Docker Intermediate,25,15,https://github.com/...,2025-08-14T15:45:00Z",
+    "total_records": 245
+  }
+}
+
+===============================================
+ANALYTICS METRICS EXPLANATION
+===============================================
+
+USER LIFECYCLE STAGES:
+- new: Users who haven't made any purchases yet
+- active: Users with recent activity (within 7 days)
+- at_risk: Users with no activity for 7-30 days
+- churned: Users with no activity for 30+ days
+
+SPENDING PATTERNS:
+- conservative: 0-20 coins spent lifetime
+- moderate: 21-50 coins spent lifetime  
+- heavy: 50+ coins spent lifetime
+
+RISK SCORE CALCULATION (0-1 scale):
+- Days since last activity (0.3 weight)
+- Zero coin spending (0.2 weight)
+- Low access count (0.3 weight)
+- No purchases (0.2 weight)
+
+COMPLETION RATE:
+- Percentage of users who marked lab as "completed"
+- Based on completion_status field in purchases
+
+COINS VELOCITY:
+- Ratio of coins spent to coins earned
+- Indicates economic activity and engagement
+
+===============================================
+ERROR CODES REFERENCE
+===============================================
+
+400 Bad Request:
+- invalid_parameters: Missing or invalid request parameters
+- invalid_date: Date format must be YYYY-MM-DD
+
+401 Unauthorized:
+- authentication_failed: Invalid or expired JWT token
+
+403 Forbidden:
+- insufficient_permissions: Admin/Owner role required
+
+500 Internal Server Error:
+- analytics_error: Failed to calculate or retrieve analytics
+- dashboard_error: Failed to load dashboard data
+- calculation_error: Failed to calculate daily metrics
+- bulk_operation_error: Failed to complete bulk operation
+- export_error: Failed to export data
+
+===============================================
+RATE LIMITING
+===============================================
+
+Rate limits for analytics endpoints (per admin user):
+- Dashboard requests: 60 requests per minute
+- Analytics queries: 30 requests per minute
+- Bulk operations: 5 requests per minute
+- Data exports: 10 requests per hour
+
+===============================================
+FRONTEND INTEGRATION EXAMPLES
+===============================================
+
+DASHBOARD COMPONENTS:
+1. Real-time overview: GET /dashboard/overview
+2. Revenue charts: GET /revenue?days=30
+3. User metrics: GET /users?days=7
+4. Lab performance tables: GET /labs/performance?sort=total_revenue&limit=10
+
+COMMON QUERY PATTERNS:
+1. Weekly revenue: /revenue?days=7
+2. Monthly user analysis: /users?days=30
+3. Top 20 labs: /labs/performance?sort=total_revenue&limit=20
+4. At-risk users: /users/at-risk?threshold=0.7&limit=50
+5. Export CSV: /export/transactions?format=csv&start_date=2025-08-01&end_date=2025-08-31
+
+REFRESH INTERVALS (Recommended):
+- Dashboard overview: Every 30 seconds
+- Revenue charts: Every 5 minutes
+- User analytics: Every 15 minutes
+- Lab performance: Every 30 minutes
+- System health: Every 5 minutes

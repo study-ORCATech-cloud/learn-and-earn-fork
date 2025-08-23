@@ -64,7 +64,7 @@
 │   ├── seo-implementation-plan.md
 │   └── troubleshooting.md
 ├── public/ (9 items)
-│   ├── lovable-uploads/
+│   ├── assets/
 │   ├── 404.html
 │   ├── CNAME
 │   ├── favicon.ico

@@ -54,6 +54,12 @@ const newsItems: NewsItem[] = [
     description: 'We\'re thrilled to announce that the ORCATech Learning Platform is officially live! Start your Tech journey today with our comprehensive hands-on labs, interactive courses, and real-world projects. Welcome to the future of technical education!',
     date: '2025-08-21',
     category: 'announcement'
+  },
+  {
+    title: '💻 New Feature: Built-in IDE for Labs',
+    description: 'Experience seamless coding with our new integrated development environment! Edit code directly in your browser during lab exercises. Features include syntax highlighting, auto-completion, real-time error detection, and instant code execution. No more switching between multiple tools - everything you need is right here!',
+    date: '2025-08-22',
+    category: 'feature'
   }
 ];
 

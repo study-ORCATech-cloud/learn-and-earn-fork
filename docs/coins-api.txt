@@ -1,0 +1,474 @@
+ORCA COINS API DOCUMENTATION
+===============================
+
+This document describes all the Orca Coins system API endpoints, their functionality, 
+request requirements, and response formats.
+
+BASE URL: /api/orca
+AUTHENTICATION: JWT token required (except where noted)
+AUTHORIZATION: User role permissions enforced
+
+===============================
+1. GET WALLET DETAILS
+===============================
+
+ENDPOINT: GET /api/orca/wallet
+DESCRIPTION: Get comprehensive wallet information for the authenticated user
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Any authenticated user
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <jwt_token>
+- Body: None
+- Query Parameters: None
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "data": {
+    "wallet": {
+      "id": "wallet-uuid",
+      "user_id": "user-uuid",
+      "orca_balance": 15,
+      "total_orca_earned": 20,
+      "total_orca_spent": 5,
+      "lifetime_purchases": 1,
+      "created_at": "2025-08-14T10:30:00Z",
+      "updated_at": "2025-08-14T15:45:00Z"
+    },
+    "recent_transactions": [
+      {
+        "id": "transaction-uuid",
+        "transaction_type": "LAB_PURCHASE",
+        "amount": -5,
+        "description": "Purchased premium access: Python Basics",
+        "balance_before": 20,
+        "balance_after": 15,
+        "reference_url": "https://github.com/...",
+        "created_at": "2025-08-14T15:45:00Z"
+      }
+    ],
+    "purchased_labs_count": 1,
+    "spending_stats": {
+      "total_earned": 20,
+      "total_spent": 5,
+      "lifetime_purchases": 1
+    }
+  }
+}
+
+RESPONSE (401 Unauthorized):
+{
+  "success": false,
+  "error": "authentication_failed",
+  "message": "Token is invalid or expired"
+}
+
+===============================
+2. GET WALLET BALANCE
+===============================
+
+ENDPOINT: GET /api/orca/wallet/balance
+DESCRIPTION: Get current Orca Coins balance for the authenticated user
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Any authenticated user
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <jwt_token>
+- Body: None
+- Query Parameters: None
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "balance": 15
+}
+
+===============================
+3. PURCHASE LAB PREMIUM ACCESS
+===============================
+
+ENDPOINT: POST /api/orca/purchase/lab
+DESCRIPTION: Purchase premium access to a lab using Orca Coins
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Any authenticated user
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <jwt_token>
+  Content-Type: application/json
+- Body:
+{
+  "lab_url": "https://github.com/study-ORCATech-cloud/python-labs/tree/main/Core-Python/LAB01-Basics-Variables",
+  "lab_title": "Python Basics Variables",
+  "lab_description": "Learn Python variables and data types",
+  "lab_difficulty": "beginner",
+  "lab_category": "programming",
+  "lab_tags": ["python", "variables", "basics"]
+}
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "message": "Successfully purchased premium access for 5 Orca Coins",
+  "data": {
+    "purchase": {
+      "id": "purchase-uuid",
+      "lab_url": "https://github.com/...",
+      "lab_title": "Python Basics Variables",
+      "lab_difficulty": "beginner",
+      "orca_cost": 5,
+      "status": "active",
+      "created_at": "2025-08-14T15:45:00Z"
+    },
+    "transaction": {
+      "id": "transaction-uuid",
+      "amount": -5,
+      "description": "Purchased premium access: Python Basics Variables",
+      "balance_before": 20,
+      "balance_after": 15
+    },
+    "new_balance": 15
+  }
+}
+
+RESPONSE (400 Insufficient Balance):
+{
+  "success": false,
+  "error": "insufficient_balance",
+  "message": "Insufficient Orca Coins. Required: 10, Available: 5",
+  "data": {
+    "current_balance": 5,
+    "required": 10
+  }
+}
+
+RESPONSE (400 Already Owned):
+{
+  "success": false,
+  "error": "already_owned",
+  "message": "You already own premium access to this lab",
+  "data": {
+    "purchase": {
+      "id": "existing-purchase-uuid",
+      "lab_title": "Python Basics Variables",
+      "created_at": "2025-08-14T10:30:00Z"
+    }
+  }
+}
+
+===============================
+4. CHECK LAB ACCESS
+===============================
+
+ENDPOINT: POST /api/orca/lab/access
+DESCRIPTION: Check if user has premium access to a specific lab
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Any authenticated user
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <jwt_token>
+  Content-Type: application/json
+- Body:
+{
+  "lab_url": "https://github.com/study-ORCATech-cloud/python-labs/tree/main/Core-Python/LAB01-Basics-Variables"
+}
+
+RESPONSE (200 Has Access):
+{
+  "success": true,
+  "data": {
+    "has_access": true,
+    "purchase_info": {
+      "id": "purchase-uuid",
+      "lab_title": "Python Basics Variables",
+      "purchased_at": "2025-08-14T10:30:00Z",
+      "last_accessed_at": "2025-08-14T15:45:00Z",
+      "total_access_count": 5
+    },
+    "wallet_balance": 15
+  }
+}
+
+RESPONSE (200 No Access):
+{
+  "success": true,
+  "data": {
+    "has_access": false,
+    "wallet_balance": 15,
+    "premium_cost": 5,
+    "can_afford": true
+  }
+}
+
+===============================
+5. GET USER LAB LIBRARY
+===============================
+
+ENDPOINT: GET /api/orca/library
+DESCRIPTION: Get all labs the user has purchased
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Any authenticated user
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <jwt_token>
+- Body: None
+- Query Parameters: None
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "data": {
+    "purchased_labs": [
+      {
+        "id": "purchase-uuid",
+        "lab_url": "https://github.com/...",
+        "lab_title": "Python Basics Variables",
+        "lab_difficulty": "beginner",
+        "lab_category": "programming",
+        "orca_cost": 5,
+        "purchased_at": "2025-08-14T10:30:00Z",
+        "last_accessed_at": "2025-08-14T15:45:00Z",
+        "total_access_count": 5,
+        "completion_status": "in_progress"
+      }
+    ],
+    "total_purchases": 1
+  }
+}
+
+===============================
+6. GRANT ORCA COINS (ADMIN)
+===============================
+
+ENDPOINT: POST /api/orca/admin/grant
+DESCRIPTION: Admin function to grant Orca Coins to a user
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Admin/Owner role required
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <admin_jwt_token>
+  Content-Type: application/json
+- Body:
+{
+  "user_id": "target-user-uuid",
+  "amount": 15,
+  "reason": "Promotional bonus for completing survey"
+}
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "message": "Successfully granted 15 Orca Coins",
+  "data": {
+    "transaction": {
+      "id": "transaction-uuid",
+      "amount": 15,
+      "description": "Admin grant: Promotional bonus for completing survey",
+      "balance_before": 5,
+      "balance_after": 20,
+      "performed_by": "admin-user-uuid"
+    },
+    "new_balance": 20
+  }
+}
+
+RESPONSE (403 Forbidden):
+{
+  "success": false,
+  "error": "insufficient_permissions",
+  "message": "Admin role required for this operation"
+}
+
+===============================
+7. ADMIN VIEW TRANSACTIONS
+===============================
+
+ENDPOINT: GET /api/orca/admin/transactions
+DESCRIPTION: Admin endpoint to view all Orca transactions with filtering
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Admin/Owner role required
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <admin_jwt_token>
+- Body: None
+- Query Parameters:
+  - user_id: Filter by user (optional)
+  - transaction_type: Filter by type (optional)
+  - limit: Number of records (default: 100, max: 1000)
+  - offset: Pagination offset (default: 0)
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "data": {
+    "transactions": [
+      {
+        "id": "transaction-uuid",
+        "user_id": "user-uuid",
+        "transaction_type": "LAB_PURCHASE",
+        "amount": -10,
+        "description": "Purchased premium access: Docker Intermediate",
+        "balance_before": 25,
+        "balance_after": 15,
+        "reference_url": "https://github.com/...",
+        "created_at": "2025-08-14T15:45:00Z"
+      }
+    ],
+    "pagination": {
+      "total": 245,
+      "limit": 100,
+      "offset": 0,
+      "has_more": true
+    }
+  }
+}
+
+RESPONSE (400 Bad Request):
+{
+  "success": false,
+  "error": "invalid_request",
+  "message": "At least one filter (user_id or transaction_type) is required"
+}
+
+===============================
+8. ADMIN ANALYTICS OVERVIEW
+===============================
+
+ENDPOINT: GET /api/orca/admin/analytics
+DESCRIPTION: Admin endpoint for basic Orca Coins analytics overview
+AUTHENTICATION: Required (JWT)
+AUTHORIZATION: Admin/Owner role required
+
+REQUEST:
+- Headers:
+  Authorization: Bearer <admin_jwt_token>
+- Body: None
+- Query Parameters: None
+
+RESPONSE (200 Success):
+{
+  "success": true,
+  "data": {
+    "economy_overview": {
+      "total_orca_in_circulation": 2500,
+      "total_orca_earned": 3780,
+      "total_orca_spent": 1280,
+      "circulation_rate": 33.86
+    },
+    "transaction_breakdown": [
+      {
+        "type": "WELCOME_BONUS",
+        "count": 150,
+        "total_amount": 750
+      },
+      {
+        "type": "LAB_PURCHASE",
+        "count": 89,
+        "total_amount": -1280
+      },
+      {
+        "type": "ADMIN_GRANT",
+        "count": 25,
+        "total_amount": 500
+      }
+    ],
+    "popular_labs": [
+      {
+        "title": "Python Basics Variables",
+        "category": "programming",
+        "purchases": 25,
+        "avg_rating": 4.2
+      }
+    ],
+    "user_wallet_distribution": [
+      {
+        "range": "0 coins",
+        "user_count": 12
+      },
+      {
+        "range": "1-5 coins",
+        "user_count": 45
+      },
+      {
+        "range": "6-20 coins",
+        "user_count": 78
+      },
+      {
+        "range": "21-50 coins",
+        "user_count": 13
+      },
+      {
+        "range": "50+ coins",
+        "user_count": 2
+      }
+    ]
+  }
+}
+
+===============================
+PRICING SYSTEM EXPLANATION
+===============================
+
+LAB PRICING CALCULATION:
+1. Base price: 5 Orca Coins
+2. Difficulty multipliers:
+   - Beginner: 1.0x (5 coins)
+   - Intermediate: 2.0x (10 coins)
+   - Professional: 3.0x (15 coins)
+   - Expert: 4.0x (20 coins)
+
+PREMIUM ACCESS:
+- Premium files include solutions, advanced examples, and test answers
+- Free access includes README and basic lab instructions
+- Lab-specific pricing may override default calculation
+
+WELCOME BONUS:
+- New users receive 5 Orca Coins upon wallet creation
+
+===============================
+ERROR CODES REFERENCE
+===============================
+
+400 Bad Request:
+- insufficient_balance: User doesn't have enough coins
+- already_owned: User already owns the lab
+- invalid_parameters: Missing or invalid request parameters
+
+401 Unauthorized:
+- authentication_failed: Invalid or expired JWT token
+- token_missing: No authorization header provided
+
+403 Forbidden:
+- insufficient_permissions: User lacks required role permissions
+
+404 Not Found:
+- user_not_found: Target user doesn't exist
+- lab_not_found: Lab URL not found in system
+
+500 Internal Server Error:
+- wallet_error: Database or system error during wallet operations
+- transaction_failed: Failed to process Orca Coins transaction
+
+===============================
+RATE LIMITING
+===============================
+
+Rate limits are applied per user:
+- Purchase operations: 10 requests per minute
+- Balance checks: 100 requests per minute
+- Admin operations: 20 requests per minute
+
+Exceeded limits return HTTP 429 with:
+{
+  "success": false,
+  "error": "rate_limit_exceeded",
+  "message": "Too many requests. Try again in 60 seconds",
+  "retry_after": 60
+}

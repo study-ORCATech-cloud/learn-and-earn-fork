@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, FileText, Folder, FolderOpen, Download, AlertCircle, Lock, Coins, Eye } from 'lucide-react';
+import { ArrowLeft, FileText, Folder, FolderOpen, Download, AlertCircle, Lock, Coins, Eye, Code } from 'lucide-react';
 import Header from '../components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -70,7 +70,6 @@ const LabViewerPage: React.FC = () => {
   // Check authentication and redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !isAuthenticated && courseId) {
-      console.log('User not authenticated, redirecting to course page');
       navigate(`/course/${courseId}`, { replace: true });
     }
   }, [isAuthenticated, authLoading, courseId, navigate]);
@@ -241,6 +240,87 @@ const LabViewerPage: React.FC = () => {
   // Check if file is premium based on API response
   const isPremiumFile = (file: LabFile) => {
     return file.is_premium;
+  };
+
+  // Recursively collect all files including nested ones
+  const getAllFilesRecursively = (files: LabFile[]): LabFile[] => {
+    const result: LabFile[] = [];
+    
+    files.forEach(file => {
+      if (file.type === 'file') {
+        result.push(file);
+      } else if (file.type === 'directory' && file.children) {
+        // Recursively get files from subdirectories
+        result.push(...getAllFilesRecursively(file.children));
+      }
+    });
+    
+    return result;
+  };
+
+  // Download all accessible content files as ZIP
+  const downloadAccessibleFiles = async () => {
+    if (!labContent) return;
+
+    try {
+      const allTopLevelFiles = combineLabFiles(labContent);
+      const allFiles = getAllFilesRecursively(allTopLevelFiles);
+      
+      // Filter out preview files but include both free and premium actual content
+      const downloadableFiles = allFiles.filter(file => 
+        file.content && 
+        !file.is_preview && 
+        file.access_granted !== false
+      );
+
+      if (downloadableFiles.length === 0) {
+        toast({
+          title: "No Files Available",
+          description: "No downloadable files are available for this content.",
+          variant: "destructive",
+          className: "bg-orange-900 border-orange-700 text-white",
+        });
+        return;
+      }
+
+      // Dynamically import JSZip
+      const JSZip = (await import('jszip')).default;
+      const zip = new JSZip();
+
+      // Add each file to the ZIP with proper folder structure
+      downloadableFiles.forEach(file => {
+        if (file.content) {
+          // Use the full path to maintain folder structure
+          const filePath = file.path || file.name;
+          zip.file(filePath, file.content);
+        }
+      });
+
+      // Generate and download the ZIP file
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(zipBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${contentResource?.title?.replace(/[^a-z0-9]/gi, '_') || contentType}-files.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Download Started",
+        description: `Downloaded ${downloadableFiles.length} file${downloadableFiles.length > 1 ? 's' : ''} as ZIP.`,
+        className: "bg-green-900 border-green-700 text-white",
+      });
+    } catch (error) {
+      console.error('Download error:', error);
+      toast({
+        title: "Download Failed",
+        description: "Failed to create ZIP file. Please try again.",
+        variant: "destructive",
+        className: "bg-red-900 border-red-700 text-white",
+      });
+    }
   };
 
   const renderFileTree = (files: LabFile[], level = 0) => {
@@ -415,24 +495,39 @@ const LabViewerPage: React.FC = () => {
                 Back to {course?.title || 'Course'}
               </button>
               
-              <div className="flex items-center gap-4 text-sm text-slate-400">
-                <div className="flex items-center gap-1">
-                  <FileText className="w-4 h-4" />
-                  {combineLabFiles(labContent).length} files
+              <div className="flex items-center gap-4">
+                {/* File info and premium status */}
+                <div className="flex items-center gap-4 text-sm text-slate-400">
+                  <div className="flex items-center gap-1">
+                    <FileText className="w-4 h-4" />
+                    {getAllFilesRecursively(combineLabFiles(labContent)).length} files
+                  </div>
+                  {hasPremiumFiles && (
+                    hasAccess ? (
+                      <div className="flex items-center gap-2 text-green-300">
+                        <span>✓</span>
+                        <span>Premium content unlocked</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        <Lock className="w-4 h-4 text-amber-400" />
+                        <span>Premium content available</span>
+                      </div>
+                    )
+                  )}
                 </div>
-                {hasPremiumFiles && (
-                  hasAccess ? (
-                    <div className="flex items-center gap-2 text-green-300">
-                      <span>✓</span>
-                      <span>Premium content unlocked</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1">
-                      <Lock className="w-4 h-4 text-amber-400" />
-                      <span>Premium content available</span>
-                    </div>
-                  )
-                )}
+
+                {/* Edit Mode Button */}
+                <Button
+                  onClick={() => navigate(`/course/${courseId}/${contentType}/${contentId}/ide`)}
+                  variant="outline"
+                  size="sm"
+                  className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white hover:border-blue-500 hover:text-blue-400"
+                  title="Switch to IDE mode for editing"
+                >
+                  <Code className="w-4 h-4 mr-2" />
+                  Edit Mode
+                </Button>
               </div>
             </div>
           </div>
@@ -515,13 +610,17 @@ const LabViewerPage: React.FC = () => {
             <div className="lg:col-span-1">
               <Card className="p-4 bg-slate-900/50 border-slate-800">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white">Lab Files</h3>
-                  {/* <Button size="sm" variant="outline">
-                    <Download className="w-4 h-4" />
-                  </Button> */}
-                </div>
-                <div className="max-h-96 overflow-y-auto">
-                  {(() => {
+                  <h3 className="text-lg font-semibold text-white">Lab Files</h3>  
+                <Button onClick={downloadAccessibleFiles}
+                  variant="outline"
+                  size="sm"
+                  className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+                >
+                  <Download className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="max-h-96 overflow-y-auto">
+                {(() => {
                     const allFiles = combineLabFiles(labContent);
                     return allFiles.length > 0 ? 
                       renderFileTree(allFiles) : 
