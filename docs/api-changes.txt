@@ -1,0 +1,266 @@
+API CHANGES DOCUMENTATION
+=========================
+
+This document describes all the breaking and significant changes made to existing APIs 
+to support the Orca Coins system and Analytics Dashboard. Frontend applications need 
+to be updated to work with these changes.
+
+CRITICAL: All endpoints now require proper JWT authentication unless explicitly noted.
+
+==============================================================================
+1. LAB CONTENT API - MAJOR BREAKING CHANGES
+==============================================================================
+
+ENDPOINT: GET /api/v1/lab/content
+STATUS: 🚨 BREAKING CHANGES - Frontend integration required
+
+WHAT CHANGED:
+- Now integrates with Orca Coins premium access system
+- Response structure completely overhauled to include access control information
+- Premium files now require Orca Coins payment to access
+- New access control logic separates free vs premium content
+
+OLD RESPONSE STRUCTURE:
+{
+  "success": true,
+  "data": {
+    "files": [...],
+    "tree": [...],
+    "config": {...}
+  }
+}
+
+NEW RESPONSE STRUCTURE:
+{
+  "success": true,
+  "data": {
+    "repository": {
+      "owner": "study-ORCATech-cloud",
+      "name": "python-labs",
+      "branch": "main",
+      "is_public": false
+    },
+    "content": {
+      "files": [
+        {
+          "name": "README.md",
+          "path": "README.md",
+          "type": "file",
+          "size": 1234,
+          "content": "...",
+          "is_premium": false,
+          "access_granted": true
+        },
+        {
+          "name": "solutions.md",
+          "path": "solutions.md", 
+          "type": "file",
+          "size": 567,
+          "content": null,           // NULL if no access
+          "is_premium": true,
+          "access_granted": false,
+          "access_message": "Premium access required"
+        }
+      ],
+      "tree": [...],              // Same as before
+      "premium_files": ["solutions.md", "advanced_examples.py"],
+      "free_files": ["README.md", "LAB.md"]
+    },
+    "access": {
+      "has_premium_access": false,
+      "wallet_balance": 15,
+      "premium_cost": 5,
+      "can_afford_premium": true,
+      "purchase_info": null       // Only if user owns the lab
+    },
+    "lab_config": {
+      "title": "Python Basics",
+      "difficulty": "beginner",
+      "category": "programming",
+      "tags": ["python", "basics"],
+      "pricing": {
+        "base_price": 5,
+        "difficulty_multiplier": 1.0,
+        "final_price": 5
+      }
+    }
+  }
+}
+
+FRONTEND INTEGRATION REQUIRED:
+1. Update response parsing to handle new nested structure
+2. Check access.has_premium_access before showing premium content
+3. Display premium purchase UI if access.can_afford_premium is true
+4. Show wallet balance from access.wallet_balance
+5. Filter files based on access_granted field
+6. Handle null content for premium files without access
+
+==============================================================================
+2. NEW LAB ENDPOINTS ADDED
+==============================================================================
+
+ENDPOINT: GET /api/v1/lab/purchase-info
+STATUS: ✅ NEW ENDPOINT - No breaking changes
+
+PURPOSE: Get lab purchase information and pricing without fetching full content
+RESPONSE: Lab metadata, pricing info, and user access status
+
+FRONTEND INTEGRATION:
+- Use this for quick access checks and purchase flow
+- Lighter weight than full content endpoint
+
+==============================================================================
+3. ORCA COINS WALLET API - ALL NEW
+==============================================================================
+
+BASE URL: /api/orca
+STATUS: ✅ NEW ENDPOINTS - No breaking changes
+
+NEW ENDPOINTS:
+- GET /api/orca/wallet - Get wallet details and transaction history
+- GET /api/orca/wallet/balance - Quick balance check
+- POST /api/orca/purchase/lab - Purchase lab premium access
+- POST /api/orca/lab/access - Check lab access status
+- GET /api/orca/library - Get user's purchased labs
+- POST /api/orca/admin/grant - Admin coin granting (admin only)
+
+FRONTEND INTEGRATION REQUIRED:
+1. Add wallet balance display to user interface
+2. Implement lab purchase flow using purchase/lab endpoint
+3. Show user's lab library from library endpoint
+4. Integrate purchase checks before showing premium content
+
+==============================================================================
+4. ANALYTICS & ADMIN DASHBOARD API - ALL NEW
+==============================================================================
+
+BASE URL: /api/analytics
+STATUS: ✅ NEW ENDPOINTS - Admin/Owner only
+
+NEW ENDPOINTS:
+- GET /api/analytics/dashboard/overview - Comprehensive dashboard metrics
+- GET /api/analytics/revenue - Revenue analytics with breakdowns
+- GET /api/analytics/users - User behavior and lifecycle analytics
+- GET /api/analytics/labs/performance - Lab performance metrics
+- GET /api/analytics/system/health - System health monitoring
+- GET /api/analytics/users/at-risk - Churn risk identification
+- POST /api/analytics/daily-metrics/calculate - Manual metrics calculation
+- POST /api/analytics/bulk-operations/grant-coins - Bulk coin granting
+- GET /api/analytics/export/transactions - Data export functionality
+
+FRONTEND INTEGRATION REQUIRED:
+1. Build admin dashboard using overview endpoint
+2. Create revenue charts using revenue endpoint data
+3. Implement user analytics views
+4. Add lab performance tables
+5. Create system health monitoring interface
+
+==============================================================================
+5. ERROR LOGGING API - ENHANCED
+==============================================================================
+
+ENDPOINT: POST /api/logs/error
+STATUS: 🔄 ENHANCED - Backward compatible
+
+WHAT CHANGED:
+- Enhanced error categorization and tracking
+- Better context capture for Orca Coins related errors
+- Improved admin error management interface
+
+NEW ERROR TYPES ADDED:
+- 'orca_coins_error' - Wallet and transaction related errors
+- 'lab_access_error' - Premium access and purchase related errors
+- 'analytics_error' - Dashboard and analytics related errors
+
+FRONTEND INTEGRATION:
+- Update error reporting to use new error categories
+- No breaking changes to existing error logging
+
+==============================================================================
+6. AUTHENTICATION CHANGES
+==============================================================================
+
+STATUS: 🔄 ENHANCED - Mostly backward compatible
+
+WHAT CHANGED:
+- Welcome bonus (5 Orca Coins) automatically granted on first login
+- User wallet automatically created during authentication
+- Enhanced user profile includes wallet information
+
+FRONTEND INTEGRATION:
+- Display welcome message for new users receiving bonus
+- Show wallet balance in user profile/navigation
+
+==============================================================================
+7. USER MANAGEMENT API - ENHANCED
+==============================================================================
+
+STATUS: 🔄 ENHANCED - Backward compatible
+
+WHAT CHANGED:
+- User profiles now include Orca Coins wallet information
+- Enhanced user analytics and behavior tracking
+- Admin users can view user purchase history and wallet details
+
+FRONTEND INTEGRATION:
+- Update user profile pages to show wallet info
+- Admin user management should display Orca Coins data
+
+==============================================================================
+MIGRATION CHECKLIST FOR FRONTEND
+==============================================================================
+
+CRITICAL UPDATES REQUIRED:
+□ Update /api/v1/lab/content response parsing (BREAKING CHANGE)
+□ Implement Orca Coins wallet integration
+□ Add lab purchase flow UI
+□ Handle premium vs free content separation
+□ Update error handling for new error types
+
+RECOMMENDED UPDATES:
+□ Build admin analytics dashboard
+□ Add user wallet balance display
+□ Implement lab library interface
+□ Add premium access indicators in lab listings
+□ Create purchase confirmation flows
+
+NEW FEATURES TO IMPLEMENT:
+□ Orca Coins wallet management
+□ Lab premium access system
+□ Analytics dashboard (admin)
+□ User purchase history
+□ System health monitoring (admin)
+
+==============================================================================
+TESTING RECOMMENDATIONS
+==============================================================================
+
+1. Test lab content endpoint with different user access levels
+2. Test purchase flow with insufficient/sufficient balance
+3. Test premium file access controls
+4. Verify wallet balance updates after purchases
+5. Test analytics dashboard with admin users
+6. Verify error logging captures Orca Coins contexts
+
+==============================================================================
+SUPPORT AND TROUBLESHOOTING
+==============================================================================
+
+COMMON ISSUES:
+1. "access_denied" errors - User needs to purchase lab premium access
+2. "insufficient_balance" - User needs more Orca Coins
+3. "lab_configuration_error" - Lab .orca-config.json file is malformed
+4. "authentication_failed" - JWT token issues
+
+ERROR CODES REFERENCE:
+- See coins-api.txt and analytics-api.txt for complete error code lists
+- All Orca Coins errors include helpful user-facing messages
+- Analytics errors are admin-focused and technical
+
+CONTACT:
+- Technical issues: Check error logs via /api/logs/errors
+- Business logic questions: Review API documentation files
+- System health: Monitor via /api/analytics/system/health
+
+Last Updated: 2025-08-15
+API Version: v1 (with Orca Coins integration)

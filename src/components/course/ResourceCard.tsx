@@ -32,7 +32,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
       const resourceId = resource.id;
       
       if (resource.type === 'lab') {
-        navigate(`/course/${courseId}/lab/${resourceId}`);
+        navigate(`/course/${courseId}/lab/${resourceId}/ide`);
       } else if (resource.type === 'article') {
         navigate(`/course/${courseId}/article/${resourceId}`);
       }
