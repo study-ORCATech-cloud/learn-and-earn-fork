@@ -58,7 +58,7 @@ const newsItems: NewsItem[] = [
   {
     title: '💻 New Feature: Built-in IDE for Labs',
     description: 'Experience seamless coding with our new integrated development environment! Edit code directly in your browser during lab exercises. Features include syntax highlighting, auto-completion, real-time error detection, and instant code execution. No more switching between multiple tools - everything you need is right here!',
-    date: '2025-08-22',
+    date: '2025-08-23',
     category: 'feature'
   }
 ];
