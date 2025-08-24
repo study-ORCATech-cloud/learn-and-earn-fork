@@ -60,6 +60,12 @@ const newsItems: NewsItem[] = [
     description: 'Experience seamless coding with our new integrated development environment! Edit code directly in your browser during lab exercises. Features include syntax highlighting, auto-completion, real-time error detection, and instant code execution. No more switching between multiple tools - everything you need is right here!',
     date: '2025-08-23',
     category: 'feature'
+  },
+  {
+    title: '🗳️ Community Voting System Now Live!',
+    description: 'Help shape the future of ORCATech! Our new community voting system lets you vote on upcoming features and roadmap items. Your voice matters - log in and vote for the features you want to see developed first. Real-time vote counts and user-friendly interface make participating easy and engaging!',
+    date: '2025-08-24',
+    category: 'feature'
   }
 ];
 
