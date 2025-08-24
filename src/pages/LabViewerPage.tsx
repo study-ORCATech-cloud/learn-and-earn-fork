@@ -24,9 +24,10 @@ const combineLabFiles = (labContent: LabContent | null): LabFile[] => {
   const regularFiles = labContent.content.lab_files || [];
   const previewFiles = labContent.content.premium_preview || [];
   
-  // Mark preview files with a special indicator
-  const markedPreviewFiles = previewFiles.map(file => ({
+  // Mark preview files with a special indicator and unique paths
+  const markedPreviewFiles = previewFiles.map((file, index) => ({
     ...file,
+    path: `preview-${index}-${file.path}`, // Make path unique to prevent selection conflicts
     is_premium: true,
     access_granted: false, // Preview files are not fully accessible
     access_message: 'Premium preview - purchase for full access'
@@ -60,12 +61,58 @@ const LabViewerPage: React.FC = () => {
   const contentUrl = contentResource?.url || '';
   const navigate = useNavigate();
   const [labContent, setLabContent] = useState<LabContent | null>(null);
+  
+  // Cache keys for this specific content
+  const cachedContentKey = `lab-content-${courseId}-${contentType}-${contentId}`;
+  const cacheTimestampKey = `lab-content-timestamp-${courseId}-${contentType}-${contentId}`;
   const [selectedFile, setSelectedFile] = useState<LabFile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isUnderConstruction, setIsUnderConstruction] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [showPurchaseDialog, setShowPurchaseDialog] = useState(false);
+  
+  // Cache management functions
+  const saveCachedContent = (content: LabContent) => {
+    try {
+      localStorage.setItem(cachedContentKey, JSON.stringify(content));
+      localStorage.setItem(cacheTimestampKey, Date.now().toString());
+    } catch (error) {
+      console.warn('Failed to cache content:', error);
+    }
+  };
+
+  const loadCachedContent = (): LabContent | null => {
+    try {
+      const cached = localStorage.getItem(cachedContentKey);
+      const timestamp = localStorage.getItem(cacheTimestampKey);
+      
+      if (cached && timestamp) {
+        const cacheAge = Date.now() - parseInt(timestamp);
+        const maxCacheAge = 30 * 60 * 1000; // 30 minutes
+        
+        if (cacheAge < maxCacheAge) {
+          return JSON.parse(cached);
+        } else {
+          // Cache expired, clean up
+          localStorage.removeItem(cachedContentKey);
+          localStorage.removeItem(cacheTimestampKey);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load cached content:', error);
+    }
+    return null;
+  };
+
+  const clearCache = () => {
+    try {
+      localStorage.removeItem(cachedContentKey);
+      localStorage.removeItem(cacheTimestampKey);
+    } catch (error) {
+      console.warn('Failed to clear cache:', error);
+    }
+  };
 
   // Check authentication and redirect if not authenticated
   useEffect(() => {
@@ -75,7 +122,7 @@ const LabViewerPage: React.FC = () => {
   }, [isAuthenticated, authLoading, courseId, navigate]);
 
   // Fetch lab content and access info
-  const fetchLabData = async () => {
+  const fetchLabData = async (forceRefresh = false) => {
     if (!contentUrl || !contentResource) {
       setError(`${contentType === 'lab' ? 'Lab' : 'Article'} not found or invalid ${contentType} configuration`);
       setIsLoading(false);
@@ -87,10 +134,41 @@ const LabViewerPage: React.FC = () => {
       setError(null);
       setIsUnderConstruction(false);
       
+      // Check for cached content first (unless force refresh)
+      if (!forceRefresh) {
+        const cachedContent = loadCachedContent();
+        if (cachedContent) {
+          setLabContent(cachedContent);
+          
+          // Auto-select the main instruction file if it exists
+          const allFiles = combineLabFiles(cachedContent);
+          if (allFiles.length > 0) {
+            if (allFiles.length === 1) {
+              setSelectedFile(allFiles[0]);
+            } else {
+              const mainFile = allFiles.find(f => 
+                f.name.toLowerCase().includes('readme') || 
+                f.name.toLowerCase().includes('instruction')
+              );
+              if (mainFile) {
+                setSelectedFile(mainFile);
+              }
+            }
+          }
+          
+          setIsLoading(false);
+          return; // Exit early with cached content
+        }
+      }
+      
+      // Fetch from backend if no cache or force refresh
       const contentResponse = await apiService.getLabContent(contentUrl);
       
       if (contentResponse.success && contentResponse.data) {
         setLabContent(contentResponse.data);
+        
+        // Cache the fetched content
+        saveCachedContent(contentResponse.data);
         
         // Auto-select the main instruction file if it exists
         const allFiles = combineLabFiles(contentResponse.data);
@@ -214,8 +292,9 @@ const LabViewerPage: React.FC = () => {
           className: "bg-slate-800 border-slate-700 text-white",
         });
         
-        // Refetch lab content to get the updated premium files
-        await fetchLabData();
+        // Clear cache and refetch lab content to get the updated premium files
+        clearCache();
+        await fetchLabData(true);
         
         // Refresh wallet balance to update the header
         await refreshBalance();
@@ -269,7 +348,6 @@ const LabViewerPage: React.FC = () => {
       // Filter out preview files but include both free and premium actual content
       const downloadableFiles = allFiles.filter(file => 
         file.content && 
-        !file.is_preview && 
         file.access_granted !== false
       );
 

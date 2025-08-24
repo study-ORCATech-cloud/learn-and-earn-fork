@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, FileText, Code, Eye, Save, RotateCcw, RefreshCcw, Download } from 'lucide-react';
+import { ArrowLeft, FileText, Folder, FolderOpen, Code, Eye, Save, RotateCcw, RefreshCcw, Download, Coins } from 'lucide-react';
 import Header from '../components/layout/Header';
 import MonacoEditor from '../components/ide/MonacoEditor';
 import CodeRunner from '../components/ide/CodeRunner';
@@ -19,8 +19,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import { apiService } from '../services/apiService';
 import { LabContent, LabFile } from '../types/lab';
+import { PurchaseRequest } from '../types/orcaCoins';
 import { useBackendData } from '../context/BackendDataContext';
 import { useAuth } from '../context/AuthContext';
+import { useOrcaWallet } from '../context/OrcaWalletContext';
+import PurchaseConfirmationDialog from '../components/lab/PurchaseConfirmationDialog';
 import { useToast } from '@/hooks/use-toast';
 
 // Combine regular lab files with premium preview files (copied from LabViewerPage)
@@ -30,9 +33,10 @@ const combineLabFiles = (labContent: LabContent | null): LabFile[] => {
   const regularFiles = labContent.content.lab_files || [];
   const previewFiles = labContent.content.premium_preview || [];
   
-  // Mark preview files with a special indicator
-  const markedPreviewFiles = previewFiles.map(file => ({
+  // Mark preview files with a special indicator and unique paths
+  const markedPreviewFiles = previewFiles.map((file, index) => ({
     ...file,
+    path: `preview-${index}-${file.path}`, // Make path unique to prevent selection conflicts
     is_premium: true,
     access_granted: false,
     access_message: 'Premium preview - purchase for full access'
@@ -46,6 +50,13 @@ const LabIDEPage: React.FC = () => {
   const navigate = useNavigate();
   const { data } = useBackendData();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { 
+    purchaseLabAccess, 
+    isPurchasing, 
+    purchaseError, 
+    clearErrors,
+    refreshBalance
+  } = useOrcaWallet();
   const { toast } = useToast();
   
   // Determine content type and ID
@@ -55,16 +66,20 @@ const LabIDEPage: React.FC = () => {
   // LocalStorage keys for this specific content
   const pendingChangesKey = `ide-pending-${courseId}-${contentType}-${contentId}`;
   const savedContentKey = `ide-saved-${courseId}-${contentType}-${contentId}`;
+  const cachedContentKey = `lab-content-${courseId}-${contentType}-${contentId}`;
+  const cacheTimestampKey = `lab-content-timestamp-${courseId}-${contentType}-${contentId}`;
   
   // State
   const [labContent, setLabContent] = useState<LabContent | null>(null);
   const [selectedFile, setSelectedFile] = useState<LabFile | null>(null);
   const [modifiedFiles, setModifiedFiles] = useState<Map<string, string>>(new Map());
   const [originalFiles, setOriginalFiles] = useState<Map<string, string>>(new Map());
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showReloadModal, setShowReloadModal] = useState(false);
+  const [showPurchaseDialog, setShowPurchaseDialog] = useState(false);
 
   // Get course and content resource data (memoized to prevent infinite loops)
   const course = useMemo(() => data?.courses?.find(c => c.id === courseId), [data?.courses, courseId]);
@@ -105,8 +120,52 @@ const LabIDEPage: React.FC = () => {
     try {
       localStorage.removeItem(pendingChangesKey);
       localStorage.removeItem(savedContentKey);
+      localStorage.removeItem(cachedContentKey);
+      localStorage.removeItem(cacheTimestampKey);
     } catch (error) {
       console.warn('Failed to clear IDE storage:', error);
+    }
+  };
+
+  // Cache management functions
+  const saveCachedContent = (content: LabContent) => {
+    try {
+      localStorage.setItem(cachedContentKey, JSON.stringify(content));
+      localStorage.setItem(cacheTimestampKey, Date.now().toString());
+    } catch (error) {
+      console.warn('Failed to cache content:', error);
+    }
+  };
+
+  const loadCachedContent = (): LabContent | null => {
+    try {
+      const cached = localStorage.getItem(cachedContentKey);
+      const timestamp = localStorage.getItem(cacheTimestampKey);
+      
+      if (cached && timestamp) {
+        const cacheAge = Date.now() - parseInt(timestamp);
+        const maxCacheAge = 30 * 60 * 1000; // 30 minutes
+        
+        if (cacheAge < maxCacheAge) {
+          return JSON.parse(cached);
+        } else {
+          // Cache expired, clean up
+          localStorage.removeItem(cachedContentKey);
+          localStorage.removeItem(cacheTimestampKey);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load cached content:', error);
+    }
+    return null;
+  };
+
+  const clearCache = () => {
+    try {
+      localStorage.removeItem(cachedContentKey);
+      localStorage.removeItem(cacheTimestampKey);
+    } catch (error) {
+      console.warn('Failed to clear cache:', error);
     }
   };
 
@@ -150,6 +209,19 @@ const LabIDEPage: React.FC = () => {
     return result;
   };
 
+  // Count only files, not folders
+  const countFiles = (files: LabFile[]): number => {
+    let count = 0;
+    files.forEach(file => {
+      if (file.type === 'file') {
+        count++;
+      } else if (file.type === 'directory' && file.children) {
+        count += countFiles(file.children);
+      }
+    });
+    return count;
+  };
+
   // Download all accessible content files as ZIP
   const downloadAccessibleFiles = async () => {
     if (!labContent) return;
@@ -161,7 +233,6 @@ const LabIDEPage: React.FC = () => {
       // Filter out preview files but include both free and premium actual content
       const downloadableFiles = allFiles.filter(file => 
         file.content && 
-        !file.is_preview && 
         file.access_granted !== false
       );
 
@@ -254,7 +325,7 @@ const LabIDEPage: React.FC = () => {
   }, [isAuthenticated, authLoading, navigate]);
 
   // Fetch lab content and access info
-  const fetchLabData = useCallback(async () => {
+  const fetchLabData = useCallback(async (forceRefresh = false) => {
     if (!contentUrl || !contentResource) {
       setError(`${contentType === 'lab' ? 'Lab' : 'Article'} not found or invalid ${contentType} configuration`);
       setIsLoading(false);
@@ -265,10 +336,103 @@ const LabIDEPage: React.FC = () => {
       setIsLoading(true);
       setError(null);
       
+      // Check for cached content first (unless force refresh)
+      if (!forceRefresh) {
+        const cachedContent = loadCachedContent();
+        if (cachedContent) {
+          setLabContent(cachedContent);
+          
+          // Store original content for all files
+          const allFiles = combineLabFiles(cachedContent);
+          const originalContent = new Map<string, string>();
+          allFiles.forEach(file => {
+            originalContent.set(file.path, file.content || '');
+          });
+          setOriginalFiles(originalContent);
+          
+          // Check if this is a page refresh or navigation
+          const isRefresh = isPageRefresh();
+          
+          if (isRefresh) {
+            // Page refresh - clear all storage and start fresh with cached content
+            const pendingChangesKey = `ide-pending-${courseId}-${contentType}-${contentId}`;
+            const savedContentKey = `ide-saved-${courseId}-${contentType}-${contentId}`;
+            try {
+              localStorage.removeItem(pendingChangesKey);
+              localStorage.removeItem(savedContentKey);
+            } catch (error) {
+              console.warn('Failed to clear IDE storage:', error);
+            }
+          } else {
+            // Navigation - restore user's work
+            const pendingChanges = loadPendingChanges();
+            const savedContent = loadSavedContent();
+            
+            // Set pending changes to show modification indicators
+            if (pendingChanges.size > 0) {
+              setModifiedFiles(pendingChanges);
+            }
+            
+            // Apply content to files: saved content first, then pending changes
+            allFiles.forEach(file => {
+              // Apply saved content (from Save button clicks)
+              const saved = savedContent.get(file.path);
+              if (saved !== undefined) {
+                file.content = saved;
+              }
+              
+              // Apply pending changes (current unsaved edits) - overrides saved
+              const pending = pendingChanges.get(file.path);
+              if (pending !== undefined) {
+                file.content = pending;
+              }
+            });
+          }
+          
+          // Update the lab content with modified files so they persist in state
+          const updatedContent = { ...cachedContent };
+          if (updatedContent.content) {
+            updatedContent.content.lab_files = allFiles.filter(f => !f.is_premium);
+            updatedContent.content.premium_preview = allFiles.filter(f => f.is_premium);
+          }
+          setLabContent(updatedContent);
+          
+          // Auto-select the main file
+          if (allFiles.length > 0) {
+            // First, try to find common main files
+            let mainFile = allFiles.find(f => {
+              const fileName = f.name.toLowerCase();
+              return fileName.includes('readme') || 
+                     fileName.includes('instruction') ||
+                     fileName.includes('index') ||
+                     fileName.includes('main') ||
+                     fileName === 'article.md' ||
+                     fileName === 'content.md';
+            });
+            
+            // If no main file found, select the first file
+            if (!mainFile && allFiles.length > 0) {
+              mainFile = allFiles[0];
+            }
+            
+            if (mainFile) {
+              setSelectedFile(mainFile);
+            }
+          }
+          
+          setIsLoading(false);
+          return; // Exit early with cached content
+        }
+      }
+      
+      // Fetch from backend if no cache or force refresh
       const contentResponse = await apiService.getLabContent(contentUrl);
       
       if (contentResponse.success && contentResponse.data) {
         setLabContent(contentResponse.data);
+        
+        // Cache the fetched content
+        saveCachedContent(contentResponse.data);
         
         // Store original content for all files
         const allFiles = combineLabFiles(contentResponse.data);
@@ -370,8 +534,27 @@ const LabIDEPage: React.FC = () => {
   // Note: We don't clean up sessionStorage navigation flag anymore
   // Instead, we use the presence of localStorage changes to detect navigation vs refresh
 
+  // Toggle folder expand/collapse
+  const toggleFolder = (path: string) => {
+    setExpandedFolders(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(path)) {
+        newSet.delete(path);
+      } else {
+        newSet.add(path);
+      }
+      return newSet;
+    });
+  };
+
   // Handle file selection
   const handleFileSelect = (file: LabFile) => {
+    if (file.type === 'directory') {
+      // Toggle folder expansion instead of selecting
+      toggleFolder(file.path);
+      return;
+    }
+
     // Apply user's changes to the selected file (in case it doesn't have them)
     const pendingChanges = loadPendingChanges();
     const savedContent = loadSavedContent();
@@ -471,7 +654,7 @@ const LabIDEPage: React.FC = () => {
   const confirmReloadFresh = async () => {
     try {
       
-      // Clear all user changes
+      // Clear all user changes and cache
       clearAllStorage();
       setModifiedFiles(new Map());
       
@@ -480,8 +663,8 @@ const LabIDEPage: React.FC = () => {
       setError(null);
       setSelectedFile(null);
       
-      // Refetch the lab content
-      await fetchLabData();
+      // Refetch the lab content with force refresh
+      await fetchLabData(true);
       
       setShowReloadModal(false);
       
@@ -491,27 +674,118 @@ const LabIDEPage: React.FC = () => {
     }
   };
 
-  // Simple file tree renderer (simplified version from LabViewerPage)
-  const renderFileTree = (files: LabFile[]) => {
+  // Helper function to check if file is premium preview (from LabViewerPage)
+  const isPremiumPreviewFile = (file: LabFile): boolean => {
+    return file.type === 'file' && 
+           (file as any).is_premium === true && 
+           file.access_granted === false &&
+           file.access_message?.includes('Premium preview');
+  };
+
+  // Purchase handlers
+  const handlePurchaseClick = () => {
+    clearErrors();
+    setShowPurchaseDialog(true);
+  };
+
+  const handlePurchaseConfirm = async () => {
+    if (!labContent || !contentResource) return;
+
+    const purchaseData: PurchaseRequest = {
+      lab_url: contentUrl,
+      lab_title: labContent.lab_info?.title || 'Lab',
+      lab_description: contentResource?.description || '',
+      lab_difficulty: labContent.lab_info?.difficulty || 'beginner',
+      lab_category: labContent.lab_info?.category || 'programming',
+      lab_tags: labContent.lab_info?.tags || []
+    };
+
+    try {
+      const response = await purchaseLabAccess(purchaseData);
+      
+      if (response.success) {
+        setShowPurchaseDialog(false);
+        toast({
+          title: "Purchase Successful!",
+          description: `You now have premium access to ${labContent.lab_info?.title || 'this'} lab`,
+          className: "bg-green-900 border-green-700 text-white",
+        });
+        
+        // Clear cache and refetch lab content to get the updated premium files
+        clearCache();
+        await fetchLabData(true);
+        
+        // Refresh wallet balance to update the header
+        await refreshBalance();
+      } else {
+        toast({
+          title: "Purchase Failed",
+          description: response.error || response.message || "Unable to purchase lab access",
+          variant: "destructive",
+          className: "bg-red-900 border-red-700 text-white",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Purchase Error",
+        description: "An unexpected error occurred while processing your purchase",
+        variant: "destructive",
+        className: "bg-red-900 border-red-700 text-white",
+      });
+    }
+  };
+
+  // Check if there are premium files and user doesn't have access
+  const hasPremiumFiles = labContent?.content?.premium_files_count > 0;
+  const hasAccess = labContent?.access?.has_premium_access || false;
+  const labCost = labContent?.access?.premium_cost;
+  const showPurchaseButton = hasPremiumFiles && !hasAccess;
+
+  // Proper file tree renderer with folder support (from LabViewerPage)
+  const renderFileTree = (files: LabFile[], level = 0) => {
     return (
-      <div className="space-y-1">
-        {files.map((file, index) => (
-          <button
-            key={`${file.path}-${index}`}
-            onClick={() => handleFileSelect(file)}
-            className={`flex items-center gap-2 p-2 rounded-lg w-full text-left transition-colors ${
-              selectedFile?.path === file.path
-                ? 'bg-blue-600 text-white'
-                : 'hover:bg-slate-700 text-slate-300'
-            }`}
-          >
-            <FileText className="w-4 h-4 flex-shrink-0" />
-            <span className="truncate">{file.name}</span>
-            {modifiedFiles.has(file.path) && (
-              <div className="w-2 h-2 bg-yellow-400 rounded-full flex-shrink-0 ml-auto" title="Modified" />
-            )}
-          </button>
-        ))}
+      <div className={`${level > 0 ? 'ml-4' : ''}`}>
+        {files.map((file, index) => {
+          const isPremium = isPremiumPreviewFile(file);
+          
+          return (
+            <div key={`${file.path}-${index}`} className="mb-1">
+              <button
+                onClick={() => handleFileSelect(file)}
+                className={`flex items-center gap-2 p-2 rounded-lg w-full text-left transition-colors relative ${
+                  selectedFile?.path === file.path && file.type === 'file'
+                    ? 'bg-blue-600 text-white'
+                    : 'hover:bg-slate-700 text-slate-300'
+                }`}
+              >
+                {file.type === 'directory' ? (
+                  expandedFolders.has(file.path) ? (
+                    <FolderOpen className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                  ) : (
+                    <Folder className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                  )
+                ) : (
+                  <FileText className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                )}
+                <span className="text-sm flex-1 truncate">{file.name}</span>
+                
+                {isPremium && (
+                  <span className="text-xs bg-blue-600 text-white px-1 rounded flex-shrink-0">PREVIEW</span>
+                )}
+                
+                {file.type === 'file' && modifiedFiles.has(file.path) && (
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full flex-shrink-0" title="Modified" />
+                )}
+              </button>
+              
+              {file.type === 'directory' && file.children && expandedFolders.has(file.path) && (
+                <div className="ml-4">
+                  {renderFileTree(file.children, level + 1)}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     );
   };
@@ -594,6 +868,16 @@ const LabIDEPage: React.FC = () => {
               </div>
               
               <div className="flex items-center gap-2">
+                {showPurchaseButton && (
+                  <Button
+                    onClick={handlePurchaseClick}
+                    className="bg-amber-600 hover:bg-amber-700 text-white"
+                    size="sm"
+                  >
+                    <Coins className="w-4 h-4 mr-2" />
+                    Purchase for {labCost} Coins
+                  </Button>
+                )}
                 <Button
                   onClick={handleReloadFresh}
                   variant="outline"
@@ -628,7 +912,7 @@ const LabIDEPage: React.FC = () => {
                   <h3 className="text-lg font-semibold text-white">Files</h3>
                   <div className="flex items-center gap-2">
                     <div className="text-xs text-slate-400">
-                      {combineLabFiles(labContent).length} files
+                      {countFiles(combineLabFiles(labContent))} files
                     </div>
                     <Button
                       onClick={downloadAccessibleFiles}
@@ -641,7 +925,7 @@ const LabIDEPage: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-                <div className="flex-1 overflow-y-auto min-h-0">
+                <div className="flex-1 overflow-y-auto min-h-0 custom-scrollbar">
                   {labContent && renderFileTree(combineLabFiles(labContent))}
                 </div>
               </Card>
@@ -754,6 +1038,25 @@ const LabIDEPage: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Purchase Confirmation Dialog */}
+      {labContent && (
+        <PurchaseConfirmationDialog
+          isOpen={showPurchaseDialog}
+          onClose={() => setShowPurchaseDialog(false)}
+          onConfirm={handlePurchaseConfirm}
+          labData={{
+            title: labContent.lab_info?.title || 'Lab',
+            difficulty: labContent.lab_info?.difficulty || 'beginner',
+            cost: labCost,
+            description: contentResource?.description || '',
+            premiumFilesCount: labContent.content?.premium_files_count
+          }}
+          isPurchasing={isPurchasing}
+          purchaseError={purchaseError}
+          onGetMoreCoins={() => navigate('/coins')}
+        />
+      )}
     </>
   );
 };

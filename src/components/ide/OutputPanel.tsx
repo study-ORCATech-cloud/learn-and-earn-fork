@@ -67,7 +67,10 @@ const OutputPanel: React.FC<OutputPanelProps> = ({ result, isRunning }) => {
       </div>
 
       {/* Output content */}
-      <div className="flex-1 overflow-y-auto min-h-0">
+      <div 
+        className="flex-1 overflow-y-auto min-h-0 pr-2 custom-scrollbar" 
+        style={{ maxHeight: 'calc(100vh - 400px)' }}
+      >
         {result.error && (
           <div className="mb-4 p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
