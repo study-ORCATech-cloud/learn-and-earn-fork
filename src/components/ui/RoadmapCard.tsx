@@ -1,7 +1,10 @@
-import React from 'react';
-import { Clock, Heart, Calendar, TrendingUp, BookOpen } from 'lucide-react';
+import React, { useState } from 'react';
+import { Heart, Calendar, BookOpen } from 'lucide-react';
 import { RoadmapItem } from '../../types/learningPath';
 import { Card } from '@/components/ui/card';
+import { useVoting } from '../../context/VotingContext';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface RoadmapCardProps {
   item: RoadmapItem;
@@ -10,6 +13,7 @@ interface RoadmapCardProps {
 
 const RoadmapCard: React.FC<RoadmapCardProps> = ({ item, className = '' }) => {
   const {
+    id,
     title,
     description,
     icon,
@@ -24,6 +28,55 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({ item, className = '' }) => {
     gradient,
     developmentProgress
   } = item;
+
+  const { isAuthenticated } = useAuth();
+  const { isItemVoted, toggleVote } = useVoting();
+  const { toast } = useToast();
+  const [currentVoteCount, setCurrentVoteCount] = useState(votingCount);
+  const [isVoting, setIsVoting] = useState(false);
+
+  const isVoted = isItemVoted(id);
+  
+
+  const handleVoteClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    // Prevent event bubbling to parent elements
+    event.preventDefault();
+    event.stopPropagation();
+    
+
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to vote for roadmap items.",
+        variant: "destructive",
+        className: "bg-red-900 border-red-700 text-white",
+      });
+      return;
+    }
+
+    if (isVoting) return; // Prevent double clicks
+
+    try {
+      setIsVoting(true);
+      const newCount = await toggleVote(id, currentVoteCount);
+      setCurrentVoteCount(newCount);
+      
+      toast({
+        title: isVoted ? "Vote Removed" : "Vote Cast",
+        description: isVoted ? "Your vote has been removed." : "Thank you for your vote!",
+        className: "bg-green-900 border-green-700 text-white",
+      });
+    } catch (error) {
+      toast({
+        title: "Vote Failed",
+        description: error instanceof Error ? error.message : "Failed to update vote. Please try again.",
+        variant: "destructive",
+        className: "bg-red-900 border-red-700 text-white",
+      });
+    } finally {
+      setIsVoting(false);
+    }
+  };
 
   const getDifficultyColor = (level: string) => {
     switch (level) {
@@ -54,7 +107,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({ item, className = '' }) => {
   };
 
   return (
-    <Card className={`relative overflow-hidden bg-slate-900/50 border-slate-800 hover:border-slate-700 transition-all duration-300 hover:transform hover:scale-[1.02] h-full flex flex-col ${className}`}>
+    <Card className={`relative overflow-hidden bg-slate-900/50 border-slate-800 hover:border-slate-700 transition-all duration-300 h-full flex flex-col ${className}`}>
       {/* Background Gradient */}
       <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5 hover:opacity-10 transition-opacity duration-300`} />
       
@@ -96,8 +149,8 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({ item, className = '' }) => {
             {plannedReleaseDate}
           </div>
           <div className="flex items-center gap-1">
-            <Heart className="w-4 h-4" />
-            {votingCount}
+            <Heart className={`w-4 h-4 ${isVoted ? 'text-red-400' : 'text-slate-400'}`} />
+            {currentVoteCount}
           </div>
         </div>
 
@@ -129,9 +182,21 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({ item, className = '' }) => {
               {status}
             </span>
           </div>
-          <button className="flex items-center gap-1 text-slate-400 hover:text-red-400 transition-colors">
-            <Heart className="w-4 h-4" />
-            <span className="text-xs">Vote</span>
+          <button 
+            onClick={handleVoteClick}
+            disabled={isVoting}
+            className={`flex items-center gap-1 transition-colors disabled:opacity-50 cursor-pointer hover:scale-105 z-10 relative ${
+              isVoted 
+                ? 'text-red-400 hover:text-red-300' 
+                : 'text-slate-400 hover:text-red-400'
+            }`}
+            title={isAuthenticated ? (isVoted ? 'Remove vote' : 'Vote for this item') : 'Login to vote'}
+            type="button"
+          >
+            <Heart className={`w-4 h-4 transition-all ${isVoted ? 'fill-current scale-110' : 'hover:scale-110'}`} />
+            <span className="text-xs font-medium">
+              {isVoting ? '...' : isVoted ? 'Voted' : 'Vote'}
+            </span>
           </button>
         </div>
       </div>

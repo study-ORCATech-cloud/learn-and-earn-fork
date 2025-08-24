@@ -27,6 +27,7 @@ import { SearchProvider } from "./context/SearchContext";
 import { BackendDataProvider } from "./context/BackendDataContext";
 import { AuthProvider } from "./context/AuthContext";
 import { OrcaWalletProvider } from "./context/OrcaWalletContext";
+import { VotingProvider } from "./context/VotingContext";
 import { useScrollToTop } from "./hooks/useScrollToTop";
 import RoadmapPage from "./pages/RoadmapPage";
 import ManagementDashboard from "./management/pages/ManagementDashboard";
@@ -55,8 +56,9 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
       <AuthProvider>
-        <BackendDataProvider>
-          <OrcaWalletProvider>
+        <VotingProvider>
+          <BackendDataProvider>
+            <OrcaWalletProvider>
             <UserProgressProvider>
               <SearchProvider>
               <TooltipProvider>
@@ -124,8 +126,9 @@ const App = () => (
               </TooltipProvider>
               </SearchProvider>
             </UserProgressProvider>
-          </OrcaWalletProvider>
-        </BackendDataProvider>
+            </OrcaWalletProvider>
+          </BackendDataProvider>
+        </VotingProvider>
       </AuthProvider>
     </HelmetProvider>
   </QueryClientProvider>
