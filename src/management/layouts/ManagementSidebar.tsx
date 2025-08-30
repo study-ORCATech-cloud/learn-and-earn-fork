@@ -13,7 +13,8 @@ import {
   Database,
   LogOut,
   BarChart3,
-  Coins
+  Coins,
+  MessageSquare
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -71,6 +72,14 @@ const ManagementSidebar: React.FC<ManagementSidebarProps> = ({
       icon: <Shield className="w-5 h-5" />,
       requiredPermission: 'view_all_users',
       description: 'Role hierarchy and permissions',
+    },
+    {
+      id: 'contact-messages',
+      label: 'Contact Messages',
+      path: '/management/contact-messages',
+      icon: <MessageSquare className="w-5 h-5" />,
+      requiredPermission: 'manage_system',
+      description: 'Manage customer inquiries and support requests',
     },
     {
       id: 'analytics',

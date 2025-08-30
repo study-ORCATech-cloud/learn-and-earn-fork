@@ -82,6 +82,77 @@ export interface GlobalLogoutStatus {
   timestamp: string;
 }
 
+// Contact management types
+export interface ContactMessage {
+  id: string;
+  name: string;
+  last_name?: string;
+  email: string;
+  phone_number?: string;
+  message: string;
+  ip_address?: string;
+  user_agent?: string;
+  country?: string;
+  city?: string;
+  status: 'NEW' | 'READ' | 'IN_PROGRESS' | 'RESOLVED' | 'SPAM';
+  created_at: string;
+  read_at?: string;
+  resolved_at?: string;
+  acknowledgment_sent: boolean;
+  acknowledgment_sent_at?: string;
+  admin_notes?: string;
+  assigned_to?: string;
+}
+
+export interface ContactMessageResponse {
+  success: boolean;
+  messages: ContactMessage[];
+  pagination: {
+    page: number;
+    per_page: number;
+    total_pages: number;
+    total_items: number;
+    has_next: boolean;
+    has_prev: boolean;
+    next_page?: number;
+    prev_page?: number;
+  };
+  filters: {
+    status?: string;
+    search?: string;
+  };
+  stats: {
+    total_messages: number;
+    new_messages: number;
+    in_progress: number;
+    resolved: number;
+  };
+}
+
+export interface ContactSystemHealth {
+  status: string;
+  message: string;
+  stats: {
+    total_messages: number;
+    email_enabled: boolean;
+    geolocation_enabled: boolean;
+    rate_limit_per_hour: number;
+  };
+}
+
+export interface ContactFilters {
+  status?: string;
+  search?: string;
+  page?: number;
+  per_page?: number;
+}
+
+export interface ContactMessageUpdate {
+  status?: 'NEW' | 'READ' | 'IN_PROGRESS' | 'RESOLVED' | 'SPAM';
+  admin_notes?: string;
+  assigned_to?: string;
+}
+
 // Management operation types
 export type BulkOperation = 'ACTIVATE' | 'DEACTIVATE' | 'ROLE_CHANGE' | 'DELETE';
 export type AuditAction = 'CREATE' | 'UPDATE' | 'DELETE' | 'ROLE_CHANGE' | 'ACTIVATE' | 'DEACTIVATE';

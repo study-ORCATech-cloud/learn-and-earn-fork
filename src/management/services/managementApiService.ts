@@ -1,7 +1,14 @@
 // Core management API service
 
 import { authService } from '../../services/authService';
-import type { ApiResponse } from '../types/management';
+import type { 
+  ApiResponse, 
+  ContactMessage, 
+  ContactMessageResponse,
+  ContactSystemHealth, 
+  ContactFilters,
+  ContactMessageUpdate
+} from '../types/management';
 
 // Global variable to store logout callback
 let logoutCallback: (() => Promise<void>) | null = null;
@@ -205,6 +212,38 @@ class ManagementApiService {
    */
   getManagementBasePath(): string {
     return import.meta.env.VITE_MANAGEMENT_BASE_PATH || '/management';
+  }
+
+  /**
+   * Contact system management methods
+   */
+  
+  /**
+   * Get contact system health status
+   */
+  async getContactHealth(): Promise<ApiResponse<ContactSystemHealth>> {
+    return this.get<ContactSystemHealth>('/api/v1/contact/health');
+  }
+
+  /**
+   * Look up contact message status by reference ID
+   */
+  async getContactMessageStatus(referenceId: string): Promise<ApiResponse<{ message: ContactMessage }>> {
+    return this.get<{ message: ContactMessage }>(`/api/v1/contact/status/${referenceId}`);
+  }
+
+  /**
+   * Get all contact messages with pagination and filtering
+   */
+  async getContactMessages(filters?: ContactFilters): Promise<ApiResponse<ContactMessageResponse>> {
+    return this.get<ContactMessageResponse>('/api/v1/contact', filters);
+  }
+
+  /**
+   * Update a contact message
+   */
+  async updateContactMessage(messageId: string, update: ContactMessageUpdate): Promise<ApiResponse<ContactMessage>> {
+    return this.put<ContactMessage>(`/api/v1/contact/${messageId}`, update);
   }
 }
 

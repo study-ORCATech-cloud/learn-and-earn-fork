@@ -13,7 +13,10 @@ import {
   Database,
   Eye,
   UserPlus,
-  BarChart3
+  BarChart3,
+  MessageSquare,
+  Search,
+  RefreshCw
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,6 +28,9 @@ import { useUsers } from '../hooks/useUsers';
 import { useSystemHealth } from '../hooks/useSystemHealth';
 import { formatRelativeTime } from '../utils/formatters';
 import SystemStatusBar from '../components/common/SystemStatusBar';
+import { managementApiService } from '../services/managementApiService';
+import type { ContactSystemHealth, ContactMessage } from '../types/management';
+import { toast } from 'sonner';
 
 interface QuickActionProps {
   title: string;
@@ -82,6 +88,13 @@ const ManagementDashboard: React.FC = () => {
     cacheStats, 
     isLoading: healthLoading 
   } = useSystemHealth({ autoRefresh: true });
+
+  // Contact management state
+  const [contactHealth, setContactHealth] = React.useState<ContactSystemHealth | null>(null);
+  const [contactHealthLoading, setContactHealthLoading] = React.useState(false);
+  const [messageStatus, setMessageStatus] = React.useState<ContactMessage | null>(null);
+  const [messageStatusLoading, setMessageStatusLoading] = React.useState(false);
+  const [referenceId, setReferenceId] = React.useState('');
 
   // Note: Users are now eagerly loaded by UserManagementProvider
 
@@ -171,7 +184,70 @@ const ManagementDashboard: React.FC = () => {
       permission: 'manage_system',
       color: 'text-orange-400'
     },
+    {
+      title: 'Contact Messages',
+      description: 'Manage customer inquiries and support requests',
+      icon: <MessageSquare className="w-5 h-5" />,
+      to: '/management/contact-messages',
+      permission: 'manage_system',
+      color: 'text-cyan-400'
+    },
   ];
+
+  // Contact management functions
+  const checkContactHealth = async () => {
+    setContactHealthLoading(true);
+    try {
+      const response = await managementApiService.getContactHealth();
+      if (response.success && response.data) {
+        setContactHealth(response.data);
+        toast.success('Contact system health updated');
+      } else {
+        toast.error(response.message || 'Failed to check contact health');
+      }
+    } catch (error) {
+      toast.error('Network error checking contact health');
+    } finally {
+      setContactHealthLoading(false);
+    }
+  };
+
+  const lookupMessageStatus = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!referenceId.trim()) return;
+    
+    setMessageStatusLoading(true);
+    try {
+      const response = await managementApiService.getContactMessageStatus(referenceId.trim());
+      if (response.success && response.data) {
+        setMessageStatus(response.data.message);
+        toast.success('Message found');
+      } else {
+        setMessageStatus(null);
+        toast.error(response.message || 'Message not found');
+      }
+    } catch (error) {
+      setMessageStatus(null);
+      toast.error('Network error looking up message');
+    } finally {
+      setMessageStatusLoading(false);
+    }
+  };
+
+  const getStatusBadgeColor = (status: string) => {
+    switch (status?.toUpperCase()) {
+      case 'NEW':
+        return 'text-blue-400 border-blue-500/30';
+      case 'IN_PROGRESS':
+        return 'text-yellow-400 border-yellow-500/30';
+      case 'RESOLVED':
+        return 'text-green-400 border-green-500/30';
+      case 'CLOSED':
+        return 'text-gray-400 border-gray-500/30';
+      default:
+        return 'text-slate-400 border-slate-500/30';
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -213,7 +289,7 @@ const ManagementDashboard: React.FC = () => {
           </div>
         </CardContent>
       </Card>
-
+      
       {/* Recent Activity & System Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* User Statistics */}

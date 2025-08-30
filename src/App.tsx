@@ -37,6 +37,7 @@ import RolesPage from "./management/pages/RolesPage";
 import SystemPage from "./management/pages/SystemPage";
 import AnalyticsPage from "./management/pages/AnalyticsPage";
 import OrcaCoinsPage from "./management/pages/OrcaCoinsPage";
+import ContactMessagesPage from "./management/pages/ContactMessagesPage";
 import { ManagementProvider } from "./management/context/ManagementContext";
 import { UserManagementProvider } from "./management/context/UserManagementContext";
 import { SystemProvider } from "./management/context/SystemContext";
@@ -101,6 +102,7 @@ const App = () => (
                                     <Route path="users/create" element={<UsersPage />} />
                                     <Route path="users/:id" element={<UserDetailsPage />} />
                                     <Route path="roles" element={<RolesPage />} />
+                                    <Route path="contact-messages" element={<ContactMessagesPage />} />
                                     <Route path="analytics" element={<AnalyticsPage />} />
                                     <Route path="orca-coins" element={<OrcaCoinsPage />} />
                                     <Route path="system" element={
