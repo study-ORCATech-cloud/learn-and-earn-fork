@@ -176,7 +176,8 @@ class ApiService {
     
     return {
       ...options,
-      credentials: 'include', // CRITICAL: Include cookies for authentication
+      // Include cookies if auth is enabled - let backend decide if user is authenticated
+      credentials: authService.isAuthEnabled() ? 'include' : undefined,
       headers: {
         ...defaultHeaders,
         ...options?.headers,

@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import { Clock, Play, ExternalLink, Lock, Coins } from 'lucide-react';
+import { Clock, Play, ExternalLink, Lock, Coins, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '../../context/AuthContext';
 import { LoginModal } from '../auth/LoginModal';
@@ -31,10 +32,8 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
       const courseId = course.id;
       const resourceId = resource.id;
       
-      if (resource.type === 'lab') {
-        navigate(`/course/${courseId}/lab/${resourceId}/ide`);
-      } else if (resource.type === 'article') {
-        navigate(`/course/${courseId}/article/${resourceId}`);
+      if (resource.type === 'lab' || resource.type === 'article') {
+        navigate(`/course/${courseId}/${resource.type}/${resourceId}`);
       }
     } else {
       // For other resource types (video, etc.), open external link
@@ -67,7 +66,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
         <div className="text-2xl">{getTypeIcon(resource.type)}</div>
         <div className="flex-1 flex flex-col h-full">
           <div className="flex items-start justify-between mb-3">
-            <div>
+            <div className="flex-1">
               <h3 className="text-xl font-semibold text-white mb-2">
                 {resource.title}
               </h3>
@@ -75,9 +74,17 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
                 {resource.description}
               </p>
             </div>
-            <span className={`px-3 py-1 rounded-full text-sm font-medium border ml-4 ${getDifficultyColor(resource.difficulty)}`}>
-              {resource.difficulty}
-            </span>
+            <div className="flex flex-col items-end gap-2 ml-4">
+              <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getDifficultyColor(resource.difficulty)}`}>
+                {resource.difficulty}
+              </span>
+              {resource.completed && (
+                <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/20 hover:text-green-400 cursor-default">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  Completed
+                </Badge>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-4 mb-4 text-sm text-slate-400">

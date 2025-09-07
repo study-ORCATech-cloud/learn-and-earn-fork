@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, FileText, Folder, FolderOpen, Download, AlertCircle, Lock, Coins, Eye, Code } from 'lucide-react';
+import { ArrowLeft, FileText, Folder, FolderOpen, Download, AlertCircle, Lock, Coins, Eye, Code, CheckCircle } from 'lucide-react';
 import Header from '../components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -16,6 +16,36 @@ import PurchaseConfirmationDialog from '../components/lab/PurchaseConfirmationDi
 import LabUnderConstruction from '../components/lab/LabUnderConstruction';
 import { useToast } from '@/hooks/use-toast';
 import { errorLoggingService } from '../services/errorLoggingService';
+import MarkdownRenderer from '../components/ui/markdown-renderer';
+import LabNavigationButtons from '../components/lab/LabNavigationButtons';
+
+// Helper function to determine file type and rendering method
+const getFileType = (fileName: string): 'markdown' | 'code' | 'text' => {
+  const extension = fileName.toLowerCase().split('.').pop();
+  
+  switch (extension) {
+    case 'md':
+    case 'markdown':
+      return 'markdown';
+    case 'js':
+    case 'jsx':
+    case 'ts':
+    case 'tsx':
+    case 'py':
+    case 'html':
+    case 'css':
+    case 'json':
+    case 'xml':
+    case 'yaml':
+    case 'yml':
+    case 'sql':
+    case 'sh':
+    case 'bash':
+      return 'code';
+    default:
+      return 'text';
+  }
+};
 
 // Combine regular lab files with premium preview files
 const combineLabFiles = (labContent: LabContent | null): LabFile[] => {
@@ -39,10 +69,33 @@ const combineLabFiles = (labContent: LabContent | null): LabFile[] => {
 const LabViewerPage: React.FC = () => {
   const { courseId, labId, articleId } = useParams<{ courseId: string; labId?: string; articleId?: string }>();
   
+  // Helper function to render file content based on type
+  const renderFileContent = (file: LabFile, isPreview: boolean = false) => {
+    const fileType = getFileType(file.name);
+    const content = file.content || (isPreview ? 'Preview content not available' : 'File content not available');
+    
+    if (fileType === 'markdown') {
+      return (
+        <div className={`bg-slate-950 rounded-lg p-6 ${isPreview ? 'border border-blue-500/30' : ''}`}>
+          <MarkdownRenderer content={content} />
+        </div>
+      );
+    }
+    
+    // Default rendering for code and text files
+    return (
+      <div className={`bg-slate-950 rounded-lg p-4 overflow-x-auto ${isPreview ? 'border border-blue-500/30' : ''}`}>
+        <pre className="text-sm text-slate-300 whitespace-pre-wrap">
+          {content}
+        </pre>
+      </div>
+    );
+  };
+  
   // Determine content type and ID
   const contentType = labId ? 'lab' : 'article';
   const contentId = labId || articleId;
-  const { data } = useBackendData();
+  const { data, refetch } = useBackendData();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { 
     purchaseLabAccess, 
@@ -54,9 +107,8 @@ const LabViewerPage: React.FC = () => {
   const { toast } = useToast();
   
   // Find the course and lab resource
-  const course = data.courses.find(c => c.id === courseId);
-  const contentResource = course?.resources?.find(r => r.id === contentId && r.type === contentType) ||
-                         course?.resourceGroups?.flatMap(g => g.resources).find(r => r.id === contentId && r.type === contentType);
+  const course = data.courses[courseId];
+  const contentResource = course?.resources ? Object.values(course.resources).find(r => r.id === contentId && r.type === contentType) : undefined;
   
   const contentUrl = contentResource?.url || '';
   const navigate = useNavigate();
@@ -71,6 +123,8 @@ const LabViewerPage: React.FC = () => {
   const [isUnderConstruction, setIsUnderConstruction] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [showPurchaseDialog, setShowPurchaseDialog] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
   
   // Cache management functions
   const saveCachedContent = (content: LabContent) => {
@@ -259,6 +313,13 @@ const LabViewerPage: React.FC = () => {
   const handleFileSelect = (file: LabFile) => {
     if (file.type === 'file') {
       setSelectedFile(file);
+      
+      // Check if this is a preview file that requires purchase
+      const isPreviewFile = file.is_premium && !file.access_granted && file.access_message?.includes('Premium preview');
+      if (isPreviewFile) {
+        // Show purchase modal for preview files
+        handlePurchaseClick();
+      }
     } else {
       toggleFolder(file.path);
     }
@@ -313,6 +374,53 @@ const LabViewerPage: React.FC = () => {
         variant: "destructive",
         className: "bg-red-900 border-red-700 text-white",
       });
+    }
+  };
+
+  const handleCompleteClick = async () => {
+    if (!contentUrl) return;
+
+    try {
+      setIsCompleting(true);
+      
+      const baseUrl = import.meta.env.VITE_BACKEND_BASE_PATH || 'http://localhost:5000';
+      const response = await fetch(`${baseUrl}/api/v1/labs/complete`, {
+        method: 'POST',
+        credentials: 'include', // Use cookie-based auth like other API calls
+        headers: {
+          'X-Lab-Url': contentUrl,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        setIsCompleted(true);
+        toast({
+          title: "Lab Completed!",
+          description: "You have successfully completed this lab",
+          className: "bg-green-900 border-green-700 text-white",
+        });
+        // Refresh backend data to reflect the completion
+        refetch();
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: "Completion Failed",
+          description: errorData.message || "Unable to mark lab as completed",
+          variant: "destructive",
+          className: "bg-red-900 border-red-700 text-white",
+        });
+      }
+    } catch (error) {
+      console.error('Error completing lab:', error);
+      toast({
+        title: "Completion Error",
+        description: "An unexpected error occurred while marking the lab as completed",
+        variant: "destructive",
+        className: "bg-red-900 border-red-700 text-white",
+      });
+    } finally {
+      setIsCompleting(false);
     }
   };
 
@@ -595,17 +703,34 @@ const LabViewerPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Edit Mode Button */}
-                <Button
-                  onClick={() => navigate(`/course/${courseId}/${contentType}/${contentId}/ide`)}
-                  variant="outline"
-                  size="sm"
-                  className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white hover:border-blue-500 hover:text-blue-400"
-                  title="Switch to IDE mode for editing"
-                >
-                  <Code className="w-4 h-4 mr-2" />
-                  Edit Mode
-                </Button>
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => navigate(`/course/${courseId}/${contentType}/${contentId}/ide`)}
+                    variant="outline"
+                    size="sm"
+                    className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white hover:border-blue-500 hover:text-blue-400"
+                    title="Switch to IDE mode for editing"
+                  >
+                    <Code className="w-4 h-4 mr-2" />
+                    Edit Mode
+                  </Button>
+                  
+                  <Button
+                    onClick={handleCompleteClick}
+                    disabled={isCompleting || isCompleted}
+                    size="sm"
+                    className={`${
+                      isCompleted 
+                        ? 'bg-green-600 border-green-500 text-white cursor-default' 
+                        : 'bg-green-700 hover:bg-green-600 border-green-600 text-white hover:border-green-500'
+                    }`}
+                    title={isCompleted ? 'Lab completed' : 'Mark lab as completed'}
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    {isCompleting ? 'Completing...' : isCompleted ? 'Completed' : 'Complete'}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -682,6 +807,18 @@ const LabViewerPage: React.FC = () => {
             
           </div>
 
+          {/* Lab Navigation */}
+          {courseId && (
+            <div className="mb-4">
+              <LabNavigationButtons
+                courseId={courseId}
+                currentLabId={labId}
+                currentArticleId={articleId}
+                currentMode="view"
+              />
+            </div>
+          )}
+
           {/* Main Content Area */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* File Tree */}
@@ -742,11 +879,7 @@ const LabViewerPage: React.FC = () => {
                             <p className="text-slate-300 mb-4 text-center">
                               This is a preview of premium content. Purchase access to unlock the complete version.
                             </p>
-                            <div className="bg-slate-900 rounded-lg p-4 text-left border border-blue-500/30">
-                              <pre className="text-sm text-slate-300 whitespace-pre-wrap overflow-x-auto">
-                                {selectedFile.content || 'Preview content not available'}
-                              </pre>
-                            </div>
+                            {renderFileContent(selectedFile, true)}
                           </div>
                         ) : (
                           // This is a locked premium file - show lock icon
@@ -767,10 +900,8 @@ const LabViewerPage: React.FC = () => {
                         </Button>
                       </div>
                     ) : (
-                      <div className="bg-slate-950 rounded-lg p-4 overflow-x-auto">
-                        <pre className="text-sm text-slate-300 whitespace-pre-wrap">
-                          {selectedFile.content || 'File content not available'}
-                        </pre>
+                      <div>
+                        {renderFileContent(selectedFile)}
                       </div>
                     )}
                   </>

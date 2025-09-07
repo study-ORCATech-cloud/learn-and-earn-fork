@@ -13,13 +13,11 @@ export interface Resource {
   isExternal?: boolean;
   lastUpdated?: Date;
   isInteractive?: boolean;
+  // Lab completion fields
+  completed?: boolean;
+  completed_at?: string;
 }
 
-export interface ResourceGroup {
-  title: string;
-  description: string;
-  resources: Resource[];
-}
 
 export interface Course {
   id: string;
@@ -41,9 +39,13 @@ export interface Course {
   topics: string[];
   prerequisites: string[];
   tags: string[];
-  resources?: Resource[];
-  resourceGroups?: ResourceGroup[];
+  resources?: { [url: string]: Resource };
   lastUpdated: Date;
+  // Course progress fields
+  total_labs_completed?: number;
+  total_labs?: number;
+  completion_percentage?: number;
+  course_completed?: boolean;
 }
 
 export interface CourseGroup {

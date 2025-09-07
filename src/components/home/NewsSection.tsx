@@ -109,7 +109,7 @@ const NewsSection = () => {
   };
 
   return (
-    <section className="py-12 md:py-16 px-4 bg-gradient-to-r from-slate-900/30 to-slate-800/30 border-y border-slate-800">
+    <section className="py-12 md:py-16 px-4 bg-gradient-to-b from-purple-900/25 to-blue-900/25 border-slate-800">
       <div className="container mx-auto">
         <div className="text-center mb-8 md:mb-12">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4 md:mb-6">

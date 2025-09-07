@@ -60,10 +60,10 @@ const CourseFilterBar: React.FC<CourseFilterBarProps> = ({
             <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
               <SelectValue placeholder="Difficulty" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Difficulties</SelectItem>
+            <SelectContent className="bg-slate-800 border-slate-700">
+              <SelectItem value="all" className="text-white hover:bg-slate-700">All Difficulties</SelectItem>
               {availableDifficulties.map((difficulty) => (
-                <SelectItem key={difficulty} value={difficulty}>
+                <SelectItem key={difficulty} value={difficulty} className="text-white hover:bg-slate-700">
                   {difficulty}
                 </SelectItem>
               ))}
@@ -77,10 +77,10 @@ const CourseFilterBar: React.FC<CourseFilterBarProps> = ({
             <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
+            <SelectContent className="bg-slate-800 border-slate-700">
+              <SelectItem value="all" className="text-white hover:bg-slate-700">All Types</SelectItem>
               {availableTypes.map((type) => (
-                <SelectItem key={type} value={type}>
+                <SelectItem key={type} value={type} className="text-white hover:bg-slate-700">
                   {type.charAt(0).toUpperCase() + type.slice(1)}
                 </SelectItem>
               ))}
@@ -94,7 +94,7 @@ const CourseFilterBar: React.FC<CourseFilterBarProps> = ({
             variant="outline"
             size="sm"
             onClick={onClearFilters}
-            className="border-slate-700 text-slate-300 hover:bg-slate-800"
+            className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
           >
             <X className="w-4 h-4 mr-2" />
             Clear

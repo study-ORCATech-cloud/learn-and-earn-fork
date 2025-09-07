@@ -124,28 +124,16 @@ const WalletPage: React.FC = () => {
 
   const handleLabClick = (labUrl: string) => {
     // Find the course and lab that matches this URL
-    for (const course of backendData.courses) {
+    for (const course of Object.values(backendData.courses)) {
       // Check direct resources
-      const directLab = course.resources?.find(resource => 
-        resource.type === 'lab' && resource.url === labUrl
-      );
-      
-      if (directLab) {
-        window.open(`/course/${course.id}/lab/${directLab.id}`, '_blank');
-        return;
-      }
-      
-      // Check resource groups
-      if (course.resourceGroups) {
-        for (const group of course.resourceGroups) {
-          const groupLab = group.resources.find(resource => 
-            resource.type === 'lab' && resource.url === labUrl
-          );
-          
-          if (groupLab) {
-            window.open(`/course/${course.id}/lab/${groupLab.id}`, '_blank');
-            return;
-          }
+      if (course.resources) {
+        const directLab = Object.values(course.resources).find(resource => 
+          resource.type === 'lab' && resource.url === labUrl
+        );
+        
+        if (directLab) {
+          window.open(`/course/${course.id}/lab/${directLab.id}`, '_blank');
+          return;
         }
       }
     }

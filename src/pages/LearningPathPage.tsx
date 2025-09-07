@@ -40,9 +40,7 @@ const LearningPathPage = () => {
     return <LearningPathNotFound />;
   }
 
-  const pathCourses = data.courses.filter(course => 
-    learningPath.courseIds.includes(course.id)
-  );
+  const pathCourses = learningPath.courseIds.map(courseId => data.courses[courseId]).filter(Boolean);
 
   // Simple filter function like courses page
   const filterCourses = (coursesToFilter: typeof data.courses) => {

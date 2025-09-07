@@ -1,9 +1,11 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, Star, TrendingUp, Wrench } from 'lucide-react';
+import { Clock, Star, TrendingUp, Wrench, CheckCircle } from 'lucide-react';
 import { Course } from '../../types/learningPath';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 
 interface CourseCardProps {
   course: Course;
@@ -83,6 +85,30 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
               {duration}
             </div>
           </div>
+
+          {/* Course Progress */}
+          {(course.completion_percentage !== undefined && course.total_labs !== undefined) && (
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-slate-400">
+                  Progress: {course.total_labs_completed || 0}/{course.total_labs} labs
+                </span>
+                {course.course_completed && (
+                  <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30">
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Complete
+                  </Badge>
+                )}
+              </div>
+              <Progress 
+                value={course.completion_percentage} 
+                className="h-2 bg-slate-800 [&>div]:bg-gradient-to-r [&>div]:from-blue-500 [&>div]:to-cyan-500"
+              />
+              <div className="text-right mt-1">
+                <span className="text-xs text-slate-500">{course.completion_percentage}%</span>
+              </div>
+            </div>
+          )}
 
           {/* Difficulty and Coming Soon Badge - pushed to bottom */}
           <div className="flex items-center justify-between mt-auto">

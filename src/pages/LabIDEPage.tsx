@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, FileText, Folder, FolderOpen, Code, Eye, Save, RotateCcw, RefreshCcw, Download, Coins } from 'lucide-react';
+import { ArrowLeft, FileText, Folder, FolderOpen, Code, Eye, Save, RotateCcw, RefreshCcw, Download, Coins, CheckCircle } from 'lucide-react';
 import Header from '../components/layout/Header';
 import MonacoEditor from '../components/ide/MonacoEditor';
 import CodeRunner from '../components/ide/CodeRunner';
@@ -24,6 +24,7 @@ import { useBackendData } from '../context/BackendDataContext';
 import { useAuth } from '../context/AuthContext';
 import { useOrcaWallet } from '../context/OrcaWalletContext';
 import PurchaseConfirmationDialog from '../components/lab/PurchaseConfirmationDialog';
+import LabNavigationButtons from '../components/lab/LabNavigationButtons';
 import { useToast } from '@/hooks/use-toast';
 
 // Combine regular lab files with premium preview files (copied from LabViewerPage)
@@ -48,7 +49,7 @@ const combineLabFiles = (labContent: LabContent | null): LabFile[] => {
 const LabIDEPage: React.FC = () => {
   const { courseId, labId, articleId } = useParams<{ courseId: string; labId?: string; articleId?: string }>();
   const navigate = useNavigate();
-  const { data } = useBackendData();
+  const { data, refetch } = useBackendData();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { 
     purchaseLabAccess, 
@@ -80,15 +81,15 @@ const LabIDEPage: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [showReloadModal, setShowReloadModal] = useState(false);
   const [showPurchaseDialog, setShowPurchaseDialog] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   // Get course and content resource data (memoized to prevent infinite loops)
-  const course = useMemo(() => data?.courses?.find(c => c.id === courseId), [data?.courses, courseId]);
+  const course = useMemo(() => data?.courses?.[courseId], [data?.courses, courseId]);
   
   const contentResource = useMemo(() => {
-    if (!course) return null;
-    return course.resources?.find(r => r.id === contentId && r.type === contentType) ||
-           course.resourceGroups?.flatMap(g => g.resources).find(r => r.id === contentId && r.type === contentType) ||
-           null;
+    if (!course || !course.resources) return null;
+    return Object.values(course.resources).find(r => r.id === contentId && r.type === contentType) || null;
   }, [course, contentId, contentType]);
   
   const contentUrl = useMemo(() => contentResource?.url || '', [contentResource?.url]);
@@ -555,6 +556,13 @@ const LabIDEPage: React.FC = () => {
       return;
     }
 
+    // Check if this is a preview file that requires purchase
+    const isPreviewFile = file.is_premium && !file.access_granted && file.access_message?.includes('Premium preview');
+    if (isPreviewFile) {
+      // Show purchase modal for preview files
+      handlePurchaseClick();
+    }
+
     // Apply user's changes to the selected file (in case it doesn't have them)
     const pendingChanges = loadPendingChanges();
     const savedContent = loadSavedContent();
@@ -735,6 +743,53 @@ const LabIDEPage: React.FC = () => {
     }
   };
 
+  const handleCompleteClick = async () => {
+    if (!contentUrl) return;
+
+    try {
+      setIsCompleting(true);
+      
+      const baseUrl = import.meta.env.VITE_BACKEND_BASE_PATH || 'http://localhost:5000';
+      const response = await fetch(`${baseUrl}/api/v1/labs/complete`, {
+        method: 'POST',
+        credentials: 'include', // Use cookie-based auth like other API calls
+        headers: {
+          'X-Lab-Url': contentUrl,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        setIsCompleted(true);
+        toast({
+          title: "Lab Completed!",
+          description: "You have successfully completed this lab",
+          className: "bg-green-900 border-green-700 text-white",
+        });
+        // Refresh backend data to reflect the completion
+        refetch();
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: "Completion Failed",
+          description: errorData.message || "Unable to mark lab as completed",
+          variant: "destructive",
+          className: "bg-red-900 border-red-700 text-white",
+        });
+      }
+    } catch (error) {
+      console.error('Error completing lab:', error);
+      toast({
+        title: "Completion Error",
+        description: "An unexpected error occurred while marking the lab as completed",
+        variant: "destructive",
+        className: "bg-red-900 border-red-700 text-white",
+      });
+    } finally {
+      setIsCompleting(false);
+    }
+  };
+
   // Check if there are premium files and user doesn't have access
   const hasPremiumFiles = labContent?.content?.premium_files_count > 0;
   const hasAccess = labContent?.access?.has_premium_access || false;
@@ -897,18 +952,45 @@ const LabIDEPage: React.FC = () => {
                   <Eye className="w-4 h-4 mr-2" />
                   View Mode
                 </Button>
+                <Button
+                  onClick={handleCompleteClick}
+                  disabled={isCompleting || isCompleted}
+                  size="sm"
+                  className={`${
+                    isCompleted 
+                      ? 'bg-green-600 border-green-500 text-white cursor-default' 
+                      : 'bg-green-700 hover:bg-green-600 border-green-600 text-white hover:border-green-500'
+                  }`}
+                  title={isCompleted ? 'Lab completed' : 'Mark lab as completed'}
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  {isCompleting ? 'Completing...' : isCompleted ? 'Completed' : 'Complete'}
+                </Button>
               </div>
             </div>
           </div>
         </div>
+        <br/>
+
+        {/* Lab Navigation */}
+        {courseId && (
+          <div className="container mx-auto px-4 mb-4">
+            <LabNavigationButtons
+              courseId={courseId}
+              currentLabId={labId}
+              currentArticleId={articleId}
+              currentMode="ide"
+            />
+          </div>
+        )}
 
         {/* Main IDE Layout */}
         <div className="container mx-auto px-4 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 h-[calc(100vh-220px)]">
             {/* File Explorer */}
             <div className="lg:col-span-1">
-              <Card className="p-4 bg-slate-900/50 border-slate-800 h-full flex flex-col">
-                <div className="flex items-center justify-between mb-4 flex-shrink-0">
+              <Card className="p-4 bg-slate-900/50 border-slate-800">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-white">Files</h3>
                   <div className="flex items-center gap-2">
                     <div className="text-xs text-slate-400">
@@ -925,7 +1007,7 @@ const LabIDEPage: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-                <div className="flex-1 overflow-y-auto min-h-0 custom-scrollbar">
+                <div className="max-h-96 overflow-y-auto">
                   {labContent && renderFileTree(combineLabFiles(labContent))}
                 </div>
               </Card>

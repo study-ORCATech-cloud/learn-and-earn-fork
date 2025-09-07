@@ -28,9 +28,7 @@ const CourseGroupSection: React.FC<CourseGroupSectionProps> = ({
   return (
     <div className="space-y-6">
       {groups.map((group, groupIndex) => {
-        const groupCourses = courses.filter(course => 
-          group.courseIds.includes(course.id)
-        );
+        const groupCourses = group.courseIds.map(courseId => courses[courseId]).filter(Boolean);
         const filteredGroupCourses = filterCourses(groupCourses);
         const isOpen = openSections[groupIndex] || false;
         

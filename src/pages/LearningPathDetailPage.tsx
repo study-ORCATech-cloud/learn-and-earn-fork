@@ -12,9 +12,7 @@ const LearningPathDetailPage: React.FC = () => {
   const { data, isLoading, error } = useBackendData();
 
   const learningPath = data?.learningPaths.find(path => path.id === pathId);
-  const pathCourses = data?.courses.filter(course => 
-    learningPath?.courses?.includes(course.id)
-  ) || [];
+  const pathCourses = learningPath?.courses?.map(courseId => data?.courses[courseId]).filter(Boolean) || [];
 
   const handleCourseSelect = (course: Course) => {
     navigate(`/course/${course.id}`);

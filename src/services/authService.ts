@@ -89,7 +89,8 @@ class AuthService {
     
     const params = new URLSearchParams({
       state,
-      redirect_uri: window.location.origin + '/auth/callback'
+      redirect_uri: window.location.origin + '/auth/callback',
+      redirect_url: window.location.pathname + window.location.search
     });
     
     window.location.href = `${this.baseUrl}/google?${params.toString()}`;
@@ -101,7 +102,8 @@ class AuthService {
     
     const params = new URLSearchParams({
       state,
-      redirect_uri: window.location.origin + '/auth/callback'
+      redirect_uri: window.location.origin + '/auth/callback',
+      redirect_url: window.location.pathname + window.location.search
     });
     
     window.location.href = `${this.baseUrl}/github?${params.toString()}`;

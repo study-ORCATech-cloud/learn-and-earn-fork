@@ -1,23 +1,20 @@
 
 import { useState, useMemo } from 'react';
-import { Resource, ResourceGroup } from '../types/learningPath';
+import { Resource } from '../types/learningPath';
 
 interface UseCourseFiltersProps {
   resources?: Resource[];
-  resourceGroups?: ResourceGroup[];
 }
 
-export const useCourseFilters = ({ resources = [], resourceGroups = [] }: UseCourseFiltersProps) => {
+export const useCourseFilters = ({ resources = [] }: UseCourseFiltersProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
 
-  // Get all resources from both direct resources and resource groups
+  // Get all resources
   const allResources = useMemo(() => {
-    const directResources = resources || [];
-    const groupResources = resourceGroups?.flatMap(group => group.resources) || [];
-    return [...directResources, ...groupResources];
-  }, [resources, resourceGroups]);
+    return resources || [];
+  }, [resources]);
 
   // Get available filter options
   const availableDifficulties = useMemo(() => {
@@ -45,13 +42,6 @@ export const useCourseFilters = ({ resources = [], resourceGroups = [] }: UseCou
     });
   };
 
-  // Filter resource groups
-  const filterResourceGroups = (groups: ResourceGroup[]) => {
-    return groups.map(group => ({
-      ...group,
-      resources: filterResources(group.resources)
-    })).filter(group => group.resources.length > 0);
-  };
 
   // Count active filters
   const activeFiltersCount = useMemo(() => {
@@ -78,7 +68,6 @@ export const useCourseFilters = ({ resources = [], resourceGroups = [] }: UseCou
     availableDifficulties,
     availableTypes,
     filterResources,
-    filterResourceGroups,
     activeFiltersCount,
     clearFilters
   };

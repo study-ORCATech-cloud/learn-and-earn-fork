@@ -44,35 +44,35 @@ const CoursesPage = () => {
       id: 'software-development',
       title: 'Software Development',
       description: 'Master programming languages and software development fundamentals',
-      courses: data.courses.filter(course => course.category === 'Programming' && course.level !== 'Expert'),
+      courses: Object.values(data.courses).filter(course => course.category === 'Programming' && course.level !== 'Expert'),
       icon: '💻'
     },
     {
       id: 'web-development',
       title: 'Web Development',
       description: 'Build modern web applications with React and frontend technologies',
-      courses: data.courses.filter(course => course.category === 'Web' && course.level !== 'Expert'),
+      courses: Object.values(data.courses).filter(course => course.category === 'Web' && course.level !== 'Expert'),
       icon: '🌐'
     },
     {
       id: 'cloud-computing',
       title: 'Cloud Computing',
       description: 'Learn cloud platforms, services, and cloud-native architectures',
-      courses: data.courses.filter(course => course.category === 'Cloud' && course.level !== 'Expert'),
+      courses: Object.values(data.courses).filter(course => course.category === 'Cloud' && course.level !== 'Expert'),
       icon: '☁️'
     },
     {
       id: 'devops-infrastructure',
       title: 'DevOps & Infrastructure',
       description: 'Master containerization, orchestration, CI/CD, and infrastructure automation',
-      courses: data.courses.filter(course => ['DevOps', 'Docker', 'Kubernetes', 'Git', 'SysAdmin', 'CI/CD', 'IaC'].includes(course.category) && course.level !== 'Expert'),
+      courses: Object.values(data.courses).filter(course => ['DevOps', 'Docker', 'Kubernetes', 'Git', 'SysAdmin', 'CI/CD', 'IaC'].includes(course.category) && course.level !== 'Expert'),
       icon: '🔧'
     },
     {
       id: 'expert-specializations',
       title: 'Expert Specializations',
       description: 'Advanced courses for specialized skills and deep expertise',
-      courses: data.courses.filter(course => course.level === 'Expert'),
+      courses: Object.values(data.courses).filter(course => course.level === 'Expert'),
       icon: '🎯'
     }
   ];

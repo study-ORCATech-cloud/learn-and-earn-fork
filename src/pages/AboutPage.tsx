@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useLocation } from 'react-router-dom';
 import Header from '../components/layout/Header';
-import { Target, Users, Award, Zap } from 'lucide-react';
+import { Target, Users, Award, Zap, Coins, Gift, BookOpen, Star } from 'lucide-react';
 
 const AboutPage = () => {
   const location = useLocation();
@@ -41,7 +41,7 @@ const AboutPage = () => {
         <Header />
 
         {/* Hero Section */}
-        <section className="py-20 px-4">
+        <section className="py-20 px-4 bg-gradient-to-b from-slate-950/60 to-slate-900/60">
           <div className="container mx-auto text-center">
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
               <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
@@ -56,7 +56,7 @@ const AboutPage = () => {
         </section>
 
         {/* Mission Section */}
-        <section className="py-16 px-4 bg-slate-900/30">
+        <section className="py-16 px-4 bg-gradient-to-b from-slate-900/60 to-slate-900/70">
           <div className="container mx-auto">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-4xl font-bold text-white mb-8 text-center">Our Mission</h2>
@@ -86,7 +86,7 @@ const AboutPage = () => {
         </section>
 
         {/* Story Section */}
-        <section className="py-16 px-4">
+        <section className="py-16 px-4 bg-gradient-to-b from-slate-900/70 to-slate-900/70">
           <div className="container mx-auto">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-4xl font-bold text-white mb-8 text-center">Our Story</h2>
@@ -114,7 +114,7 @@ const AboutPage = () => {
         </section>
 
         {/* Features Section */}
-        <section className="py-16 px-4 bg-gradient-to-r from-blue-900/20 to-purple-900/20">
+        <section className="py-16 px-4 bg-gradient-to-b from-slate-900/70 to-slate-900/70">
           <div className="container mx-auto">
             <h2 className="text-4xl font-bold text-white mb-12 text-center">What We Offer</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -134,8 +134,121 @@ const AboutPage = () => {
           </div>
         </section>
 
+        {/* Orca Coins Section */}
+        <section className="py-16 px-4 bg-gradient-to-b from-slate-900/70 to-slate-900/70">
+          <div className="container mx-auto">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <Coins className="w-8 h-8 text-amber-400" />
+                  <h2 className="text-4xl font-bold text-white">Orca Coins</h2>
+                  <Coins className="w-8 h-8 text-amber-400" />
+                </div>
+                <p className="text-xl text-slate-300">
+                  Enhance your learning experience with optional premium content
+                </p>
+              </div>
+
+              {/* Free vs Premium Clarification */}
+              <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-6 mb-8">
+                <div className="flex items-center gap-3 mb-3">
+                  <Star className="w-6 h-6 text-green-400" />
+                  <h3 className="text-xl font-semibold text-green-400">All Labs Are Completely FREE</h3>
+                </div>
+                <p className="text-slate-300 leading-relaxed">
+                  Every lab, exercise, and core learning material on ORCATech is <strong className="text-green-400">100% free</strong>. 
+                  You can complete entire courses, master new technologies, and build your skills without spending a penny. 
+                  Orca Coins are only for optional premium enhancements that complement your free learning experience.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                {/* What are Orca Coins */}
+                <div className="bg-slate-900/50 rounded-lg p-6 border border-slate-800">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
+                      <Coins className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-white">What are Orca Coins?</h3>
+                  </div>
+                  <p className="text-slate-300 leading-relaxed">
+                    Orca Coins are our platform's virtual currency that allows you to access premium content and features. 
+                    They're designed to support the platform while giving you access to enhanced learning materials, 
+                    bonus exercises, and exclusive content created by industry experts.
+                  </p>
+                </div>
+
+                {/* How to Earn */}
+                <div className="bg-slate-900/50 rounded-lg p-6 border border-slate-800">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-cyan-500 rounded-full flex items-center justify-center">
+                      <Gift className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-white">How to Get Coins</h3>
+                  </div>
+                  <ul className="text-slate-300 space-y-2">
+                    <li>• <strong className="text-green-400">Welcome Bonus:</strong> Get coins when you join</li>
+                    <li>• <strong className="text-purple-400">Purchase:</strong> Support the platform directly</li>
+                    <li>• <strong className="text-blue-400">Webinars:</strong> Join live sessions for extra rewards</li>
+                    <li>• <strong className="text-amber-400">Special Events:</strong> Participate in community challenges</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* What You Can Use Coins For */}
+              <div className="bg-slate-900/50 rounded-lg p-6 border border-slate-800">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
+                    <BookOpen className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white">Premium Content & Features</h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <strong className="text-white">Advanced Exercises:</strong>
+                      <p className="text-slate-400 text-sm">Deep-dive challenges and advanced scenarios</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <strong className="text-white">Solution Walkthroughs:</strong>
+                      <p className="text-slate-400 text-sm">Detailed explanations and best practices</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <strong className="text-white">Expert Tips:</strong>
+                      <p className="text-slate-400 text-sm">Industry insights and pro techniques</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <strong className="text-white">Bonus Materials:</strong>
+                      <p className="text-slate-400 text-sm">Additional resources and reference guides</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center mt-8">
+                <Link to="/coins">
+                  <button className="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-300 flex items-center gap-2 mx-auto">
+                    <Coins className="w-5 h-5" />
+                    Get Orca Coins
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Contact Section */}
-        <section className="py-16 px-4">
+        <section className="py-16 px-4 bg-gradient-to-b from-slate-900/70 to-slate-950/60">
           <div className="container mx-auto text-center">
             <h2 className="text-4xl font-bold text-white mb-6">Get In Touch</h2>
             <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">

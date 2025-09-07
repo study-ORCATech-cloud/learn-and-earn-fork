@@ -13,7 +13,7 @@ const HomePage = () => {
 
   const stats = [
     { label: 'Learning Paths', value: data.learningPaths.length.toString(), icon: BookOpen },
-    { label: 'Individual Courses', value: data.courses.length.toString(), icon: Target },
+    { label: 'Individual Courses', value: Object.keys(data.courses).length.toString(), icon: Target },
     { label: 'Practice Projects', value: data.projects.length.toString(), icon: Code },
     { label: 'Industry Focus', value: '100%', icon: TrendingUp },
   ];
@@ -69,7 +69,7 @@ const HomePage = () => {
         {/* Hero Section */}
         <section className="relative py-12 md:py-20 px-4 overflow-hidden">
           {/* Background Effects */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-slate-950 to-purple-900/20" />
+          <div className="absolute inset-0 bg-gradient-to-b from-blue-900/40 to-purple-900/40" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-500/10 via-transparent to-transparent" />
           
           <div className="container mx-auto text-center relative z-10">
@@ -102,28 +102,50 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* News Section */}
-        <NewsSection />
-
         {/* Stats Section */}
-        <section className="py-8 md:py-12 px-4 border-y border-slate-800">
+        <section className="py-8 md:py-12 px-4 bg-gradient-to-b from-purple-900/40 to-purple-900/25 border-slate-800">
           <div className="container mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg mb-3 md:mb-4">
-                    <stat.icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                  </div>
-                  <div className="text-2xl md:text-3xl font-bold text-white mb-1 md:mb-2">{stat.value}</div>
-                  <div className="text-slate-400 text-sm md:text-base">{stat.label}</div>
-                </div>
-              ))}
+              {stats.map((stat, index) => {
+                // Determine the route based on the stat label
+                let route = '';
+                if (stat.label === 'Learning Paths') route = '/learning-paths';
+                else if (stat.label === 'Individual Courses') route = '/courses';
+                else if (stat.label === 'Practice Projects') route = '/projects';
+
+                // If there's a route, make it clickable
+                if (route) {
+                  return (
+                    <Link key={index} to={route} className="text-center group cursor-pointer">
+                      <div className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg mb-3 md:mb-4 group-hover:from-blue-600 group-hover:to-cyan-600 transition-all duration-300 transform group-hover:scale-110">
+                        <stat.icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                      </div>
+                      <div className="text-2xl md:text-3xl font-bold text-white mb-1 md:mb-2 group-hover:text-blue-300 transition-colors">{stat.value}</div>
+                      <div className="text-slate-400 text-sm md:text-base group-hover:text-slate-300 transition-colors">{stat.label}</div>
+                    </Link>
+                  );
+                } else {
+                  // For non-clickable stats (like Industry Focus), keep the original structure
+                  return (
+                    <div key={index} className="text-center">
+                      <div className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg mb-3 md:mb-4">
+                        <stat.icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                      </div>
+                      <div className="text-2xl md:text-3xl font-bold text-white mb-1 md:mb-2">{stat.value}</div>
+                      <div className="text-slate-400 text-sm md:text-base">{stat.label}</div>
+                    </div>
+                  );
+                }
+              })}
             </div>
           </div>
         </section>
 
+        {/* News Section */}
+        <NewsSection />
+
         {/* Features Section */}
-        <section className="py-12 md:py-20 px-4">
+        <section className="py-12 md:py-20 px-4 bg-gradient-to-b from-blue-900/25 to-slate-900/40">
           <div className="container mx-auto">
             <div className="text-center mb-12 md:mb-16">
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4 md:mb-6">
@@ -149,7 +171,7 @@ const HomePage = () => {
         </section>
 
         {/* Learning Approach Section */}
-        <section className="py-12 md:py-20 px-4 bg-gradient-to-r from-slate-900/50 to-slate-800/50">
+        <section className="py-12 md:py-20 px-4 bg-gradient-to-b from-slate-900/40 to-purple-900/25">
           <div className="container mx-auto">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6 md:mb-8">
@@ -198,7 +220,7 @@ const HomePage = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-12 md:py-20 px-4 bg-gradient-to-r from-blue-900/30 to-purple-900/30">
+        <section className="py-12 md:py-20 px-4 bg-gradient-to-b from-purple-900/25 to-blue-900/30">
           <div className="container mx-auto text-center">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4 md:mb-6">
               Ready to Start Learning?

@@ -1,6 +1,6 @@
 export interface BackendResponse {
   learningPaths: any[];
-  courses: any[];
+  courses: { [key: string]: any };
   projects: any[];
   roadmapItems: any[];
   roadmapProjects: any[];

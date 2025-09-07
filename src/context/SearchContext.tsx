@@ -47,7 +47,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         category: path.category || 'General',
         difficulty: 'Intermediate' // Default difficulty for paths
       })),
-      ...data.courses.map(course => ({
+      ...Object.values(data.courses).map(course => ({
         id: course.id,
         title: course.title,
         description: course.description,

@@ -14,7 +14,7 @@ const CoursePage = () => {
   const location = useLocation();
   const { data, isLoading } = useBackendData();
   
-  const course = data.courses.find(c => c.id === courseId);
+  const course = data.courses[courseId];
 
   if (isLoading) {
     return (

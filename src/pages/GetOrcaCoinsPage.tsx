@@ -176,7 +176,7 @@ const GetOrcaCoinsPage = () => {
         </section>
 
         {/* Benefits Section */}
-        <section className="py-16 px-4 bg-slate-900/30">
+        <section className="py-16 px-4">
           <div className="container mx-auto">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-4xl font-bold text-white mb-12 text-center">Why Choose Orca Coins?</h2>
