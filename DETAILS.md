@@ -9,7 +9,7 @@
 ## 1. Project Overview
 
 ### Purpose & Domain
-**learn-and-earn** is a React + TypeScript Single Page Application (SPA) designed to provide an interactive, modular learning platform focused on cloud technologies, DevOps, programming, and infrastructure topics. It solves the problem of fragmented learning by offering curated learning paths, courses, projects, and roadmaps with rich metadata, progress tracking, and filtering capabilities.
+**labdojo** is a React + TypeScript Single Page Application (SPA) designed to provide an interactive, modular learning platform focused on cloud technologies, DevOps, programming, and infrastructure topics. It solves the problem of fragmented learning by offering curated learning paths, courses, projects, and roadmaps with rich metadata, progress tracking, and filtering capabilities.
 
 ### Target Users & Use Cases
 - **Learners:** Individuals seeking structured learning paths in cloud computing, DevOps, programming, and related fields.
@@ -320,7 +320,7 @@
 
 # Summary
 
-The **learn-and-earn** project is a modern, modular React + TypeScript SPA designed for structured learning in cloud and DevOps domains. It features a clean separation of concerns with static data modules, reusable UI components, global state management via React Context, and robust build and deployment pipelines. The project employs best practices in component design, type safety, and accessibility, supported by comprehensive documentation and operational guides. This architecture facilitates scalability, maintainability, and ease of contribution for developers and content creators alike.
+The **labdojo** project is a modern, modular React + TypeScript SPA designed for structured learning in cloud and DevOps domains. It features a clean separation of concerns with static data modules, reusable UI components, global state management via React Context, and robust build and deployment pipelines. The project employs best practices in component design, type safety, and accessibility, supported by comprehensive documentation and operational guides. This architecture facilitates scalability, maintainability, and ease of contribution for developers and content creators alike.
 
 ---
 

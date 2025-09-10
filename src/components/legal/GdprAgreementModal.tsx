@@ -45,7 +45,7 @@ const GdprAgreementModal: React.FC<GdprAgreementModalProps> = ({ isOpen, onClose
             {/* Introduction */}
             <section className="space-y-3">
               <p className="leading-relaxed">
-                This agreement outlines your rights and how to exercise them when using Learn-and-Earn.online.
+                This agreement outlines your rights and how to exercise them when using labdojo.io.
               </p>
             </section>
 
@@ -122,7 +122,7 @@ const GdprAgreementModal: React.FC<GdprAgreementModalProps> = ({ isOpen, onClose
             <section className="space-y-3">
               <h2 className="text-xl font-semibold text-white">Data Controller</h2>
               <p className="leading-relaxed">
-                Learn-and-Earn.online acts as the data controller for the personal data processed through this platform. 
+                labdojo.io acts as the data controller for the personal data processed through this platform. 
                 For any GDPR-related inquiries, please contact us using the information provided above.
               </p>
             </section>

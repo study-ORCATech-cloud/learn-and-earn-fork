@@ -96,7 +96,7 @@ const CoursesPage = () => {
       <Helmet>
         <title>Courses - ORCATech Learning Platform</title>
         <meta name="description" content="Focus on specific technologies and skills with our comprehensive course catalog. From beginner fundamentals to expert-level specializations." />
-        <link rel="canonical" href={`https://learn-and-earn.online${location.pathname}`} />
+        <link rel="canonical" href={`https://labdojo.io${location.pathname}`} />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">

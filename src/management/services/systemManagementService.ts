@@ -138,7 +138,7 @@ class SystemManagementService {
         health: healthResponse.data || {
           status: 'unhealthy',
           timestamp: new Date().toISOString(),
-          service: 'learn-and-earn-backend',
+          service: 'labdojo-backend',
           version: 'unknown',
           environment: 'unknown',
         },

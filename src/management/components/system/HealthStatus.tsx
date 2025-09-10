@@ -318,7 +318,7 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
                     <div className="flex justify-between items-center py-2 border-b border-slate-700">
                       <span className="text-slate-400">Service Name</span>
                       <span className="text-slate-200 font-mono">
-                        {health.service || 'learn-and-earn-backend'}
+                        {health.service || 'labdojo-backend'}
                       </span>
                     </div>
                     <div className="flex justify-between items-center py-2 border-b border-slate-700">

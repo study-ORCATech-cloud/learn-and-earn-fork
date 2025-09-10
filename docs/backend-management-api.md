@@ -639,7 +639,7 @@ System health check for monitoring.
 {
   "status": "healthy",
   "timestamp": "2024-01-01T00:00:00Z",
-  "service": "learn-and-earn-backend",
+  "service": "labdojo-backend",
   "version": "1.0.0",
   "environment": "production"
 }

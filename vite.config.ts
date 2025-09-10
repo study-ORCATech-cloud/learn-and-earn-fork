@@ -9,7 +9,7 @@ const dynamicCSPPlugin = (mode: string) => ({
   transformIndexHtml(html: string) {
     // Define allowed connections based on environment
     const connectSrc = mode === 'production' 
-      ? "'self' https://engine.learn-and-earn.online https://cdn.jsdelivr.net https://api.github.com wss: ws:"
+      ? "'self' https://engine.labdojo.io https://cdn.jsdelivr.net https://api.github.com wss: ws:"
       : "'self' http://localhost:* https://cdn.jsdelivr.net https://api.github.com wss: ws:";
     
     const cspContent = `default-src 'self'; 

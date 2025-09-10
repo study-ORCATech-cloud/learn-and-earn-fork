@@ -45,7 +45,7 @@ const CopyrightAgreementModal: React.FC<CopyrightAgreementModalProps> = ({ isOpe
             {/* Introduction */}
             <section className="space-y-3">
               <p className="leading-relaxed">
-                Learn-and-Earn.online ("Website," "Platform," "we," "us," or "our") respects the intellectual property rights of others and expects users to do the same.<br/>
+                labdojo.io ("Website," "Platform," "we," "us," or "our") respects the intellectual property rights of others and expects users to do the same.<br/>
                 This Copyright & DMCA Policy explains how our content may be used, how third-party materials are treated, and how we handle copyright infringement claims.
               </p>
             </section>
@@ -54,7 +54,7 @@ const CopyrightAgreementModal: React.FC<CopyrightAgreementModalProps> = ({ isOpe
             <section className="space-y-3">
               <h2 className="text-xl font-semibold text-white">1. Copyright Ownership</h2>
               <p className="leading-relaxed">
-                All original content available on the Platform, including but not limited to tutorials, labs, exercises, text, graphics, code snippets, and design elements ("Content"), is the property of Learn-and-Earn.online or its licensors and is protected by applicable copyright laws.
+                All original content available on the Platform, including but not limited to tutorials, labs, exercises, text, graphics, code snippets, and design elements ("Content"), is the property of labdojo.io or its licensors and is protected by applicable copyright laws.
               </p>
             </section>
 

@@ -99,7 +99,7 @@ const RoadmapPage = () => {
       <Helmet>
         <title>Roadmap - ORCATech Learning Platform</title>
         <meta name="description" content="Discover what's coming next to the ORCATech Learning Platform. Vote on upcoming courses and features, and see our development roadmap." />
-        <link rel="canonical" href={`https://learn-and-earn.online${location.pathname}`} />
+        <link rel="canonical" href={`https://labdojo.io${location.pathname}`} />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">
