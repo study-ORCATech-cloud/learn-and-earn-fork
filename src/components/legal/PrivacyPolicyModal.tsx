@@ -45,7 +45,7 @@ const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({ isOpen, onClose
             {/* Introduction */}
             <section className="space-y-3">
               <p className="leading-relaxed">
-                labdojo.io ("Website," "Platform," "we," "us," or "our") respects your privacy.<br/>
+                LabDojo.io ("Website," "Platform," "we," "us," or "our") respects your privacy.<br/>
                 This Privacy Policy explains how we collect, use, and protect your information when you use the Website.<br/>
                 By accessing or using the Website, you agree to the practices described below.
               </p>
