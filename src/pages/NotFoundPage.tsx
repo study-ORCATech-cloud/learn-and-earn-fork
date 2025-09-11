@@ -13,7 +13,7 @@ const NotFoundPage = () => {
       <Helmet>
         <title>Page Not Found - LabDojo Learning Platform</title>
         <meta name="description" content="The page you're looking for doesn't exist. Explore our learning paths instead." />
-        <link rel="canonical" href={`https://learn-and-earn.online${location.pathname}`} />
+        <link rel="canonical" href={`https://labdojo.io${location.pathname}`} />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">

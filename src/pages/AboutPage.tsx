@@ -34,7 +34,7 @@ const AboutPage = () => {
       <Helmet>
         <title>About LabDojo - Transforming Tech Education</title>
         <meta name="description" content="Learn about LabDojo's mission to democratize tech education through cutting-edge learning platforms and industry-focused curricula." />
-        <link rel="canonical" href={`https://learn-and-earn.online${location.pathname}`} />
+        <link rel="canonical" href={`https://labdojo.io${location.pathname}`} />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">

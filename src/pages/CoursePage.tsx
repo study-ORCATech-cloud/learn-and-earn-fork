@@ -49,7 +49,7 @@ const CoursePage = () => {
         <title>{course.title} - LabDojo Learning Platform</title>
         <meta name="description" content={course.longDescription} />
         <meta name="keywords" content={course.tags.join(', ')} />
-        <link rel="canonical" href={`https://learn-and-earn.online${location.pathname}`} />
+        <link rel="canonical" href={`https://labdojo.io${location.pathname}`} />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">
