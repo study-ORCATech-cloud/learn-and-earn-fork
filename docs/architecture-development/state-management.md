@@ -1,6 +1,6 @@
 # State Management Guide
 
-This document provides a comprehensive guide to state management in the ORCATech Learning Platform, covering Context API patterns, state organization, and best practices for maintaining scalable and maintainable state.
+This document provides a comprehensive guide to state management in the LabDojo Learning Platform, covering Context API patterns, state organization, and best practices for maintaining scalable and maintainable state.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ This document provides a comprehensive guide to state management in the ORCATech
 
 ## Overview
 
-The ORCATech Learning Platform uses React's Context API as the primary state management solution, supplemented by local component state and custom hooks. This approach provides:
+The LabDojo Learning Platform uses React's Context API as the primary state management solution, supplemented by local component state and custom hooks. This approach provides:
 
 - **Global State Management**: Shared state across components
 - **Type Safety**: Full TypeScript integration
@@ -117,13 +117,13 @@ interface UserPreferences {
 export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // 1. Initialize state from localStorage
   const [progress, setProgress] = useState<UserProgress>(() => {
-    const stored = localStorage.getItem('orcatech-progress');
+    const stored = localStorage.getItem('labdojo-progress');
     return stored ? JSON.parse(stored) : DEFAULT_PROGRESS;
   });
 
   // 2. Persist state changes
   useEffect(() => {
-    localStorage.setItem('orcatech-progress', JSON.stringify(progress));
+    localStorage.setItem('labdojo-progress', JSON.stringify(progress));
   }, [progress]);
 
   // 3. Action handlers
@@ -957,7 +957,7 @@ const useUserProgress = () => {
 
 ## Conclusion
 
-Effective state management in the ORCATech Learning Platform relies on:
+Effective state management in the LabDojo Learning Platform relies on:
 
 1. **Clear Architecture**: Well-defined state layers and responsibilities
 2. **Type Safety**: Comprehensive TypeScript integration

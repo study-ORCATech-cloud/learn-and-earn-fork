@@ -550,7 +550,7 @@ const ContactMessagesPage: React.FC = () => {
                 <Label className="text-slate-300">Assigned To</Label>
                 <Input
                   type="email"
-                  placeholder="admin@orcatech.com"
+                  placeholder="admin@labdojo.com"
                   value={updateForm.assigned_to}
                   onChange={(e) => setUpdateForm({...updateForm, assigned_to: e.target.value})}
                   className="bg-slate-800 border-slate-600 text-white"

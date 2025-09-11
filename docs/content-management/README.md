@@ -1,7 +1,7 @@
 
 # Content Management Documentation 📝
 
-This section contains all documentation related to creating, editing, and managing educational content on the ORCATech Learning Platform.
+This section contains all documentation related to creating, editing, and managing educational content on the LabDojo Learning Platform.
 
 ## 📚 Available Guides
 

@@ -16,7 +16,7 @@ Before you begin, ensure you have the following installed on your computer:
 **Option A: Using Git (Recommended)**
 ```bash
 git clone <your-repository-url>
-cd orcatech-learning-platform
+cd labdojo-learning-platform
 ```
 
 **Option B: Download ZIP**

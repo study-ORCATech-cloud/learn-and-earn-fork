@@ -1,7 +1,7 @@
 
 # Content Management Guide
 
-This guide explains how to add, edit, and manage educational content in the ORCATech Learning Platform.
+This guide explains how to add, edit, and manage educational content in the LabDojo Learning Platform.
 
 ## Overview
 

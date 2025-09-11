@@ -1,7 +1,7 @@
 # Monaco Editor IDE Integration Plan
 
 ## Overview
-This document outlines the comprehensive plan to integrate Monaco Editor (VS Code's editor) into the ORCATech learning platform, creating an in-browser IDE experience for labs and articles while maintaining the existing LabViewerPage as a fallback.
+This document outlines the comprehensive plan to integrate Monaco Editor (VS Code's editor) into the LabDojo learning platform, creating an in-browser IDE experience for labs and articles while maintaining the existing LabViewerPage as a fallback.
 
 ## Project Structure
 ```
@@ -255,7 +255,7 @@ const LANGUAGE_MAP = {
 ```typescript
 // Configure Monaco Editor
 monaco.languages.register({ id: 'custom-language' });
-monaco.editor.defineTheme('orcatech-dark', {
+monaco.editor.defineTheme('labdojo-dark', {
   base: 'vs-dark',
   inherit: true,
   rules: [
@@ -404,6 +404,6 @@ const viewerUrl = `/course/${courseId}/${resourceType}/${resourceId}`;
 
 ## Conclusion
 
-This plan provides a comprehensive roadmap for implementing Monaco Editor as an integrated IDE within the ORCATech platform. The phased approach ensures manageable development cycles while maintaining the existing functionality as a fallback. The new IDE will significantly enhance the learning experience by allowing users to code directly in the browser with professional-grade editing capabilities.
+This plan provides a comprehensive roadmap for implementing Monaco Editor as an integrated IDE within the LabDojo platform. The phased approach ensures manageable development cycles while maintaining the existing functionality as a fallback. The new IDE will significantly enhance the learning experience by allowing users to code directly in the browser with professional-grade editing capabilities.
 
 The implementation prioritizes user experience, performance, and maintainability while providing a clear upgrade path from the current viewer-only approach to a full-featured development environment.

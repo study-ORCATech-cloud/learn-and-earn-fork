@@ -1,7 +1,7 @@
 
 # Customization Guide
 
-This guide provides comprehensive instructions for customizing themes, layouts, and branding in the ORCATech Learning Platform. Learn how to adapt the platform to match your organization's visual identity and requirements.
+This guide provides comprehensive instructions for customizing themes, layouts, and branding in the LabDojo Learning Platform. Learn how to adapt the platform to match your organization's visual identity and requirements.
 
 ## Table of Contents
 
@@ -23,7 +23,7 @@ This guide provides comprehensive instructions for customizing themes, layouts, 
 
 ## Overview
 
-The ORCATech Learning Platform uses a flexible theming system based on:
+The LabDojo Learning Platform uses a flexible theming system based on:
 
 - **CSS Custom Properties** for dynamic theming
 - **Tailwind CSS** for utility-first styling
@@ -1100,4 +1100,4 @@ const ThemeTest = () => {
 };
 ```
 
-This customization guide provides comprehensive instructions for adapting the ORCATech Learning Platform to match any brand or design requirements. Use these patterns and examples as starting points for your specific customization needs.
+This customization guide provides comprehensive instructions for adapting the LabDojo Learning Platform to match any brand or design requirements. Use these patterns and examples as starting points for your specific customization needs.

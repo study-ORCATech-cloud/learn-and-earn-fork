@@ -1,7 +1,7 @@
 
-# SEO Implementation Plan - ORCATech Learning Platform
+# SEO Implementation Plan - LabDojo Learning Platform
 
-This document outlines our comprehensive plan to improve Google indexing and search performance for the ORCATech Learning Platform.
+This document outlines our comprehensive plan to improve Google indexing and search performance for the LabDojo Learning Platform.
 
 ## Current SEO Status ✅
 
@@ -88,7 +88,7 @@ This document outlines our comprehensive plan to improve Google indexing and sea
 **Schema Types to Implement:**
 - [ ] **Course Schema** - For individual courses
 - [ ] **LearningResource Schema** - For learning paths
-- [ ] **Organization Schema** - For ORCATech brand
+- [ ] **Organization Schema** - For LabDojo brand
 - [ ] **Breadcrumb Schema** - For navigation
 - [ ] **FAQ Schema** - For FAQ sections
 
@@ -205,7 +205,7 @@ This document outlines our comprehensive plan to improve Google indexing and sea
   "description": "Learn Kubernetes from scratch...",
   "provider": {
     "@type": "Organization",
-    "name": "ORCATech",
+    "name": "LabDojo",
     "url": "https://yourdomain.com"
   },
   "educationalLevel": "Beginner",
@@ -218,7 +218,7 @@ This document outlines our comprehensive plan to improve Google indexing and sea
 {
   "@context": "https://schema.org",
   "@type": "EducationalOrganization",
-  "name": "ORCATech",
+  "name": "LabDojo",
   "url": "https://yourdomain.com",
   "logo": "https://yourdomain.com/logo.png",
   "description": "Transform your career with comprehensive tech learning paths"

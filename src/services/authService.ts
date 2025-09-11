@@ -2,7 +2,7 @@ import { jwtDecode } from 'jwt-decode';
 import { User, TokenPayload, LoginResponse } from '../types/auth';
 
 const BACKEND_AUTH_URL = import.meta.env.VITE_BACKEND_AUTH_URL || 'http://localhost:5000/auth';
-const TOKEN_STORAGE_KEY = import.meta.env.VITE_TOKEN_STORAGE_KEY || 'orcatech_auth_token';
+const TOKEN_STORAGE_KEY = import.meta.env.VITE_TOKEN_STORAGE_KEY || 'labdojo_auth_token';
 
 class AuthService {
   private baseUrl: string;

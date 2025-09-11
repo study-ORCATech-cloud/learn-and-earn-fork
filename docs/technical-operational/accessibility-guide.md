@@ -1,7 +1,7 @@
 
 # Accessibility Guide
 
-This guide outlines the accessibility standards, implementation practices, and testing procedures for the ORCATech Learning Platform to ensure an inclusive learning experience for all users.
+This guide outlines the accessibility standards, implementation practices, and testing procedures for the LabDojo Learning Platform to ensure an inclusive learning experience for all users.
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@ This guide outlines the accessibility standards, implementation practices, and t
 
 ## Overview
 
-The ORCATech Learning Platform is committed to providing an accessible learning environment that meets or exceeds Web Content Accessibility Guidelines (WCAG) 2.1 Level AA standards. This ensures that users with disabilities can effectively navigate, understand, and interact with all platform features.
+The LabDojo Learning Platform is committed to providing an accessible learning environment that meets or exceeds Web Content Accessibility Guidelines (WCAG) 2.1 Level AA standards. This ensures that users with disabilities can effectively navigate, understand, and interact with all platform features.
 
 ### Accessibility Goals
 
@@ -684,13 +684,13 @@ Provide an accessibility statement on the platform:
 ```markdown
 ## Accessibility Statement
 
-The ORCATech Learning Platform is committed to ensuring digital accessibility for people with disabilities. We continually improve the user experience for everyone and apply relevant accessibility standards.
+The LabDojo Learning Platform is committed to ensuring digital accessibility for people with disabilities. We continually improve the user experience for everyone and apply relevant accessibility standards.
 
 ### Conformance Status
 This website aims to conform to WCAG 2.1 Level AA standards.
 
 ### Feedback
-If you encounter any accessibility barriers, please contact us at accessibility@orcatech.edu
+If you encounter any accessibility barriers, please contact us at accessibility@labdojo.edu
 
 ### Date
 This statement was last updated on [Date].
@@ -698,6 +698,6 @@ This statement was last updated on [Date].
 
 ## Conclusion
 
-Accessibility is an ongoing commitment that requires continuous attention and improvement. By following these guidelines and regularly testing our platform, we ensure that the ORCATech Learning Platform remains accessible to all learners, regardless of their abilities or the assistive technologies they use.
+Accessibility is an ongoing commitment that requires continuous attention and improvement. By following these guidelines and regularly testing our platform, we ensure that the LabDojo Learning Platform remains accessible to all learners, regardless of their abilities or the assistive technologies they use.
 
 Remember that accessibility benefits everyone - clear navigation, good contrast, and semantic structure improve the experience for all users, not just those with disabilities.

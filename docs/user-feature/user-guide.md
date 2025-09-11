@@ -1,7 +1,7 @@
 
-# ORCATech Learning Platform - User Guide
+# LabDojo Learning Platform - User Guide
 
-> **Your complete guide to mastering technology skills with ORCATech's structured learning experience.**
+> **Your complete guide to mastering technology skills with LabDojo's structured learning experience.**
 
 ## Table of Contents
 
@@ -18,9 +18,9 @@
 
 ## Getting Started
 
-### Welcome to ORCATech! 🚀
+### Welcome to LabDojo! 🚀
 
-ORCATech is designed to help you master technology skills through three main learning approaches:
+LabDojo is designed to help you master technology skills through three main learning approaches:
 
 1. **📚 Learning Paths** - Comprehensive career-focused journeys
 2. **🎯 Individual Courses** - Focused skill development
@@ -421,8 +421,8 @@ The platform works perfectly on:
 
 ### General Questions
 
-**Q: Is ORCATech free to use?**
-A: Yes, ORCATech is completely free and open-source.
+**Q: Is LabDojo free to use?**
+A: Yes, LabDojo is completely free and open-source.
 
 **Q: Do I need to create an account?**
 A: No account is required. Your progress is saved locally in your browser.
@@ -449,10 +449,10 @@ A: Currently, we don't offer formal certificates, but you can showcase completed
 
 ### Technical Questions
 
-**Q: What devices does ORCATech support?**
-A: ORCATech works on all modern browsers and devices, including desktop, tablet, and mobile.
+**Q: What devices does LabDojo support?**
+A: LabDojo works on all modern browsers and devices, including desktop, tablet, and mobile.
 
-**Q: Can I use ORCATech offline?**
+**Q: Can I use LabDojo offline?**
 A: The platform requires an internet connection to access content and external resources.
 
 **Q: How is my progress saved?**

@@ -56,8 +56,8 @@ const SupportPage = () => {
   return (
     <>
       <Helmet>
-        <title>Support ORCATech - Help Us Keep Learning Accessible</title>
-        <meta name="description" content="Support ORCATech's mission to provide accessible, high-quality tech education. Your donations help us maintain the platform and create new learning resources." />
+        <title>Support LabDojo - Help Us Keep Learning Accessible</title>
+        <meta name="description" content="Support LabDojo's mission to provide accessible, high-quality tech education. Your donations help us maintain the platform and create new learning resources." />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">
@@ -77,7 +77,7 @@ const SupportPage = () => {
               </span>
             </h1>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-              Help us keep ORCATech accessible for everyone. Your support enables us to 
+              Help us keep LabDojo accessible for everyone. Your support enables us to 
               maintain the platform, create new content, and keep core learning resources available to all.
             </p>
           </div>
@@ -148,7 +148,7 @@ const SupportPage = () => {
                 <div className="p-6 bg-slate-900/50 rounded-lg border border-slate-800">
                   <h3 className="text-2xl font-semibold text-white mb-4">Spread the Word</h3>
                   <p className="text-slate-300 mb-4">
-                    Share ORCATech with friends, colleagues, and on social media. Help us reach more learners!
+                    Share LabDojo with friends, colleagues, and on social media. Help us reach more learners!
                   </p>
                   <div className="flex justify-center gap-4">
                     <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">

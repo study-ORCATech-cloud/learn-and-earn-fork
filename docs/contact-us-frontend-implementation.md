@@ -181,7 +181,7 @@ Implementation guide for integrating the Contact Us feature with the existing fr
 {
   "status": "READ",                    // Optional: NEW, READ, IN_PROGRESS, RESOLVED, SPAM
   "admin_notes": "Reviewed and...",    // Optional: Admin notes  
-  "assigned_to": "admin@orcatech.com"  // Optional: Admin email
+  "assigned_to": "admin@labdojo.com"  // Optional: Admin email
 }
 ```
 
@@ -195,7 +195,7 @@ Implementation guide for integrating the Contact Us feature with the existing fr
     "status": "READ",
     "read_at": "2025-08-28T17:00:00.000Z",
     "admin_notes": "Reviewed and...",
-    "assigned_to": "admin@orcatech.com"
+    "assigned_to": "admin@labdojo.com"
     // ... other fields
   }
 }
@@ -338,7 +338,7 @@ Implementation guide for integrating the Contact Us feature with the existing fr
       
       <div class="form-group">
         <label for="assignedTo">Assigned To:</label>
-        <input type="email" id="assignedTo" name="assigned_to" placeholder="admin@orcatech.com" />
+        <input type="email" id="assignedTo" name="assigned_to" placeholder="admin@labdojo.com" />
       </div>
       
       <button type="submit" class="btn btn-primary">Update Message</button>

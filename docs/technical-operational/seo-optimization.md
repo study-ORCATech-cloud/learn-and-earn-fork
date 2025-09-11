@@ -1,7 +1,7 @@
 
-# SEO Optimization Guide - ORCATech Learning Platform
+# SEO Optimization Guide - LabDojo Learning Platform
 
-This guide covers Search Engine Optimization (SEO) best practices, implementation strategies, and maintenance procedures for the ORCATech Learning Platform to maximize visibility and organic traffic.
+This guide covers Search Engine Optimization (SEO) best practices, implementation strategies, and maintenance procedures for the LabDojo Learning Platform to maximize visibility and organic traffic.
 
 ## Table of Contents
 
@@ -25,7 +25,7 @@ This guide covers Search Engine Optimization (SEO) best practices, implementatio
 
 ### Current SEO Implementation
 
-The ORCATech Learning Platform uses React Helmet Async for dynamic meta tag management and follows modern SEO best practices:
+The LabDojo Learning Platform uses React Helmet Async for dynamic meta tag management and follows modern SEO best practices:
 
 - **SPA SEO**: Single Page Application with proper meta management
 - **Dynamic Meta Tags**: Page-specific titles and descriptions
@@ -50,13 +50,13 @@ Generate and maintain XML sitemaps for all content:
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://orcatech.dev/</loc>
+    <loc>https://labdojo.dev/</loc>
     <lastmod>2024-01-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://orcatech.dev/learning-paths</loc>
+    <loc>https://labdojo.dev/learning-paths</loc>
     <lastmod>2024-01-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -74,7 +74,7 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://orcatech.dev/sitemap.xml
+Sitemap: https://labdojo.dev/sitemap.xml
 
 # Block any admin or development paths (if they exist)
 # Disallow: /admin/
@@ -108,7 +108,7 @@ Implement canonical URLs to prevent duplicate content:
 ```typescript
 // In React Helmet implementation
 <Helmet>
-  <link rel="canonical" href={`https://orcatech.dev${location.pathname}`} />
+  <link rel="canonical" href={`https://labdojo.dev${location.pathname}`} />
 </Helmet>
 ```
 
@@ -120,12 +120,12 @@ Follow the current pattern with improvements:
 
 ```typescript
 // Title Tag Format
-`${pageTitle} - ORCATech Learning Platform`
+`${pageTitle} - LabDojo Learning Platform`
 
 // Examples:
-"DevOps Engineer Learning Path - ORCATech Learning Platform"
-"Kubernetes Fundamentals Course - ORCATech Learning Platform"
-"Master Tech Skills - ORCATech Learning Platform"
+"DevOps Engineer Learning Path - LabDojo Learning Platform"
+"Kubernetes Fundamentals Course - LabDojo Learning Platform"
+"Master Tech Skills - LabDojo Learning Platform"
 
 // Best Practices:
 - Keep under 60 characters
@@ -278,8 +278,8 @@ const courseSchema = {
   "description": course.longDescription,
   "provider": {
     "@type": "Organization",
-    "name": "ORCATech",
-    "url": "https://orcatech.dev"
+    "name": "LabDojo",
+    "url": "https://labdojo.dev"
   },
   "educationalLevel": course.level,
   "timeRequired": course.duration,
@@ -289,7 +289,7 @@ const courseSchema = {
     "courseMode": "online",
     "instructor": {
       "@type": "Organization",
-      "name": "ORCATech"
+      "name": "LabDojo"
     }
   }
 };
@@ -305,7 +305,7 @@ const learningPathSchema = {
   "timeRequired": `${learningPath.estimatedHours} hours`,
   "provider": {
     "@type": "Organization",
-    "name": "ORCATech"
+    "name": "LabDojo"
   }
 };
 ```
@@ -316,14 +316,14 @@ const learningPathSchema = {
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "EducationalOrganization",
-  "name": "ORCATech",
-  "url": "https://orcatech.dev",
-  "logo": "https://orcatech.dev/logo.png",
+  "name": "LabDojo",
+  "url": "https://labdojo.dev",
+  "logo": "https://labdojo.dev/logo.png",
   "description": "Transform your career with comprehensive tech learning paths",
   "contactPoint": {
     "@type": "ContactPoint",
     "contactType": "customer service",
-    "email": "support@orcatech.dev"
+    "email": "support@labdojo.dev"
   }
 };
 ```
@@ -366,7 +366,7 @@ Current implementation is good, monitor these metrics:
 <picture>
   <source media="(min-width: 768px)" srcSet="/hero-desktop.webp" />
   <source media="(min-width: 480px)" srcSet="/hero-tablet.webp" />
-  <img src="/hero-mobile.webp" alt="ORCATech Learning Platform" />
+  <img src="/hero-mobile.webp" alt="LabDojo Learning Platform" />
 </picture>
 ```
 
@@ -472,16 +472,16 @@ Enhance social sharing with rich previews:
   <meta property="og:title" content={course.title} />
   <meta property="og:description" content={course.longDescription} />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content={`https://orcatech.dev/course/${course.id}`} />
-  <meta property="og:image" content={`https://orcatech.dev/course-images/${course.id}.png`} />
-  <meta property="og:site_name" content="ORCATech Learning Platform" />
+  <meta property="og:url" content={`https://labdojo.dev/course/${course.id}`} />
+  <meta property="og:image" content={`https://labdojo.dev/course-images/${course.id}.png`} />
+  <meta property="og:site_name" content="LabDojo Learning Platform" />
   
   {/* Twitter Card */}
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@orcatech_dev" />
+  <meta name="twitter:site" content="@labdojo_dev" />
   <meta name="twitter:title" content={course.title} />
   <meta name="twitter:description" content={course.longDescription} />
-  <meta name="twitter:image" content={`https://orcatech.dev/course-images/${course.id}.png`} />
+  <meta name="twitter:image" content={`https://labdojo.dev/course-images/${course.id}.png`} />
 </Helmet>
 ```
 
@@ -550,7 +550,7 @@ Track these KPIs monthly:
 
 ## Local SEO (if applicable)
 
-If ORCATech expands to local markets:
+If LabDojo expands to local markets:
 
 ### Google My Business
 
@@ -558,7 +558,7 @@ If ORCATech expands to local markets:
 const businessSchema = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  "name": "ORCATech Learning Center",
+  "name": "LabDojo Learning Center",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "123 Tech Street",
@@ -684,7 +684,7 @@ Test these elements for optimization:
 ```typescript
 // Title tag variations
 const titleTests = [
-  "DevOps Engineer Learning Path - ORCATech",
+  "DevOps Engineer Learning Path - LabDojo",
   "Master DevOps Engineering - Complete Learning Path",
   "Become a DevOps Engineer - Professional Training"
 ];
@@ -778,7 +778,7 @@ const descriptionTests = [
 
 ## Conclusion
 
-The ORCATech Learning Platform has a solid SEO foundation with React Helmet implementation, semantic HTML structure, and mobile-first design. Focus on:
+The LabDojo Learning Platform has a solid SEO foundation with React Helmet implementation, semantic HTML structure, and mobile-first design. Focus on:
 
 1. **Content Expansion**: Regular blog content and course updates
 2. **Technical Optimization**: Monitor Core Web Vitals and fix issues promptly

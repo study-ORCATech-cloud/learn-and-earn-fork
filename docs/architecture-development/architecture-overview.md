@@ -1,7 +1,7 @@
 
 # Architecture Overview
 
-This document provides a comprehensive overview of the ORCATech Learning Platform architecture, including technology stack, design patterns, data flow, and system organization.
+This document provides a comprehensive overview of the LabDojo Learning Platform architecture, including technology stack, design patterns, data flow, and system organization.
 
 ## Table of Contents
 
@@ -20,7 +20,7 @@ This document provides a comprehensive overview of the ORCATech Learning Platfor
 
 ## System Overview
 
-The ORCATech Learning Platform is a modern, single-page application (SPA) built with React that provides an interactive learning experience for DevOps, Cloud Engineering, and Programming education. The platform follows a component-based architecture with clear separation of concerns.
+The LabDojo Learning Platform is a modern, single-page application (SPA) built with React that provides an interactive learning experience for DevOps, Cloud Engineering, and Programming education. The platform follows a component-based architecture with clear separation of concerns.
 
 ### High-Level Architecture
 
@@ -449,7 +449,7 @@ npm run type-check
 
 ## Conclusion
 
-The ORCATech Learning Platform architecture emphasizes:
+The LabDojo Learning Platform architecture emphasizes:
 
 1. **Developer Experience**: Fast development with modern tools
 2. **User Experience**: Responsive, accessible, performant interface

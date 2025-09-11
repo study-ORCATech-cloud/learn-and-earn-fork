@@ -22,7 +22,7 @@ export const useUserProgress = () => {
 
 export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [progress, setProgress] = useState<UserProgress>(() => {
-    const stored = localStorage.getItem('orcatech-progress');
+    const stored = localStorage.getItem('labdojo-progress');
     return stored ? JSON.parse(stored) : {
       userId: 'guest',
       completedResources: [],
@@ -40,7 +40,7 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
   });
 
   useEffect(() => {
-    localStorage.setItem('orcatech-progress', JSON.stringify(progress));
+    localStorage.setItem('labdojo-progress', JSON.stringify(progress));
   }, [progress]);
 
   const toggleFavorite = (resourceId: string) => {

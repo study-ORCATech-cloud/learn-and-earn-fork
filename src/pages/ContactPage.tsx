@@ -120,8 +120,8 @@ const ContactPage = () => {
   return (
     <>
       <Helmet>
-        <title>Contact Us - ORCATech Learning Platform</title>
-        <meta name="description" content="Get in touch with ORCATech. Contact us for questions about our learning platform, courses, or partnership opportunities." />
+        <title>Contact Us - LabDojo Learning Platform</title>
+        <meta name="description" content="Get in touch with LabDojo. Contact us for questions about our learning platform, courses, or partnership opportunities." />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">

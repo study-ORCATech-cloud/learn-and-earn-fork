@@ -45,13 +45,13 @@ const newsItems: NewsItem[] = [
   },
   {
     title: 'Platform Going Live - August 2025',
-    description: 'We\'re excited to announce that ORCATech Learning Platform will be going live in August 2025. Get ready for comprehensive hands-on learning experiences in DevOps, Cloud Computing, and Programming.',
+    description: 'We\'re excited to announce that LabDojo Learning Platform will be going live in August 2025. Get ready for comprehensive hands-on learning experiences in DevOps, Cloud Computing, and Programming.',
     date: '2025-07-26',
     category: 'announcement'
   },
   {
-    title: '🎉 ORCATech Learning Platform is Now Live!',
-    description: 'We\'re thrilled to announce that the ORCATech Learning Platform is officially live! Start your Tech journey today with our comprehensive hands-on labs, interactive courses, and real-world projects. Welcome to the future of technical education!',
+    title: '🎉 LabDojo Learning Platform is Now Live!',
+    description: 'We\'re thrilled to announce that the LabDojo Learning Platform is officially live! Start your Tech journey today with our comprehensive hands-on labs, interactive courses, and real-world projects. Welcome to the future of technical education!',
     date: '2025-08-21',
     category: 'announcement'
   },
@@ -63,7 +63,7 @@ const newsItems: NewsItem[] = [
   },
   {
     title: '🗳️ Community Voting System Now Live!',
-    description: 'Help shape the future of ORCATech! Our new community voting system lets you vote on upcoming features and roadmap items. Your voice matters - log in and vote for the features you want to see developed first. Real-time vote counts and user-friendly interface make participating easy and engaging!',
+    description: 'Help shape the future of LabDojo! Our new community voting system lets you vote on upcoming features and roadmap items. Your voice matters - log in and vote for the features you want to see developed first. Real-time vote counts and user-friendly interface make participating easy and engaging!',
     date: '2025-08-24',
     category: 'feature'
   }

@@ -45,7 +45,7 @@ const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({ isOpen, onClo
             {/* Introduction */}
             <section className="space-y-3">
               <p className="leading-relaxed">
-                Welcome to LabDojo.io ("Website," "Platform," "we," "us," or "our").<br/>
+                Welcome to Learn-and-Earn.online ("Website," "Platform," "we," "us," or "our").<br/>
                 By accessing or using this Website, you ("you," "user," or "member") agree to be bound by these Terms of Use ("Terms").<br/>
                 If you do not agree, you must not use the Website.
               </p>
@@ -55,7 +55,7 @@ const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({ isOpen, onClo
             <section className="space-y-3">
               <h2 className="text-xl font-semibold text-white">1. Intellectual Property Rights</h2>
               <p className="leading-relaxed">
-                All content on this Website, including but not limited to text, tutorials, labs, images, graphics, software, and design ("Content"), is the property of LabDojo.io or its licensors.<br/>
+                All content on this Website, including but not limited to text, tutorials, labs, images, graphics, software, and design ("Content"), is the property of Learn-and-Earn.online or its licensors.<br/>
                 The Content is protected by copyright, and other intellectual property laws.
               </p>
               <ul className="list-disc pl-6 space-y-1">

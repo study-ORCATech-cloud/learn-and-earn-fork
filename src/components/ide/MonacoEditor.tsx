@@ -240,7 +240,7 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
       });
 
       // Configure custom theme to match site
-      monaco.editor.defineTheme('orcatech-dark', {
+      monaco.editor.defineTheme('labdojo-dark', {
         base: 'vs-dark',
         inherit: true,
         rules: [
@@ -267,7 +267,7 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
       });
 
       // Apply the custom theme
-      monaco.editor.setTheme('orcatech-dark');
+      monaco.editor.setTheme('labdojo-dark');
 
       // Configure enhanced editor options
       editorInstance.updateOptions({
@@ -349,7 +349,7 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
       <Editor
         value={file.content || ''}
         language={getLanguage(file.name)}
-        theme="orcatech-dark"
+        theme="labdojo-dark"
         onChange={handleChange}
         onMount={handleEditorDidMount}
         options={{

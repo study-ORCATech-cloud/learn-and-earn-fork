@@ -3,7 +3,7 @@
 
 ## Overview
 
-This guide provides comprehensive instructions for setting up monitoring and log analysis for the ORCATech Learning Platform. Proper monitoring ensures optimal performance, quick issue resolution, and data-driven decision making.
+This guide provides comprehensive instructions for setting up monitoring and log analysis for the LabDojo Learning Platform. Proper monitoring ensures optimal performance, quick issue resolution, and data-driven decision making.
 
 ## Table of Contents
 
@@ -1197,4 +1197,4 @@ export const MonitoringDashboard: React.FC = () => {
 
 ---
 
-This monitoring and log analysis setup provides comprehensive visibility into your ORCATech Learning Platform's performance, user behavior, and system health. Regular review and adjustment of monitoring strategies ensure optimal platform operation and user experience.
+This monitoring and log analysis setup provides comprehensive visibility into your LabDojo Learning Platform's performance, user behavior, and system health. Regular review and adjustment of monitoring strategies ensure optimal platform operation and user experience.

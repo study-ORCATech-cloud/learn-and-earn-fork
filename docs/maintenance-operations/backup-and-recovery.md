@@ -1,7 +1,7 @@
 
 # Backup and Recovery Guide
 
-This document outlines comprehensive backup strategies and disaster recovery procedures for the ORCATech Learning Platform, ensuring data protection and business continuity.
+This document outlines comprehensive backup strategies and disaster recovery procedures for the LabDojo Learning Platform, ensuring data protection and business continuity.
 
 ## Table of Contents
 
@@ -20,7 +20,7 @@ This document outlines comprehensive backup strategies and disaster recovery pro
 
 ## Overview
 
-The ORCATech Learning Platform requires robust backup and recovery procedures to protect against:
+The LabDojo Learning Platform requires robust backup and recovery procedures to protect against:
 
 - Hardware failures
 - Software corruption
@@ -212,7 +212,7 @@ backup_security:
 #!/bin/bash
 # PostgreSQL backup script
 
-DB_NAME="orcatech_prod"
+DB_NAME="labdojo_prod"
 BACKUP_DIR="/backups/database"
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_FILE="${BACKUP_DIR}/${DB_NAME}_${DATE}.sql.gz"
@@ -228,7 +228,7 @@ if [ $? -eq 0 ]; then
     echo "Database backup successful: $BACKUP_FILE"
     
     # Upload to cloud storage
-    aws s3 cp $BACKUP_FILE s3://orcatech-backups/database/
+    aws s3 cp $BACKUP_FILE s3://labdojo-backups/database/
     
     # Clean up old local backups (keep 7 days)
     find $BACKUP_DIR -name "*.sql.gz" -mtime +7 -delete
@@ -245,7 +245,7 @@ fi
 #!/bin/bash
 # MongoDB backup script
 
-DB_NAME="orcatech"
+DB_NAME="labdojo"
 BACKUP_DIR="/backups/mongodb"
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_PATH="${BACKUP_DIR}/${DB_NAME}_${DATE}"
@@ -258,7 +258,7 @@ tar -czf "${BACKUP_PATH}.tar.gz" -C $BACKUP_DIR "${DB_NAME}_${DATE}"
 rm -rf $BACKUP_PATH
 
 # Upload and cleanup
-aws s3 cp "${BACKUP_PATH}.tar.gz" s3://orcatech-backups/mongodb/
+aws s3 cp "${BACKUP_PATH}.tar.gz" s3://labdojo-backups/mongodb/
 find $BACKUP_DIR -name "*.tar.gz" -mtime +7 -delete
 ```
 
@@ -269,24 +269,24 @@ find $BACKUP_DIR -name "*.tar.gz" -mtime +7 -delete
 #!/bin/bash
 # Source code backup script
 
-REPO_DIR="/var/www/orcatech"
+REPO_DIR="/var/www/labdojo"
 BACKUP_DIR="/backups/source"
 DATE=$(date +%Y%m%d_%H%M%S)
 
 cd $REPO_DIR
 
 # Create git bundle
-git bundle create "${BACKUP_DIR}/orcatech_${DATE}.bundle" --all
+git bundle create "${BACKUP_DIR}/labdojo_${DATE}.bundle" --all
 
 # Create source archive
-tar -czf "${BACKUP_DIR}/orcatech_source_${DATE}.tar.gz" \
+tar -czf "${BACKUP_DIR}/labdojo_source_${DATE}.tar.gz" \
     --exclude='.git' \
     --exclude='node_modules' \
     --exclude='dist' \
     .
 
 # Upload to cloud storage
-aws s3 sync $BACKUP_DIR s3://orcatech-backups/source/
+aws s3 sync $BACKUP_DIR s3://labdojo-backups/source/
 ```
 
 #### Configuration Backup
@@ -297,7 +297,7 @@ aws s3 sync $BACKUP_DIR s3://orcatech-backups/source/
 CONFIG_DIRS=(
     "/etc/nginx"
     "/etc/ssl/certs"
-    "/opt/orcatech/config"
+    "/opt/labdojo/config"
     "/var/lib/docker/volumes"
 )
 
@@ -309,7 +309,7 @@ BACKUP_FILE="${BACKUP_DIR}/config_${DATE}.tar.gz"
 tar -czf $BACKUP_FILE "${CONFIG_DIRS[@]}"
 
 # Upload and cleanup
-aws s3 cp $BACKUP_FILE s3://orcatech-backups/config/
+aws s3 cp $BACKUP_FILE s3://labdojo-backups/config/
 find $BACKUP_DIR -name "config_*.tar.gz" -mtime +30 -delete
 ```
 
@@ -321,7 +321,7 @@ find $BACKUP_DIR -name "config_*.tar.gz" -mtime +30 -delete
 # User progress data backup
 
 # Export user progress from database
-psql -d orcatech_prod -c "COPY (
+psql -d labdojo_prod -c "COPY (
     SELECT 
         user_id,
         progress_data,
@@ -333,7 +333,7 @@ psql -d orcatech_prod -c "COPY (
 
 # Upload to secure storage
 aws s3 cp "/backups/user_progress_$(date +%Y%m%d).csv.gz" \
-         s3://orcatech-backups/user-data/ \
+         s3://labdojo-backups/user-data/ \
          --server-side-encryption AES256
 ```
 
@@ -347,29 +347,29 @@ aws s3 cp "/backups/user_progress_$(date +%Y%m%d).csv.gz" \
 # PostgreSQL point-in-time recovery
 
 TARGET_TIME="2024-01-15 14:30:00"
-BACKUP_FILE="/backups/database/orcatech_prod_20240115_020000.sql.gz"
+BACKUP_FILE="/backups/database/labdojo_prod_20240115_020000.sql.gz"
 
 # Stop application services
-systemctl stop orcatech-app
+systemctl stop labdojo-app
 
 # Drop existing database
-dropdb orcatech_prod
+dropdb labdojo_prod
 
 # Create new database
-createdb orcatech_prod
+createdb labdojo_prod
 
 # Restore from backup
-gunzip -c $BACKUP_FILE | psql orcatech_prod
+gunzip -c $BACKUP_FILE | psql labdojo_prod
 
 # Apply WAL files for point-in-time recovery
 pg_resetwal -f /var/lib/postgresql/data
 
 # Start services
 systemctl start postgresql
-systemctl start orcatech-app
+systemctl start labdojo-app
 
 # Verify recovery
-psql -d orcatech_prod -c "SELECT NOW() as recovery_time;"
+psql -d labdojo_prod -c "SELECT NOW() as recovery_time;"
 ```
 
 #### Full Database Restore
@@ -387,13 +387,13 @@ fi
 cp /var/www/maintenance.html /var/www/html/index.html
 
 # Stop services
-systemctl stop orcatech-app nginx
+systemctl stop labdojo-app nginx
 
 # Restore database
-gunzip -c $BACKUP_FILE | psql orcatech_prod
+gunzip -c $BACKUP_FILE | psql labdojo_prod
 
 # Restart services
-systemctl start postgresql orcatech-app nginx
+systemctl start postgresql labdojo-app nginx
 
 # Remove maintenance page
 rm /var/www/html/index.html
@@ -431,20 +431,20 @@ curl -f http://localhost/health || echo "Health check failed"
 # File system recovery from backup
 
 BACKUP_DATE=$1
-RESTORE_PATH="/var/www/orcatech"
+RESTORE_PATH="/var/www/labdojo"
 
 # Download backup from cloud
-aws s3 cp "s3://orcatech-backups/source/orcatech_source_${BACKUP_DATE}.tar.gz" /tmp/
+aws s3 cp "s3://labdojo-backups/source/labdojo_source_${BACKUP_DATE}.tar.gz" /tmp/
 
 # Stop services
-systemctl stop orcatech-app
+systemctl stop labdojo-app
 
 # Backup current state
 mv $RESTORE_PATH "${RESTORE_PATH}.backup.$(date +%s)"
 
 # Extract backup
 mkdir -p $RESTORE_PATH
-tar -xzf "/tmp/orcatech_source_${BACKUP_DATE}.tar.gz" -C $RESTORE_PATH
+tar -xzf "/tmp/labdojo_source_${BACKUP_DATE}.tar.gz" -C $RESTORE_PATH
 
 # Set permissions
 chown -R www-data:www-data $RESTORE_PATH
@@ -458,7 +458,7 @@ npm install
 npm run build
 
 # Start services
-systemctl start orcatech-app
+systemctl start labdojo-app
 ```
 
 ## Disaster Recovery Planning
@@ -527,19 +527,19 @@ communication_plan:
 recovery_team:
   incident_commander:
     responsible_for: "Overall recovery coordination"
-    contact: "ic@orcatech.com"
+    contact: "ic@labdojo.com"
   
   technical_lead:
     responsible_for: "System restoration"
-    contact: "tech-lead@orcatech.com"
+    contact: "tech-lead@labdojo.com"
   
   communications_lead:
     responsible_for: "Stakeholder communication"
-    contact: "comms@orcatech.com"
+    contact: "comms@labdojo.com"
   
   business_continuity:
     responsible_for: "Business operations"
-    contact: "bc@orcatech.com"
+    contact: "bc@labdojo.com"
 ```
 
 ### Failover Procedures
@@ -549,8 +549,8 @@ recovery_team:
 #!/bin/bash
 # Automated failover script
 
-HEALTH_CHECK_URL="https://orcatech.com/health"
-SECONDARY_SITE="https://backup.orcatech.com"
+HEALTH_CHECK_URL="https://labdojo.com/health"
+SECONDARY_SITE="https://backup.labdojo.com"
 
 # Check primary site health
 if ! curl -f $HEALTH_CHECK_URL >/dev/null 2>&1; then
@@ -599,7 +599,7 @@ fi
 # Backup integrity test script
 
 BACKUP_FILE=$1
-TEST_DB="orcatech_test"
+TEST_DB="labdojo_test"
 
 # Create test database
 createdb $TEST_DB
@@ -620,7 +620,7 @@ psql -d $TEST_DB -c "
 
 # Compare with production checksums
 psql -d $TEST_DB -c "SELECT md5(string_agg(id::text, '' ORDER BY id)) FROM users;" > test_checksum.txt
-psql -d orcatech_prod -c "SELECT md5(string_agg(id::text, '' ORDER BY id)) FROM users;" > prod_checksum.txt
+psql -d labdojo_prod -c "SELECT md5(string_agg(id::text, '' ORDER BY id)) FROM users;" > prod_checksum.txt
 
 if diff test_checksum.txt prod_checksum.txt; then
     echo "Backup integrity test PASSED"
@@ -685,7 +685,7 @@ if [ $STORAGE_USAGE -gt 85 ]; then
 fi
 
 # Verify cloud backup sync
-aws s3 ls s3://orcatech-backups/database/ --recursive | tail -1 | grep $(date +%Y%m%d) || {
+aws s3 ls s3://labdojo-backups/database/ --recursive | tail -1 | grep $(date +%Y%m%d) || {
     send_alert "Cloud backup sync failed"
 }
 ```
@@ -860,7 +860,7 @@ document_control:
 
 ## Conclusion
 
-A comprehensive backup and recovery strategy is essential for maintaining the reliability and availability of the ORCATech Learning Platform. This guide provides the framework for protecting data and ensuring business continuity.
+A comprehensive backup and recovery strategy is essential for maintaining the reliability and availability of the LabDojo Learning Platform. This guide provides the framework for protecting data and ensuring business continuity.
 
 Key success factors:
 - Regular testing and validation

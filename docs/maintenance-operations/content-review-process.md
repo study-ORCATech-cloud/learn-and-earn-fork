@@ -1,7 +1,7 @@
 
 # Content Review Process Guide 📚
 
-This guide outlines the systematic process for reviewing, updating, and maintaining the quality of educational content in the ORCATech Learning Platform. Regular content review ensures our learning materials remain current, accurate, and effective.
+This guide outlines the systematic process for reviewing, updating, and maintaining the quality of educational content in the LabDojo Learning Platform. Regular content review ensures our learning materials remain current, accurate, and effective.
 
 ## 🎯 Review Objectives
 
@@ -543,7 +543,7 @@ const checkContentFreshness = (content: Course[]): ContentHealthCheck[] => {
 
 ---
 
-*This document serves as the definitive guide for maintaining the highest quality educational content in the ORCATech Learning Platform. Regular updates to this process ensure we continue to provide exceptional learning experiences for our community.*
+*This document serves as the definitive guide for maintaining the highest quality educational content in the LabDojo Learning Platform. Regular updates to this process ensure we continue to provide exceptional learning experiences for our community.*
 
 **Last Updated:** [Current Date]
 **Next Review:** [Next Review Date]

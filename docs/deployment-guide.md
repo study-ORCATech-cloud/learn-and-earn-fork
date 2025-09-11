@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide explains how to deploy the ORCATech Learning Platform to GitHub Pages, making it accessible via a public URL like `https://yourusername.github.io/your-repo-name`.
+This guide explains how to deploy the LabDojo Learning Platform to GitHub Pages, making it accessible via a public URL like `https://yourusername.github.io/your-repo-name`.
 
 ## Prerequisites
 
@@ -260,18 +260,18 @@ Ensure proper meta tags in `index.html`:
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ORCATech Learning Platform</title>
+  <title>LabDojo Learning Platform</title>
   <meta name="description" content="Master tech skills with comprehensive learning paths" />
   
   <!-- Open Graph -->
-  <meta property="og:title" content="ORCATech Learning Platform" />
+  <meta property="og:title" content="LabDojo Learning Platform" />
   <meta property="og:description" content="Transform your career with expert-designed tech courses" />
   <meta property="og:image" content="https://yourdomain.com/og-image.png" />
   <meta property="og:url" content="https://yourdomain.com" />
   
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="ORCATech Learning Platform" />
+  <meta name="twitter:title" content="LabDojo Learning Platform" />
   <meta name="twitter:description" content="Master tech skills with comprehensive learning paths" />
   <meta name="twitter:image" content="https://yourdomain.com/twitter-image.png" />
 </head>
@@ -320,4 +320,4 @@ For more troubleshooting help, see `troubleshooting.md`.
 3. Keep local backups of important data
 4. Document deployment procedures
 
-Your ORCATech Learning Platform is now ready for the world! 🚀
+Your LabDojo Learning Platform is now ready for the world! 🚀

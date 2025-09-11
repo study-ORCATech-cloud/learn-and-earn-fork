@@ -1,7 +1,7 @@
 # IDE Code Runner Implementation Plan
 
 ## Overview
-This document outlines the comprehensive plan to implement browser-based code execution capabilities in the ORCATech IDE, allowing users to run code directly in their browser without requiring backend infrastructure.
+This document outlines the comprehensive plan to implement browser-based code execution capabilities in the LabDojo IDE, allowing users to run code directly in their browser without requiring backend infrastructure.
 
 ## 🎯 Goals
 - Execute code directly in the browser for multiple languages

@@ -1,7 +1,7 @@
 
 # Performance Optimization Guide
 
-This guide covers best practices for maintaining optimal performance in the ORCATech Learning Platform, including optimization strategies, monitoring techniques, and troubleshooting performance issues.
+This guide covers best practices for maintaining optimal performance in the LabDojo Learning Platform, including optimization strategies, monitoring techniques, and troubleshooting performance issues.
 
 ## Table of Contents
 
@@ -23,7 +23,7 @@ This guide covers best practices for maintaining optimal performance in the ORCA
 
 ## Overview
 
-The ORCATech Learning Platform is designed with performance in mind, utilizing modern React patterns, Vite's optimizations, and efficient bundling strategies. This guide helps maintain and improve performance across all aspects of the application.
+The LabDojo Learning Platform is designed with performance in mind, utilizing modern React patterns, Vite's optimizations, and efficient bundling strategies. This guide helps maintain and improve performance across all aspects of the application.
 
 ### Performance Goals
 
@@ -496,7 +496,7 @@ Implement service worker for offline support:
 
 ```javascript
 // sw.js
-const CACHE_NAME = 'orcatech-v1';
+const CACHE_NAME = 'labdojo-v1';
 const urlsToCache = [
   '/',
   '/static/css/main.css',
@@ -899,7 +899,7 @@ Optimize meta tags for performance and SEO:
 ```typescript
 const SEOHead = ({ title, description, keywords }: SEOProps) => (
   <Helmet>
-    <title>{title} | ORCATech Learning Platform</title>
+    <title>{title} | LabDojo Learning Platform</title>
     <meta name="description" content={description} />
     <meta name="keywords" content={keywords} />
     
@@ -930,7 +930,7 @@ const CourseStructuredData = ({ course }: { course: Course }) => {
     "description": course.description,
     "provider": {
       "@type": "Organization",
-      "name": "ORCATech Learning Platform"
+      "name": "LabDojo Learning Platform"
     },
     "educationalLevel": course.difficulty,
     "timeRequired": course.duration,
@@ -1138,7 +1138,7 @@ Before deploying:
 
 ## Conclusion
 
-Performance optimization is an ongoing process that requires continuous monitoring and improvement. By following these best practices and regularly auditing your application's performance, you can ensure that the ORCATech Learning Platform provides an excellent user experience across all devices and network conditions.
+Performance optimization is an ongoing process that requires continuous monitoring and improvement. By following these best practices and regularly auditing your application's performance, you can ensure that the LabDojo Learning Platform provides an excellent user experience across all devices and network conditions.
 
 ### Key Takeaways
 

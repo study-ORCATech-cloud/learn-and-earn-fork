@@ -1,7 +1,7 @@
 
 # Analytics Setup Guide
 
-This guide covers implementing tracking and analytics for the ORCATech Learning Platform to monitor user engagement, course performance, and platform usage.
+This guide covers implementing tracking and analytics for the LabDojo Learning Platform to monitor user engagement, course performance, and platform usage.
 
 ## Table of Contents
 
@@ -570,7 +570,7 @@ const collectMinimalData = (eventData: any) => {
 
 ```yaml
 # GA4 Dashboard Configuration
-dashboard_name: "ORCATech Learning Platform"
+dashboard_name: "LabDojo Learning Platform"
 
 widgets:
   - name: "Active Users"

@@ -37,7 +37,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       <DialogContent className="sm:max-w-md bg-slate-900 border-slate-800">
         <DialogHeader>
           <DialogTitle className="text-white text-center text-2xl">
-            Welcome to ORCATech
+            Welcome to LabDojo
           </DialogTitle>
           <DialogDescription className="text-slate-300 text-center">
             Sign in to access personalized learning content and track your progress

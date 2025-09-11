@@ -1,7 +1,7 @@
 
 # Progress Tracking Guide
 
-This guide provides a comprehensive overview of the progress tracking system in the ORCATech Learning Platform, covering data structures, tracking mechanisms, user interface components, and implementation details.
+This guide provides a comprehensive overview of the progress tracking system in the LabDojo Learning Platform, covering data structures, tracking mechanisms, user interface components, and implementation details.
 
 ## Table of Contents
 
@@ -20,7 +20,7 @@ This guide provides a comprehensive overview of the progress tracking system in 
 
 ## Overview
 
-The ORCATech Learning Platform implements a comprehensive progress tracking system that monitors user advancement through:
+The LabDojo Learning Platform implements a comprehensive progress tracking system that monitors user advancement through:
 
 - **Individual Resources** - Videos, articles, labs, quizzes
 - **Courses** - Complete course completion status
@@ -398,13 +398,13 @@ The UserProgressProvider manages all progress state:
 export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Initialize state from localStorage
   const [progress, setProgress] = useState<UserProgress>(() => {
-    const stored = localStorage.getItem('orcatech-progress');
+    const stored = localStorage.getItem('labdojo-progress');
     return stored ? JSON.parse(stored) : DEFAULT_PROGRESS;
   });
 
   // Persist changes to localStorage
   useEffect(() => {
-    localStorage.setItem('orcatech-progress', JSON.stringify(progress));
+    localStorage.setItem('labdojo-progress', JSON.stringify(progress));
   }, [progress]);
 
   // Progress actions
@@ -477,7 +477,7 @@ Progress data is automatically saved to localStorage:
 
 ```typescript
 // Storage key
-const STORAGE_KEY = 'orcatech-progress';
+const STORAGE_KEY = 'labdojo-progress';
 
 // Save progress
 const saveProgress = (progress: UserProgress) => {
@@ -916,7 +916,7 @@ const LearningPathPage = ({ pathId }: { pathId: string }) => {
 
 ## Conclusion
 
-The ORCATech Learning Platform's progress tracking system provides:
+The LabDojo Learning Platform's progress tracking system provides:
 
 1. **Comprehensive Tracking** - All learning activities monitored
 2. **Persistent Storage** - Progress saved across sessions

@@ -1,7 +1,7 @@
 
 # User & Feature Documentation 👥
 
-End-user guides and feature documentation for learners using the ORCATech Learning Platform.
+End-user guides and feature documentation for learners using the LabDojo Learning Platform.
 
 ## 📚 Available Guides
 

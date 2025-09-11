@@ -1,7 +1,7 @@
 
-# ORCATech Learning Platform Documentation 📚
+# LabDojo Learning Platform Documentation 📚
 
-Welcome to the comprehensive documentation for the ORCATech Learning Platform. This documentation is organized into categories to help you find exactly what you need, whether you're a contributor, content creator, or platform administrator.
+Welcome to the comprehensive documentation for the LabDojo Learning Platform. This documentation is organized into categories to help you find exactly what you need, whether you're a contributor, content creator, or platform administrator.
 
 ## 📖 Complete Documentation Index
 
@@ -201,7 +201,7 @@ We track documentation effectiveness through:
 ---
 
 **Last Updated**: December 2024  
-**Maintained By**: ORCATech Learning Platform Team  
+**Maintained By**: LabDojo Learning Platform Team  
 **License**: MIT License
 
 For questions about this documentation, please [create an issue](https://github.com/yourusername/orca-tech-learn/issues) or start a [discussion](https://github.com/yourusername/orca-tech-learn/discussions).

@@ -1,11 +1,11 @@
 
 # Search and Filtering Guide
 
-This guide explains how to effectively use the search functionality and filtering options throughout the ORCATech Learning Platform to find the content that best matches your learning needs.
+This guide explains how to effectively use the search functionality and filtering options throughout the LabDojo Learning Platform to find the content that best matches your learning needs.
 
 ## Overview
 
-The ORCATech Learning Platform provides multiple search and filtering mechanisms across different sections:
+The LabDojo Learning Platform provides multiple search and filtering mechanisms across different sections:
 
 - **Global Search** - Find content across all learning paths, courses, and projects
 - **Course Filtering** - Filter courses by category, difficulty, and type
@@ -371,4 +371,4 @@ If you continue to experience search issues:
 
 ---
 
-This search and filtering guide helps you navigate the ORCATech Learning Platform efficiently. For additional support, see our [User Guide](./user-guide.md) or [FAQ](./faq.md).
+This search and filtering guide helps you navigate the LabDojo Learning Platform efficiently. For additional support, see our [User Guide](./user-guide.md) or [FAQ](./faq.md).

@@ -192,7 +192,7 @@ export const OrcaWalletProvider: React.FC<OrcaWalletProviderProps> = ({ children
       if (hasWelcomeBonus && walletDetails.wallet.orca_balance === 5 && walletDetails.recent_transactions.length === 1) {
         // This appears to be a new user who just received their welcome bonus
         toast({
-          title: "Welcome to Orca Coins! 🎉",
+          title: "Welcome to LabDojo! 🎉",
           description: "You've received 5 free Orca Coins to get started. Use them to unlock premium lab content!",
           duration: 6000,
         });

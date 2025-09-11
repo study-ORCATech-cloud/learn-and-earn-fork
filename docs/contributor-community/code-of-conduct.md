@@ -3,7 +3,7 @@
 
 ## Our Pledge
 
-We, as members, contributors, and leaders of the ORCATech Learning Platform community, pledge to make participation in our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, caste, color, religion, or sexual identity and orientation.
+We, as members, contributors, and leaders of the LabDojo Learning Platform community, pledge to make participation in our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, caste, color, religion, or sexual identity and orientation.
 
 We pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community focused on learning and growth.
 
@@ -123,7 +123,7 @@ Every community member is expected to:
 If you experience or witness unacceptable behavior, please report it through one of these channels:
 
 #### **Primary Reporting Channels**
-- **Email**: conduct@orcatech-learn.org (monitored by multiple maintainers)
+- **Email**: conduct@labdojo-learn.org (monitored by multiple maintainers)
 - **Private Message**: Contact any maintainer directly on GitHub
 - **Anonymous Form**: [Link to anonymous reporting form] (coming soon)
 
@@ -190,7 +190,7 @@ Community leaders will follow these guidelines when determining consequences for
 
 ### **Right to Appeal**
 Anyone subject to enforcement action has the right to appeal the decision by:
-- Sending an email to appeals@orcatech-learn.org within 30 days
+- Sending an email to appeals@labdojo-learn.org within 30 days
 - Including new information or context not previously considered
 - Demonstrating rehabilitation or changed behavior
 
@@ -306,8 +306,8 @@ For answers to common questions about this code of conduct, see the FAQ at [http
 
 ## Contact Information
 
-- **General Questions**: conduct@orcatech-learn.org
-- **Appeals**: appeals@orcatech-learn.org
+- **General Questions**: conduct@labdojo-learn.org
+- **Appeals**: appeals@labdojo-learn.org
 - **Emergency/Urgent**: Contact platform administrators or local authorities
 
 **Remember**: Our community is here to support your learning journey. When in doubt, choose kindness, assume positive intent, and prioritize the collective learning experience of our community.

@@ -1,7 +1,7 @@
 
 # Technical & Operational Documentation ⚡
 
-Performance, accessibility, and operational best practices for maintaining and optimizing the ORCATech Learning Platform.
+Performance, accessibility, and operational best practices for maintaining and optimizing the LabDojo Learning Platform.
 
 ## 📚 Available Guides
 

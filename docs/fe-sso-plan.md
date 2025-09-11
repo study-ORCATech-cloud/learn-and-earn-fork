@@ -125,7 +125,7 @@ interface AuthState {
 # .env
 VITE_BACKEND_AUTH_URL=http://localhost:5000/auth
 VITE_AUTH_ENABLED=true
-VITE_TOKEN_STORAGE_KEY=orcatech_auth_token
+VITE_TOKEN_STORAGE_KEY=labdojo_auth_token
 ```
 
 ### Authentication Service Functions

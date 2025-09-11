@@ -1,7 +1,7 @@
 
-# Contributing to ORCATech Learning Platform 🤝
+# Contributing to LabDojo Learning Platform 🤝
 
-Thank you for your interest in contributing to the ORCATech Learning Platform! We welcome contributions from developers, educators, content creators, and learners of all skill levels.
+Thank you for your interest in contributing to the LabDojo Learning Platform! We welcome contributions from developers, educators, content creators, and learners of all skill levels.
 
 ## 🎯 Ways to Contribute
 
@@ -338,7 +338,7 @@ Include the following information:
 
 ## 🙏 Thank You
 
-Your contributions make the ORCATech Learning Platform better for everyone. Whether you're fixing a typo, adding a new course, or implementing a major feature, every contribution is valuable and appreciated.
+Your contributions make the LabDojo Learning Platform better for everyone. Whether you're fixing a typo, adding a new course, or implementing a major feature, every contribution is valuable and appreciated.
 
 **Ready to contribute?** Start by exploring our [open issues](https://github.com/yourusername/orca-tech-learn/issues) or check out our [good first issues](https://github.com/yourusername/orca-tech-learn/labels/good%20first%20issue) for beginner-friendly tasks.
 

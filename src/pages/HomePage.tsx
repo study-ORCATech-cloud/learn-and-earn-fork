@@ -58,8 +58,8 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>ORCATech Learning Platform - Master Tech Skills</title>
-        <meta name="description" content="Transform your career with ORCATech's comprehensive learning paths in DevOps, Python, Java, and Cloud Computing across Beginner, Intermediate, and Professional levels." />
+        <title>LabDojo Learning Platform - Master Tech Skills</title>
+        <meta name="description" content="Transform your career with LabDojo's comprehensive learning paths in DevOps, Python, Java, and Cloud Computing across Beginner, Intermediate, and Professional levels." />
         <meta name="keywords" content="tech learning, devops, python, java, cloud computing, programming courses, professional development" />
       </Helmet>
 
@@ -149,7 +149,7 @@ const HomePage = () => {
           <div className="container mx-auto">
             <div className="text-center mb-12 md:mb-16">
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4 md:mb-6">
-                Why Choose ORCATech?
+                Why Choose LabDojo?
               </h2>
               <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto px-4">
                 We provide comprehensive, industry-focused learning experiences designed to accelerate your tech career.

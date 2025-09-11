@@ -2,7 +2,7 @@
 # Roadmap Page Implementation Plan 🗺️
 
 ## Overview
-This document outlines the comprehensive plan for implementing a "Roadmap" page on the ORCATech Learning Platform. The roadmap will showcase upcoming courses, features, and planned content organized by categories, including a new "Tools" category.
+This document outlines the comprehensive plan for implementing a "Roadmap" page on the LabDojo Learning Platform. The roadmap will showcase upcoming courses, features, and planned content organized by categories, including a new "Tools" category.
 
 ## 🎯 Goals & Benefits
 
@@ -347,7 +347,7 @@ src/
 
 ## 🎉 Conclusion
 
-This roadmap implementation will significantly enhance the ORCATech Learning Platform by providing transparency, engaging the community, and organizing future content development. The phased approach ensures manageable implementation while delivering value at each stage.
+This roadmap implementation will significantly enhance the LabDojo Learning Platform by providing transparency, engaging the community, and organizing future content development. The phased approach ensures manageable implementation while delivering value at each stage.
 
 The new "Tools" category will address a crucial gap in the current curriculum, covering essential infrastructure and database technologies that are fundamental to modern software development.
 
@@ -357,5 +357,5 @@ The new "Tools" category will address a crucial gap in the current curriculum, c
 
 **Document Version**: 1.0  
 **Last Updated**: December 2024  
-**Author**: ORCATech Development Team  
+**Author**: LabDojo Development Team  
 **Review Date**: Monthly

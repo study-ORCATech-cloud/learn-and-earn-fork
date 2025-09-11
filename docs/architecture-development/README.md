@@ -1,7 +1,7 @@
 
 # Architecture & Development Documentation 🏗️
 
-Technical documentation for developers working on the ORCATech Learning Platform, including architecture, components, and development patterns.
+Technical documentation for developers working on the LabDojo Learning Platform, including architecture, components, and development patterns.
 
 ## 📚 Available Guides
 

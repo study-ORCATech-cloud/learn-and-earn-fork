@@ -149,7 +149,7 @@ const GetOrcaCoinsPage = () => {
     <>
       <Helmet>
         <title>Get Orca Coins - Access Premium Learning Content</title>
-        <meta name="description" content="Purchase Orca Coins to access premium learning content including detailed solutions, advanced tutorials, and exclusive materials on ORCATech." />
+        <meta name="description" content="Purchase Orca Coins to access premium learning content including detailed solutions, advanced tutorials, and exclusive materials on LabDojo." />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">

@@ -891,7 +891,7 @@ const LabIDEPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>{`${contentResource?.title || contentType} - IDE | ORCATech`}</title>
+        <title>{`${contentResource?.title || contentType} - IDE | LabDojo`}</title>
         <meta name="description" content={contentResource?.description || `${contentType} IDE viewer`} />
       </Helmet>
 

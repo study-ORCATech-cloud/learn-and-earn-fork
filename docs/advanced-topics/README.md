@@ -1,7 +1,7 @@
 
 # Advanced Topics 🔧
 
-Advanced customization and integration guides for extending and customizing the ORCATech Learning Platform.
+Advanced customization and integration guides for extending and customizing the LabDojo Learning Platform.
 
 ## 📚 Available Guides
 

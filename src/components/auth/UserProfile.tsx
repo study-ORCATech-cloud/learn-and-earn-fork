@@ -184,7 +184,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className = '' }) => {
               Sign out of your account?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-slate-300">
-              You will be signed out of your ORCATech account. Any unsaved progress may be lost.
+              You will be signed out of your LabDojo account. Any unsaved progress may be lost.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

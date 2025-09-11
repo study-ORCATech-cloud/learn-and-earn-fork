@@ -16,7 +16,7 @@ const Footer: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="text-center text-xs text-slate-400">
             <p>
-              © 2025 LabDojo.io. All rights reserved.{' '}
+              © 2025 Learn-and-Earn.online. All rights reserved.{' '}
               <button
                 onClick={() => setShowTermsModal(true)}
                 className="text-blue-400 hover:text-blue-300 underline underline-offset-2 transition-colors"

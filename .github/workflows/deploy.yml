@@ -25,7 +25,7 @@ jobs:
           npm run build
         env:
           VITE_BACKEND_BASE_PATH: ${{ secrets.VITE_BACKEND_BASE_PATH || 'https://engine.labdojo.io' }}
-          VITE_APP_TITLE: ${{ secrets.VITE_APP_TITLE || 'ORCA Tech Learning Platform' }}
+          VITE_APP_TITLE: ${{ secrets.VITE_APP_TITLE || 'Lab Dojo Learning Platform' }}
           VITE_API_VERSION: ${{ secrets.VITE_API_VERSION || 'v1' }}
 
       - name: Deploy to GitHub Pages

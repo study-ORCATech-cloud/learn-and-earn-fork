@@ -1,7 +1,7 @@
 
 # Maintenance & Operations 🛠️
 
-Operational procedures and maintenance guidelines for keeping the ORCATech Learning Platform running smoothly.
+Operational procedures and maintenance guidelines for keeping the LabDojo Learning Platform running smoothly.
 
 ## 📚 Available Guides
 

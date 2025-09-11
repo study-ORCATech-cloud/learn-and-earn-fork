@@ -1,11 +1,11 @@
 
-# ORCATech Learning Platform 🚀
+# LabDojo Learning Platform 🚀
 
 > **A modern, interactive learning platform for mastering technology skills through structured learning paths and hands-on resources.**
 
-## 🎯 What is ORCATech?
+## 🎯 What is LabDojo?
 
-ORCATech is a comprehensive learning platform designed to help students and professionals master cutting-edge technology skills. Whether you're a beginner starting your tech journey or an experienced developer looking to expand your skillset, ORCATech provides structured learning paths with curated resources, labs, and tutorials.
+LabDojo is a comprehensive learning platform designed to help students and professionals master cutting-edge technology skills. Whether you're a beginner starting your tech journey or an experienced developer looking to expand your skillset, LabDojo provides structured learning paths with curated resources, labs, and tutorials.
 
 ## ✨ Features
 
@@ -140,7 +140,7 @@ For detailed deployment instructions, see [Deployment Guide](docs/deployment-gui
 
 ## 🎓 Educational Approach
 
-ORCATech follows proven educational principles:
+LabDojo follows proven educational principles:
 
 - **Progressive Learning** - Build knowledge step by step
 - **Hands-on Practice** - Learn by doing, not just reading

@@ -1,7 +1,7 @@
 
 # Resource Guidelines
 
-This document establishes standards for creating, curating, and maintaining educational resources in the ORCATech Learning Platform.
+This document establishes standards for creating, curating, and maintaining educational resources in the LabDojo Learning Platform.
 
 ## Overview
 
@@ -491,7 +491,7 @@ Educational resources are the core learning materials that make up our courses a
 
 ---
 
-These guidelines ensure that all educational resources in the ORCATech Learning Platform meet high standards for quality, accessibility, and effectiveness while supporting our learners' success in their professional development journey.
+These guidelines ensure that all educational resources in the LabDojo Learning Platform meet high standards for quality, accessibility, and effectiveness while supporting our learners' success in their professional development journey.
 
 For implementation details and technical specifications, see:
 - [Content Management Guide](./content-management.md)

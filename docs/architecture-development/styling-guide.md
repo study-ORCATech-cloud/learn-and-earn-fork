@@ -1,7 +1,7 @@
 
 # Styling Guide
 
-This document provides comprehensive guidelines for styling in the ORCATech Learning Platform, covering Tailwind CSS conventions, design system principles, and theming standards.
+This document provides comprehensive guidelines for styling in the LabDojo Learning Platform, covering Tailwind CSS conventions, design system principles, and theming standards.
 
 ## Table of Contents
 
@@ -20,7 +20,7 @@ This document provides comprehensive guidelines for styling in the ORCATech Lear
 
 ## Overview
 
-The ORCATech Learning Platform uses a systematic approach to styling built on:
+The LabDojo Learning Platform uses a systematic approach to styling built on:
 
 - **Tailwind CSS** for utility-first styling
 - **CSS Custom Properties** for theming and design tokens
@@ -647,4 +647,4 @@ const buttonClass = `${baseClasses} ${isActive ? activeClasses : ''} ${isDisable
 3. Implement proper responsive design patterns
 4. Add dark mode support using theme variables
 
-This styling guide ensures consistent, maintainable, and performant styling across the ORCATech Learning Platform. Follow these conventions to create a cohesive user experience while maintaining code quality and developer productivity.
+This styling guide ensures consistent, maintainable, and performant styling across the LabDojo Learning Platform. Follow these conventions to create a cohesive user experience while maintaining code quality and developer productivity.

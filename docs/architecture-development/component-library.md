@@ -1,7 +1,7 @@
 
 # Component Library Documentation
 
-This document provides comprehensive documentation for all UI components available in the ORCATech Learning Platform. Components are organized by category and include usage examples, props, and best practices.
+This document provides comprehensive documentation for all UI components available in the LabDojo Learning Platform. Components are organized by category and include usage examples, props, and best practices.
 
 ## Table of Contents
 

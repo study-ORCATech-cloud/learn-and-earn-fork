@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://orcatech.lovable.app/sitemap.xml
+Sitemap: https://labdojo.io/sitemap.xml

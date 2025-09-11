@@ -32,9 +32,9 @@ const AboutPage = () => {
   return (
     <>
       <Helmet>
-        <title>About ORCATech - Transforming Tech Education</title>
-        <meta name="description" content="Learn about ORCATech's mission to democratize tech education through cutting-edge learning platforms and industry-focused curricula." />
-        <link rel="canonical" href={`https://labdojo.io${location.pathname}`} />
+        <title>About LabDojo - Transforming Tech Education</title>
+        <meta name="description" content="Learn about LabDojo's mission to democratize tech education through cutting-edge learning platforms and industry-focused curricula." />
+        <link rel="canonical" href={`https://learn-and-earn.online${location.pathname}`} />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">
@@ -45,7 +45,7 @@ const AboutPage = () => {
           <div className="container mx-auto text-center">
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
               <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                About ORCATech
+                About LabDojo
               </span>
             </h1>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
@@ -61,7 +61,7 @@ const AboutPage = () => {
             <div className="max-w-4xl mx-auto">
               <h2 className="text-4xl font-bold text-white mb-8 text-center">Our Mission</h2>
               <p className="text-lg text-slate-300 leading-relaxed text-center mb-12">
-                At ORCATech, we believe that everyone deserves access to world-class tech education. 
+                At LabDojo, we believe that everyone deserves access to world-class tech education. 
                 Our platform combines cutting-edge learning technologies with industry-proven curricula 
                 to create transformative educational experiences.
               </p>
@@ -92,7 +92,7 @@ const AboutPage = () => {
               <h2 className="text-4xl font-bold text-white mb-8 text-center">Our Story</h2>
               <div className="prose prose-invert max-w-none">
                 <p className="text-lg text-slate-300 leading-relaxed mb-6">
-                  ORCATech was born from a simple observation: traditional tech education wasn't keeping pace 
+                  LabDojo was born from a simple observation: traditional tech education wasn't keeping pace 
                   with industry demands. As senior DevOps engineers and educators, we saw talented individuals 
                   struggling to bridge the gap between theoretical knowledge and practical skills.
                 </p>
@@ -156,7 +156,7 @@ const AboutPage = () => {
                   <h3 className="text-xl font-semibold text-green-400">All Labs Are Completely FREE</h3>
                 </div>
                 <p className="text-slate-300 leading-relaxed">
-                  Every lab, exercise, and core learning material on ORCATech is <strong className="text-green-400">100% free</strong>. 
+                  Every lab, exercise, and core learning material on LabDojo is <strong className="text-green-400">100% free</strong>. 
                   You can complete entire courses, master new technologies, and build your skills without spending a penny. 
                   Orca Coins are only for optional premium enhancements that complement your free learning experience.
                 </p>

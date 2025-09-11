@@ -63,9 +63,9 @@ const LearningPathPage = () => {
   return (
     <>
       <Helmet>
-        <title>{learningPath.title} - ORCATech Learning Platform</title>
+        <title>{learningPath.title} - LabDojo Learning Platform</title>
         <meta name="description" content={learningPath.longDescription} />
-        <link rel="canonical" href={`https://labdojo.io${location.pathname}`} />
+        <link rel="canonical" href={`https://learn-and-earn.online${location.pathname}`} />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">

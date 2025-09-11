@@ -1,6 +1,6 @@
 # Data Structure Guide
 
-This guide provides a detailed explanation of the data models used in the ORCATech Learning Platform and how they interconnect to create a cohesive learning experience.
+This guide provides a detailed explanation of the data models used in the LabDojo Learning Platform and how they interconnect to create a cohesive learning experience.
 
 ## Overview
 
@@ -494,4 +494,4 @@ interface DataVersion {
 
 ---
 
-This data structure guide provides the foundation for understanding how content flows through the ORCATech Learning Platform. For implementation details, see the [Architecture Overview](./architecture-overview.md) and [Content Management Guide](./content-management.md).
+This data structure guide provides the foundation for understanding how content flows through the LabDojo Learning Platform. For implementation details, see the [Architecture Overview](./architecture-overview.md) and [Content Management Guide](./content-management.md).

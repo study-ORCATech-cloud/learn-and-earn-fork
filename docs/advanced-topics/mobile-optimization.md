@@ -1,7 +1,7 @@
 
 # Mobile Optimization Guide
 
-This guide provides comprehensive instructions for optimizing the ORCATech Learning Platform for mobile devices, covering responsive design, performance optimization, testing strategies, and mobile-specific considerations.
+This guide provides comprehensive instructions for optimizing the LabDojo Learning Platform for mobile devices, covering responsive design, performance optimization, testing strategies, and mobile-specific considerations.
 
 ## Table of Contents
 
@@ -19,7 +19,7 @@ This guide provides comprehensive instructions for optimizing the ORCATech Learn
 
 ## Overview
 
-The ORCATech Learning Platform follows a mobile-first approach, ensuring optimal learning experiences across all device sizes. This guide covers technical implementation details and best practices for mobile optimization.
+The LabDojo Learning Platform follows a mobile-first approach, ensuring optimal learning experiences across all device sizes. This guide covers technical implementation details and best practices for mobile optimization.
 
 ### Mobile Usage Statistics
 - 60%+ of educational content is consumed on mobile devices
@@ -240,7 +240,7 @@ const LearningPathPage = lazy(() => import('./pages/LearningPathPage'));
 #### Service Worker for Caching
 ```javascript
 // public/sw.js
-const CACHE_NAME = 'orcatech-v1';
+const CACHE_NAME = 'labdojo-v1';
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',
@@ -522,8 +522,8 @@ describe('Mobile Experience', () => {
 ```json
 // public/manifest.json
 {
-  "name": "ORCATech Learning Platform",
-  "short_name": "ORCATech",
+  "name": "LabDojo Learning Platform",
+  "short_name": "LabDojo",
   "description": "Comprehensive technology learning platform",
   "start_url": "/",
   "display": "standalone",
@@ -551,7 +551,7 @@ describe('Mobile Experience', () => {
 
 ```javascript
 // src/serviceWorker.js
-const CACHE_NAME = 'orcatech-pwa-v1';
+const CACHE_NAME = 'labdojo-pwa-v1';
 
 // Cache course content for offline access
 self.addEventListener('fetch', (event) => {
@@ -611,7 +611,7 @@ const InstallPrompt = () => {
     <div className="fixed bottom-4 left-4 right-4 bg-primary text-primary-foreground p-4 rounded-lg shadow-lg z-50">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-semibold">Install ORCATech</h3>
+          <h3 className="font-semibold">Install LabDojo</h3>
           <p className="text-sm opacity-90">Add to home screen for quick access</p>
         </div>
         <div className="flex space-x-2">
@@ -876,4 +876,4 @@ const handleTouch = useCallback((e) => {
 - Maintain good color contrast
 - Handle focus management properly
 
-This mobile optimization guide ensures the ORCATech Learning Platform provides an excellent experience across all mobile devices while maintaining performance, accessibility, and usability standards.
+This mobile optimization guide ensures the LabDojo Learning Platform provides an excellent experience across all mobile devices while maintaining performance, accessibility, and usability standards.

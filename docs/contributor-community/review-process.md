@@ -1,7 +1,7 @@
 
 # Review Process Guide 🔍
 
-This guide outlines the pull request and code review process for the ORCATech Learning Platform. Our review process ensures code quality, knowledge sharing, and collaborative development while maintaining our educational mission.
+This guide outlines the pull request and code review process for the LabDojo Learning Platform. Our review process ensures code quality, knowledge sharing, and collaborative development while maintaining our educational mission.
 
 ## 📋 Pull Request Guidelines
 

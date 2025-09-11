@@ -1,7 +1,7 @@
 
 # Integration Guide
 
-This guide provides comprehensive instructions for integrating the ORCATech Learning Platform with external learning platforms, APIs, and third-party services.
+This guide provides comprehensive instructions for integrating the LabDojo Learning Platform with external learning platforms, APIs, and third-party services.
 
 ## Table of Contents
 
@@ -24,13 +24,13 @@ This guide provides comprehensive instructions for integrating the ORCATech Lear
 
 ## Overview
 
-The ORCATech Learning Platform supports various integration patterns to connect with external services and enhance the learning experience. This guide covers both official integrations and custom API implementations.
+The LabDojo Learning Platform supports various integration patterns to connect with external services and enhance the learning experience. This guide covers both official integrations and custom API implementations.
 
 ### Integration Architecture
 
 ```
 ┌─────────────────────────────────────────────────┐
-│              ORCATech Platform                  │
+│              LabDojo Platform                  │
 ├─────────────────────────────────────────────────┤
 │                API Gateway                      │
 ├─────────────────────────────────────────────────┤
@@ -100,7 +100,7 @@ export const useOAuth = (provider: string) => {
 export const createSecureHeaders = (apiKey: string): HeadersInit => ({
   'Authorization': `Bearer ${apiKey}`,
   'Content-Type': 'application/json',
-  'User-Agent': 'ORCATech-Platform/1.0',
+  'User-Agent': 'LabDojo-Platform/1.0',
   'X-Requested-With': 'XMLHttpRequest'
 });
 ```

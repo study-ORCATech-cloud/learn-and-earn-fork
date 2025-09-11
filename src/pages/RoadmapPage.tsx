@@ -97,9 +97,9 @@ const RoadmapPage = () => {
   return (
     <>
       <Helmet>
-        <title>Roadmap - ORCATech Learning Platform</title>
-        <meta name="description" content="Discover what's coming next to the ORCATech Learning Platform. Vote on upcoming courses and features, and see our development roadmap." />
-        <link rel="canonical" href={`https://labdojo.io${location.pathname}`} />
+        <title>Roadmap - LabDojo Learning Platform</title>
+        <meta name="description" content="Discover what's coming next to the LabDojo Learning Platform. Vote on upcoming courses and features, and see our development roadmap." />
+        <link rel="canonical" href={`https://learn-and-earn.online${location.pathname}`} />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">
@@ -112,7 +112,7 @@ const RoadmapPage = () => {
               Development Roadmap
             </h1>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-8">
-              Discover what's coming next to the ORCATech Learning Platform. See our planned courses and projects,
+              Discover what's coming next to the LabDojo Learning Platform. See our planned courses and projects,
               and help us prioritize what matters most to you.
             </p>
 
