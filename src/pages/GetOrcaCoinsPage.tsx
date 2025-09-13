@@ -209,15 +209,15 @@ const GetOrcaCoinsPage = () => {
                 {coinPackages.map((pack, index) => (
                   <div 
                     key={index} 
-                    className={`relative p-6 rounded-lg border h-full flex flex-col ${
+                    className={`relative ${pack.popular ? 'mt-4' : ''} p-6 rounded-lg border h-full flex flex-col ${
                       pack.popular 
                         ? 'bg-gradient-to-b from-yellow-500/10 to-orange-500/10 border-yellow-500/50' 
                         : 'bg-slate-900/50 border-slate-800'
                     }`}
                   >
                     {pack.popular && (
-                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                        <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                        <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold shadow-lg">
                           Most Popular
                         </span>
                       </div>
@@ -335,7 +335,7 @@ const GetOrcaCoinsPage = () => {
         {/* Purchase Confirmation Modal */}
         {purchaseData && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-slate-900 rounded-lg border border-slate-700 max-w-md w-full p-6 relative">
+            <div className="bg-slate-900 rounded-lg border border-slate-700 max-w-md w-full p-6 relative my-8 max-h-[calc(100vh-2rem)] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-800 [&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-slate-500" style={{ scrollbarWidth: 'thin', scrollbarColor: '#64748b #374151' }}>
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Coins className="w-8 h-8 text-white" />

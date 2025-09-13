@@ -291,11 +291,12 @@ const Profile: React.FC = () => {
                 {(user.role === 'admin' || user.role === 'moderator' || user.role === 'owner') && (
                   <Button
                     asChild
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm"
                   >
                     <a href="/management">
                       <Shield className="w-4 h-4 mr-2" />
-                      Open Management Dashboard
+                      <span className="hidden sm:inline">Open Management Dashboard</span>
+                      <span className="sm:hidden">Management</span>
                     </a>
                   </Button>
                 )}
@@ -303,10 +304,11 @@ const Profile: React.FC = () => {
                 <Button
                   variant="outline"
                   onClick={() => navigate('/settings')}
-                  className="w-full bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+                  className="w-full bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white text-sm"
                 >
                   <User className="w-4 h-4 mr-2" />
-                  Edit Profile Settings
+                  <span className="hidden sm:inline">Edit Profile Settings</span>
+                  <span className="sm:hidden">Settings</span>
                 </Button>
 
                 <div className="pt-2 border-t border-slate-700">

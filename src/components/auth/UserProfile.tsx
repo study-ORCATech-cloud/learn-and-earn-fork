@@ -130,7 +130,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className = '' }) => {
 
         <DropdownMenuContent 
           align="end" 
-          className="w-56 bg-slate-900 border-slate-800"
+          className="w-56 bg-slate-900 border-slate-800 max-h-[70vh] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-700 [&::-webkit-scrollbar-thumb]:bg-slate-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-slate-400"
+          style={{
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#64748b #374151'
+          }}
         >
           <DropdownMenuLabel className="text-white">
             <div className="flex flex-col space-y-1">

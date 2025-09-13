@@ -13,7 +13,8 @@ import {
   Coins,
   BarChart3,
   Shield,
-  Users
+  Users,
+  MessageSquare
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -89,6 +90,10 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({ children }) => {
           breadcrumbs.push({ label: 'Orca Coins', path: '/management/orca-coins', isCurrentPage: true });
           break;
           
+        case 'contact-messages':
+          breadcrumbs.push({ label: 'Contact Messages', path: '/management/contact-messages', isCurrentPage: true });
+          break;
+          
         case 'system':
           breadcrumbs.push({ label: 'System', path: '/management/system' });
           if (pathSegments[2] === 'health') {
@@ -120,6 +125,7 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({ children }) => {
     if (path === '/management/analytics') return <BarChart3 className="w-6 h-6" />;
     if (path === '/management/roles') return <Shield className="w-6 h-6" />;
     if (path === '/management/users') return <Users className="w-6 h-6" />;
+    if (path === '/management/contact-messages') return <MessageSquare className="w-6 h-6" />;
     return null;
   };
 
@@ -132,6 +138,7 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({ children }) => {
       '/management/roles': 'View and manage role hierarchy and permissions',
       '/management/analytics': 'Orca Coins economy and platform analytics',
       '/management/orca-coins': 'Orca Coins transactions and management',
+      '/management/contact-messages': 'Manage customer inquiries and support requests',
       '/management/system': 'System health monitoring and maintenance',
     };
     return descriptions[path] || 'Management system administration';

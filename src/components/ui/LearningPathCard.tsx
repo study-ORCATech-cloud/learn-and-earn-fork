@@ -28,8 +28,8 @@ const LearningPathCard: React.FC<LearningPathCardProps> = ({ learningPath, class
         {/* Background Gradient */}
         <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`} />
         
-        {/* Badges */}
-        <div className="absolute top-4 right-4 flex gap-2 z-10">
+        {/* Badges - Desktop only */}
+        <div className="hidden sm:flex absolute top-4 right-4 gap-2 z-10">
           {isPopular && (
             <span className="flex items-center gap-1 px-2 py-1 bg-orange-500/20 text-orange-400 text-xs rounded-full">
               <TrendingUp className="w-3 h-3" />
@@ -58,6 +58,22 @@ const LearningPathCard: React.FC<LearningPathCardProps> = ({ learningPath, class
                 {description}
               </p>
             </div>
+          </div>
+
+          {/* Badges - Mobile only */}
+          <div className="flex sm:hidden gap-2 mb-4">
+            {isPopular && (
+              <span className="flex items-center gap-1 px-2 py-1 bg-orange-500/20 text-orange-400 text-xs rounded-full">
+                <TrendingUp className="w-3 h-3" />
+                Popular
+              </span>
+            )}
+            {isNew && (
+              <span className="flex items-center gap-1 px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">
+                <Star className="w-3 h-3" />
+                New
+              </span>
+            )}
           </div>
 
           {/* Stats */}

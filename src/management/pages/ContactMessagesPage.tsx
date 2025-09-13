@@ -163,12 +163,8 @@ const ContactMessagesPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Contact Messages</h1>
-          <p className="text-slate-400">Manage customer inquiries and support requests</p>
-        </div>
+      {/* Page Actions */}
+      <div className="flex justify-end">
         <Button onClick={() => loadMessages()} disabled={loading} variant="outline" size="sm" className="bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white">
           <RefreshCw className={cn('w-4 h-4 mr-2', loading && 'animate-spin')} />
           Refresh
@@ -359,7 +355,7 @@ const ContactMessagesPage: React.FC = () => {
                                 <Eye className="w-3 h-3" />
                               </Button>
                             </DialogTrigger>
-                            <DialogContent className="bg-slate-900 border-slate-700 max-w-2xl">
+                            <DialogContent className="bg-slate-900 border-slate-700 max-w-2xl max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-800 [&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-slate-500" style={{ scrollbarWidth: 'thin', scrollbarColor: '#64748b #374151' }}>
                               <DialogHeader>
                                 <DialogTitle className="text-white">Message Details</DialogTitle>
                               </DialogHeader>
@@ -501,7 +497,7 @@ const ContactMessagesPage: React.FC = () => {
 
       {/* Update Message Dialog */}
       <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
-        <DialogContent className="bg-slate-900 border-slate-700">
+        <DialogContent className="bg-slate-900 border-slate-700 max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-800 [&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-slate-500" style={{ scrollbarWidth: 'thin', scrollbarColor: '#64748b #374151' }}>
           <DialogHeader>
             <DialogTitle className="text-white">Update Message</DialogTitle>
             <DialogDescription className="text-slate-400">
@@ -525,7 +521,7 @@ const ContactMessagesPage: React.FC = () => {
                   <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-600">
+                  <SelectContent className="bg-slate-800 border-slate-600 max-h-[60vh] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-700 [&::-webkit-scrollbar-thumb]:bg-slate-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-slate-400" style={{ scrollbarWidth: 'thin', scrollbarColor: '#64748b #374151' }}>
                     <SelectItem value="NEW" className="text-white hover:bg-slate-700">New</SelectItem>
                     <SelectItem value="READ" className="text-white hover:bg-slate-700">Read</SelectItem>
                     <SelectItem value="IN_PROGRESS" className="text-white hover:bg-slate-700">In Progress</SelectItem>

@@ -250,13 +250,15 @@ const WalletPage: React.FC = () => {
           {/* Tabs for different sections */}
           <Tabs defaultValue="transactions" className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-slate-900/50 border-slate-800">
-              <TabsTrigger value="transactions" className="data-[state=active]:bg-slate-800 text-slate-300 data-[state=active]:text-white">
-                <History className="w-4 h-4 mr-2" />
-                Transaction History
+              <TabsTrigger value="transactions" className="data-[state=active]:bg-slate-800 text-slate-300 data-[state=active]:text-white text-xs sm:text-sm">
+                <History className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Transaction History</span>
+                <span className="sm:hidden">Transactions</span>
               </TabsTrigger>
-              <TabsTrigger value="purchases" className="data-[state=active]:bg-slate-800 text-slate-300 data-[state=active]:text-white">
-                <BookOpen className="w-4 h-4 mr-2" />
-                My Labs
+              <TabsTrigger value="purchases" className="data-[state=active]:bg-slate-800 text-slate-300 data-[state=active]:text-white text-xs sm:text-sm">
+                <BookOpen className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">My Labs</span>
+                <span className="sm:hidden">Labs</span>
               </TabsTrigger>
             </TabsList>
 
@@ -289,44 +291,44 @@ const WalletPage: React.FC = () => {
                         walletDetails?.recent_transactions.map((transaction) => (
                           <div
                             key={transaction.id}
-                            className="flex items-center justify-between p-4 rounded-lg bg-slate-800/50 border border-slate-700"
+                            className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:justify-between p-4 rounded-lg bg-slate-800/50 border border-slate-700"
                           >
-                            <div className="flex items-center gap-3">
-                              <div className="p-2 rounded-full bg-slate-700">
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <div className="p-2 rounded-full bg-slate-700 flex-shrink-0">
                                 {getTransactionIcon(transaction.transaction_type)}
                               </div>
-                              <div>
+                              <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <span className="font-medium text-white">
+                                  <span className="font-medium text-white text-sm sm:text-base">
                                     {formatTransactionType(transaction.transaction_type)}
                                   </span>
                                 </div>
-                                <p className="text-sm text-slate-400">
+                                <p className="text-xs sm:text-sm text-slate-400 break-words">
                                   {transaction.description}
                                 </p>
-                                <div className="flex items-center gap-4 mt-1 text-xs text-slate-500">
-                                  <span className="flex items-center gap-1">
-                                    <Calendar className="w-3 h-3" />
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mt-1 text-xs text-slate-500">
+                                  <span className="flex items-center gap-1 whitespace-nowrap">
+                                    <Calendar className="w-3 h-3 flex-shrink-0" />
                                     {new Date(transaction.created_at).toLocaleDateString()}
                                   </span>
                                   {transaction.reference_url && (
                                     <button
                                       onClick={() => handleLabClick(transaction.reference_url)}
-                                      className="flex items-center gap-1 hover:text-blue-400 transition-colors"
+                                      className="flex items-center gap-1 hover:text-blue-400 transition-colors whitespace-nowrap"
                                     >
-                                      <ExternalLink className="w-3 h-3" />
+                                      <ExternalLink className="w-3 h-3 flex-shrink-0" />
                                       View Lab
                                     </button>
                                   )}
                                 </div>
                               </div>
                             </div>
-                            <div className="text-right">
-                              <div className={`font-bold ${getTransactionColor(transaction.amount)}`}>
+                            <div className="text-right sm:text-left flex-shrink-0">
+                              <div className={`font-bold text-sm sm:text-base ${getTransactionColor(transaction.amount)}`}>
                                 {transaction.amount >= 0 ? '+' : ''}{transaction.amount}
                                 <Coins className="w-4 h-4 inline ml-1" />
                               </div>
-                              <div className="text-xs text-slate-400">
+                              <div className="text-xs text-slate-400 whitespace-nowrap">
                                 Balance: {transaction.balance_after}
                               </div>
                             </div>
@@ -373,43 +375,43 @@ const WalletPage: React.FC = () => {
                         userLibrary?.purchased_labs.map((purchase) => (
                           <div
                             key={purchase.id}
-                            className="flex items-center justify-between p-4 rounded-lg bg-slate-800/50 border border-slate-700 hover:bg-slate-800/70 transition-colors"
+                            className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-lg bg-slate-800/50 border border-slate-700 hover:bg-slate-800/70 transition-colors"
                           >
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <h3 className="font-semibold text-white">{purchase.lab_title}</h3>
-                                <Badge className={getDifficultyColor(purchase.lab_difficulty)}>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                                <h3 className="font-semibold text-white text-sm sm:text-base break-words">{purchase.lab_title}</h3>
+                                <Badge className={`text-xs whitespace-nowrap ${getDifficultyColor(purchase.lab_difficulty)}`}>
                                   {purchase.lab_difficulty.charAt(0).toUpperCase() + purchase.lab_difficulty.slice(1)}
                                 </Badge>
                               </div>
                               
-                              <div className="flex items-center gap-4 text-sm text-slate-400 mb-2">
-                                <span className="flex items-center gap-1">
-                                  <Calendar className="w-3 h-3" />
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-slate-400 mb-2">
+                                <span className="flex items-center gap-1 whitespace-nowrap">
+                                  <Calendar className="w-3 h-3 flex-shrink-0" />
                                   Purchased: {new Date(purchase.created_at).toLocaleDateString()}
                                 </span>
-                                <span>Access Count: {purchase.total_access_count}</span>
+                                <span className="whitespace-nowrap">Access Count: {purchase.total_access_count}</span>
                                 {purchase.last_accessed_at && (
-                                  <span>
+                                  <span className="whitespace-nowrap">
                                     Last Accessed: {new Date(purchase.last_accessed_at).toLocaleDateString()}
                                   </span>
                                 )}
                               </div>
                               
-                              <div className="flex items-center gap-2 text-xs text-slate-500">
-                                <span>Category: {purchase.lab_category}</span>
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-xs text-slate-500">
+                                <span className="whitespace-nowrap">Category: {purchase.lab_category}</span>
                                 {purchase.lab_tags && purchase.lab_tags.length > 0 && (
                                   <>
-                                    <span>•</span>
-                                    <span>Tags: {purchase.lab_tags.join(', ')}</span>
+                                    <span className="hidden sm:inline">•</span>
+                                    <span className="break-words">Tags: {purchase.lab_tags.join(', ')}</span>
                                   </>
                                 )}
                               </div>
                             </div>
                             
-                            <div className="flex items-center gap-10">
+                            <div className="flex items-center justify-between sm:justify-end gap-4 flex-shrink-0">
                               <div className="text-right">
-                                <div className="flex items-center gap-1 text-amber-400 font-semibold">
+                                <div className="flex items-center gap-1 text-amber-400 font-semibold text-sm">
                                   <Coins className="w-4 h-4" />
                                   {purchase.orca_cost}
                                 </div>
@@ -417,7 +419,7 @@ const WalletPage: React.FC = () => {
                               <Button
                                 size="sm"
                                 onClick={() => handleLabClick(purchase.lab_url)}
-                                className="bg-blue-600 hover:bg-blue-700"
+                                className="bg-blue-600 hover:bg-blue-700 text-xs sm:text-sm whitespace-nowrap"
                               >
                                 <ExternalLink className="w-3 h-3 mr-1" />
                                 View Lab

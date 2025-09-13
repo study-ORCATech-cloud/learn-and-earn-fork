@@ -116,7 +116,7 @@ const GrantCoinsDialog: React.FC<GrantCoinsDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-700">
+      <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-700 max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-800 [&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-slate-500" style={{ scrollbarWidth: 'thin', scrollbarColor: '#64748b #374151' }}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-white">
             <Gift className="w-5 h-5 text-amber-400" />

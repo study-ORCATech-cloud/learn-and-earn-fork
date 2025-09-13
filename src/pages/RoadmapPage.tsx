@@ -123,22 +123,22 @@ const RoadmapPage = () => {
             )}
             
             {/* Stats */}
-            <div className="flex justify-center gap-8 text-center">
-              <div className="bg-slate-800/50 rounded-lg p-4 min-w-[120px]">
-                <div className="text-2xl font-bold text-blue-400">{data.roadmapItems.filter(item => item.type === 'course').length || 0}</div>
-                <div className="text-sm text-slate-400">Planned Courses</div>
+            <div className="grid grid-cols-2 sm:flex sm:justify-center gap-4 sm:gap-8 text-center max-w-4xl mx-auto">
+              <div className="bg-slate-800/50 rounded-lg p-3 sm:p-4 flex-1 min-w-0">
+                <div className="text-xl sm:text-2xl font-bold text-blue-400">{data.roadmapItems.filter(item => item.type === 'course').length || 0}</div>
+                <div className="text-xs sm:text-sm text-slate-400">Planned Courses</div>
               </div>
-              <div className="bg-slate-800/50 rounded-lg p-4 min-w-[120px]">
-                <div className="text-2xl font-bold text-green-400">{data.roadmapItems.filter(item => item.type === 'project').length || 0}</div>
-                <div className="text-sm text-slate-400">Planned Projects</div>
+              <div className="bg-slate-800/50 rounded-lg p-3 sm:p-4 flex-1 min-w-0">
+                <div className="text-xl sm:text-2xl font-bold text-green-400">{data.roadmapItems.filter(item => item.type === 'project').length || 0}</div>
+                <div className="text-xs sm:text-sm text-slate-400">Planned Projects</div>
               </div>
-              <div className="bg-slate-800/50 rounded-lg p-4 min-w-[120px]">
-                <div className="text-2xl font-bold text-orange-400">{data.roadmapItems.filter(item => item.type === 'feature').length || 0}</div>
-                <div className="text-sm text-slate-400">Planned Features</div>
+              <div className="bg-slate-800/50 rounded-lg p-3 sm:p-4 flex-1 min-w-0">
+                <div className="text-xl sm:text-2xl font-bold text-orange-400">{data.roadmapItems.filter(item => item.type === 'feature').length || 0}</div>
+                <div className="text-xs sm:text-sm text-slate-400">Planned Features</div>
               </div>
-              <div className="bg-slate-800/50 rounded-lg p-4 min-w-[120px]">
-                <div className="text-2xl font-bold text-purple-400">{totalEstimatedTopics}</div>
-                <div className="text-sm text-slate-400">Total Estimated Topics</div>
+              <div className="bg-slate-800/50 rounded-lg p-3 sm:p-4 flex-1 min-w-0 col-span-2 sm:col-span-1">
+                <div className="text-xl sm:text-2xl font-bold text-purple-400">{totalEstimatedTopics}</div>
+                <div className="text-xs sm:text-sm text-slate-400">Total Estimated Topics</div>
               </div>
             </div>
           </div>
@@ -147,21 +147,21 @@ const RoadmapPage = () => {
         {/* Filters Section */}
         <section className="py-8 px-4 border-b border-slate-800">
           <div className="container mx-auto">
-            <div className="flex flex-col md:flex-row gap-4 items-center">
+            <div className="flex flex-col lg:flex-row gap-4 items-center">
               {/* Search */}
-              <div className="relative flex-1 max-w-md">
+              <div className="relative flex-1 max-w-md w-full lg:w-auto">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                 <Input
                   placeholder="Filter roadmap items..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-slate-800/50 border-slate-700 text-white placeholder-slate-400"
+                  className="pl-10 bg-slate-800/50 border-slate-700 text-white placeholder-slate-400 w-full"
                 />
               </div>
 
               {/* Category Filter */}
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-[180px] bg-slate-800/50 border-slate-700 text-white">
+                <SelectTrigger className="w-full sm:w-[180px] bg-slate-800/50 border-slate-700 text-white">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent className="bg-slate-800 border-slate-700">
@@ -176,7 +176,7 @@ const RoadmapPage = () => {
 
               {/* Priority Filter */}
               <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                <SelectTrigger className="w-[140px] bg-slate-800/50 border-slate-700 text-white">
+                <SelectTrigger className="w-full sm:w-[140px] bg-slate-800/50 border-slate-700 text-white">
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
                 <SelectContent className="bg-slate-800 border-slate-700">
@@ -189,7 +189,7 @@ const RoadmapPage = () => {
 
               {/* Status Filter */}
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[140px] bg-slate-800/50 border-slate-700 text-white">
+                <SelectTrigger className="w-full sm:w-[140px] bg-slate-800/50 border-slate-700 text-white">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent className="bg-slate-800 border-slate-700">
@@ -213,21 +213,21 @@ const RoadmapPage = () => {
               <CollapsibleTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  className="flex items-center justify-between w-full p-6 bg-slate-900/50 border border-slate-800 rounded-lg hover:bg-slate-800/50 text-left"
+                  className="flex items-center justify-between w-full p-4 sm:p-6 bg-slate-900/50 border border-slate-800 rounded-lg hover:bg-slate-800/50 text-left overflow-hidden"
                 >
-                  <div className="flex items-center gap-4">
-                    <BookOpen className="w-6 h-6 text-blue-400" />
-                    <div>
-                      <h2 className="text-2xl font-bold text-white">Planned Courses</h2>
-                      <p className="text-slate-400 text-sm">
+                  <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                    <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400 flex-shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-lg sm:text-2xl font-bold text-white">Planned Courses</h2>
+                      <p className="text-slate-400 text-xs sm:text-sm truncate">
                         {filteredCourses.length} course{filteredCourses.length !== 1 ? 's' : ''} planned for development
                       </p>
                     </div>
                   </div>
                   {coursesExpanded ? (
-                    <ChevronUp className="w-5 h-5 text-slate-400" />
+                    <ChevronUp className="w-5 h-5 text-slate-400 flex-shrink-0" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-slate-400" />
+                    <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0" />
                   )}
                 </Button>
               </CollapsibleTrigger>
@@ -252,21 +252,21 @@ const RoadmapPage = () => {
               <CollapsibleTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  className="flex items-center justify-between w-full p-6 bg-slate-900/50 border border-slate-800 rounded-lg hover:bg-slate-800/50 text-left"
+                  className="flex items-center justify-between w-full p-4 sm:p-6 bg-slate-900/50 border border-slate-800 rounded-lg hover:bg-slate-800/50 text-left overflow-hidden"
                 >
-                  <div className="flex items-center gap-4">
-                    <TrendingUp className="w-6 h-6 text-green-400" />
-                    <div>
-                      <h2 className="text-2xl font-bold text-white">Planned Projects</h2>
-                      <p className="text-slate-400 text-sm">
+                  <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                    <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-green-400 flex-shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-lg sm:text-2xl font-bold text-white">Planned Projects</h2>
+                      <p className="text-slate-400 text-xs sm:text-sm truncate">
                         {filteredProjects.length} project{filteredProjects.length !== 1 ? 's' : ''} planned for development
                       </p>
                     </div>
                   </div>
                   {projectsExpanded ? (
-                    <ChevronUp className="w-5 h-5 text-slate-400" />
+                    <ChevronUp className="w-5 h-5 text-slate-400 flex-shrink-0" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-slate-400" />
+                    <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0" />
                   )}
                 </Button>
               </CollapsibleTrigger>
@@ -291,21 +291,21 @@ const RoadmapPage = () => {
               <CollapsibleTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  className="flex items-center justify-between w-full p-6 bg-slate-900/50 border border-slate-800 rounded-lg hover:bg-slate-800/50 text-left"
+                  className="flex items-center justify-between w-full p-4 sm:p-6 bg-slate-900/50 border border-slate-800 rounded-lg hover:bg-slate-800/50 text-left overflow-hidden"
                 >
-                  <div className="flex items-center gap-4">
-                    <Zap className="w-6 h-6 text-orange-400" />
-                    <div>
-                      <h2 className="text-2xl font-bold text-white">Planned Features</h2>
-                      <p className="text-slate-400 text-sm">
+                  <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                    <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-orange-400 flex-shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-lg sm:text-2xl font-bold text-white">Planned Features</h2>
+                      <p className="text-slate-400 text-xs sm:text-sm truncate">
                         {filteredFeatures.length} feature{filteredFeatures.length !== 1 ? 's' : ''} planned for development
                       </p>
                     </div>
                   </div>
                   {featuresExpanded ? (
-                    <ChevronUp className="w-5 h-5 text-slate-400" />
+                    <ChevronUp className="w-5 h-5 text-slate-400 flex-shrink-0" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-slate-400" />
+                    <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0" />
                   )}
                 </Button>
               </CollapsibleTrigger>

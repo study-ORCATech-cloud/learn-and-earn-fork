@@ -23,12 +23,12 @@ const ContactPage = () => {
     e.preventDefault();
     
     // Try mailto first
-    const mailtoLink = 'mailto:orca.tech.work@gmail.com';
+    const mailtoLink = 'mailto:labdojo.io@gmail.com';
     window.location.href = mailtoLink;
     
     // Provide fallback after a short delay
     setTimeout(() => {
-      const gmailLink = 'https://mail.google.com/mail/?view=cm&fs=1&to=orca.tech.work@gmail.com';
+      const gmailLink = 'https://mail.google.com/mail/?view=cm&fs=1&to=labdojo.io@gmail.com';
       const confirmed = window.confirm(
         'If your email client didn\'t open, would you like to open Gmail in your browser instead?'
       );
@@ -161,7 +161,7 @@ const ContactPage = () => {
                         onClick={handleEmailClick}
                         className="text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
                       >
-                        orca.tech.work@gmail.com
+                        labdojo.io@gmail.com
                       </button>
                     </div>
                   </div>

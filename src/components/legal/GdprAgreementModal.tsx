@@ -21,8 +21,8 @@ interface GdprAgreementModalProps {
 const GdprAgreementModal: React.FC<GdprAgreementModalProps> = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-800">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl h-[90vh] bg-slate-900 border-slate-800 flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-white flex items-center gap-2">
             <Shield className="w-5 h-5" />
             GDPR Agreement
@@ -32,7 +32,7 @@ const GdprAgreementModal: React.FC<GdprAgreementModalProps> = ({ isOpen, onClose
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="h-[70vh] pr-4">
+        <ScrollArea className="flex-1 overflow-y-auto pr-4">
           <div className="space-y-6 text-slate-300">
             
             {/* Effective Date */}
@@ -113,7 +113,7 @@ const GdprAgreementModal: React.FC<GdprAgreementModalProps> = ({ isOpen, onClose
               <h2 className="text-xl font-semibold text-white">Exercising Your Rights</h2>
               <p className="leading-relaxed">
                 To exercise any of these rights, please contact us at{' '}
-                <span className="text-blue-400">📧 orca.tech.work@gmail.com</span>. 
+                <span className="text-blue-400">📧 labdojo.io@gmail.com</span>. 
                 We may require verification of your identity before fulfilling your request.
               </p>
             </section>
@@ -135,7 +135,7 @@ const GdprAgreementModal: React.FC<GdprAgreementModalProps> = ({ isOpen, onClose
           </div>
         </ScrollArea>
 
-        <div className="flex justify-end pt-4 border-t border-slate-700">
+        <div className="flex justify-end pt-4 border-t border-slate-700 flex-shrink-0">
           <Button
             onClick={onClose}
             variant="outline"

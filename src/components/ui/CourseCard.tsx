@@ -44,9 +44,9 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
         {/* Background Gradient */}
         <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`} />
         
-        {/* Top Right Badges */}
+        {/* Top Right Badges - Desktop only */}
         {hasTopBadges && (
-          <div className="absolute top-4 right-4 flex flex-col gap-1 z-10 max-w-[100px]">
+          <div className="hidden sm:flex absolute top-4 right-4 flex-col gap-1 z-10 max-w-[100px]">
             {isPopular && (
               <span className="flex items-center gap-1 px-2 py-1 bg-orange-500/20 text-orange-400 text-xs rounded-full whitespace-nowrap">
                 <TrendingUp className="w-3 h-3 flex-shrink-0" />
@@ -64,7 +64,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
 
         <div className="p-6 flex flex-col flex-1">
           {/* Header */}
-          <div className={`flex items-start gap-4 mb-4 ${hasTopBadges ? 'pr-24' : ''}`}>
+          <div className="flex items-start gap-4 mb-4">
             <div className={`text-4xl ${iconColor} group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
               {icon}
             </div>
@@ -77,6 +77,24 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, className = '' }) => {
               </p>
             </div>
           </div>
+
+          {/* Mobile Badges */}
+          {hasTopBadges && (
+            <div className="flex sm:hidden gap-2 mb-4">
+              {isPopular && (
+                <span className="flex items-center gap-1 px-2 py-1 bg-orange-500/20 text-orange-400 text-xs rounded-full">
+                  <TrendingUp className="w-3 h-3" />
+                  Popular
+                </span>
+              )}
+              {isNew && (
+                <span className="flex items-center gap-1 px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">
+                  <Star className="w-3 h-3" />
+                  New
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Stats */}
           <div className="flex items-center gap-4 mb-4 text-sm text-slate-400">

@@ -13,10 +13,10 @@ interface ProjectCardProps {
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'Beginner': return 'bg-green-100 text-green-800 border-green-300';
-      case 'Intermediate': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'Advanced': return 'bg-red-100 text-red-800 border-red-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+      case 'Beginner': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'Intermediate': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      case 'Advanced': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
   };
 
@@ -32,16 +32,34 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   };
 
   return (
-    <Card className="bg-slate-900/50 border-slate-800 hover:border-slate-700 transition-all duration-300 group h-full">
-      <CardHeader className="pb-4">
-        <div className="flex items-start justify-between mb-2">
-          <div className="flex items-center gap-2">
+    <Card className="bg-slate-900/50 border-slate-800 hover:border-slate-700 transition-all duration-300 group h-full overflow-hidden">
+      <CardHeader className="pb-4 relative">
+        <div className="mb-2">
+          <div className="flex items-center gap-2 mb-2">
             <div className={`w-3 h-3 rounded-full ${getCategoryColor(project.category)}`} />
             <Badge variant="outline" className="text-xs border-slate-700 text-slate-300">
               {project.category}
             </Badge>
           </div>
-          <div className="flex gap-1">
+          
+          {/* Mobile badges */}
+          <div className="flex gap-1 sm:hidden">
+            {project.isPopular && (
+              <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-400 text-xs">
+                <Star className="w-3 h-3 mr-1 fill-current" />
+                Popular
+              </Badge>
+            )}
+            {project.isNew && (
+              <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 text-xs">
+                <Sparkles className="w-3 h-3 mr-1" />
+                New
+              </Badge>
+            )}
+          </div>
+          
+          {/* Desktop badges */}
+          <div className="hidden sm:flex gap-1 absolute top-4 right-4">
             {project.isPopular && (
               <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
             )}
@@ -61,8 +79,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 
       <CardContent className="space-y-4">
         {/* Difficulty and Duration */}
-        <div className="flex items-center justify-between text-sm">
-          <Badge className={getDifficultyColor(project.difficulty)}>
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <Badge className={getDifficultyColor(project.difficulty)} variant="outline">
             {project.difficulty}
           </Badge>
           <div className="flex items-center text-slate-400">
@@ -88,18 +106,18 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1 max-w-full overflow-hidden">
           {project.tags.slice(0, 3).map((tag) => (
             <Badge 
               key={tag} 
               variant="secondary" 
-              className="text-xs bg-slate-800 text-slate-300 hover:bg-slate-700"
+              className="text-xs bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap"
             >
               {tag}
             </Badge>
           ))}
           {project.tags.length > 3 && (
-            <Badge variant="secondary" className="text-xs bg-slate-800 text-slate-400">
+            <Badge variant="secondary" className="text-xs bg-slate-800 text-slate-400 whitespace-nowrap">
               +{project.tags.length - 3}
             </Badge>
           )}

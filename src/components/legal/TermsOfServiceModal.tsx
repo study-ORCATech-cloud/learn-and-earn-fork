@@ -21,8 +21,8 @@ interface TermsOfServiceModalProps {
 const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-800">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl h-[90vh] bg-slate-900 border-slate-800 flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-white flex items-center gap-2">
             <FileText className="w-5 h-5" />
             Terms of Service
@@ -32,7 +32,7 @@ const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({ isOpen, onClo
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="h-[70vh] pr-4">
+        <ScrollArea className="flex-1 overflow-y-auto pr-4">
           <div className="space-y-6 text-slate-300">
             
             {/* Effective Date */}
@@ -184,7 +184,7 @@ const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({ isOpen, onClo
                 For questions or concerns regarding these Terms, please contact us at:
               </p>
               <p className="text-blue-400">
-                📧 orca.tech.work@gmail.com
+                📧 labdojo.io@gmail.com
               </p>
             </section>
 
@@ -196,7 +196,7 @@ const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({ isOpen, onClo
           </div>
         </ScrollArea>
 
-        <div className="flex justify-end pt-4 border-t border-slate-700">
+        <div className="flex justify-end pt-4 border-t border-slate-700 flex-shrink-0">
           <Button
             onClick={onClose}
             variant="outline"

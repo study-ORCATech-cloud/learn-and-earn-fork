@@ -111,9 +111,9 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({ item, className = '' }) => {
       {/* Background Gradient */}
       <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5 hover:opacity-10 transition-opacity duration-300`} />
       
-      {/* Priority Badge */}
+      {/* Priority Badge - Desktop only */}
       {priority && (
-      <div className="absolute top-4 right-4 z-10">
+      <div className="hidden sm:block absolute top-4 right-4 z-10">
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(priority)}`}>
           {priority}
         </span>
@@ -122,7 +122,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({ item, className = '' }) => {
 
       <div className="p-6 flex flex-col flex-1">
         {/* Header */}
-        <div className="flex items-start gap-4 mb-4 pr-16">
+        <div className="flex items-start gap-4 mb-4 sm:pr-16">
           <div className={`text-4xl ${iconColor} flex-shrink-0`}>
             {icon}
           </div>
@@ -135,21 +135,31 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({ item, className = '' }) => {
             </p>
           </div>
         </div>
+        
+        {/* Priority Badge - Mobile only */}
+        {priority && (
+          <div className="sm:hidden mb-4">
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(priority)}`}>
+              {priority}
+            </span>
+          </div>
+        )}
 
         {/* Stats */}
-        <div className="flex items-center gap-4 mb-4 text-sm text-slate-400">
+        <div className="flex flex-wrap items-center gap-3 mb-4 text-sm text-slate-400">
           {topicCount && (
-          <div className="flex items-center gap-1">
-            <BookOpen className="w-4 h-4" />
-            {type === 'course' ? `${topicCount} Estimated topics` : `${topicCount} Estimated deliverables`}
+          <div className="flex items-center gap-1 whitespace-nowrap">
+            <BookOpen className="w-4 h-4 flex-shrink-0" />
+            <span className="hidden sm:inline">{type === 'course' ? `${topicCount} Estimated topics` : `${topicCount} Estimated deliverables`}</span>
+            <span className="sm:hidden">{topicCount} {type === 'course' ? 'topics' : 'items'}</span>
           </div>
           )}
-          <div className="flex items-center gap-1">
-            <Calendar className="w-4 h-4" />
+          <div className="flex items-center gap-1 whitespace-nowrap">
+            <Calendar className="w-4 h-4 flex-shrink-0" />
             {plannedReleaseDate}
           </div>
-          <div className="flex items-center gap-1">
-            <Heart className={`w-4 h-4 ${isVoted ? 'text-red-400' : 'text-slate-400'}`} />
+          <div className="flex items-center gap-1 whitespace-nowrap">
+            <Heart className={`w-4 h-4 flex-shrink-0 ${isVoted ? 'text-red-400' : 'text-slate-400'}`} />
             {currentVoteCount}
           </div>
         </div>
@@ -171,14 +181,14 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({ item, className = '' }) => {
         )}
 
         {/* Bottom section */}
-        <div className="flex items-center justify-between mt-auto">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-auto gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             {difficulty && (
-              <span className={`px-3 py-1 rounded-full text-xs font-medium ${getDifficultyColor(difficulty)}`}>
+              <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${getDifficultyColor(difficulty)}`}>
                 {difficulty}
               </span>
             )}
-            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(status)}`}>
+            <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${getStatusColor(status)}`}>
               {status}
             </span>
           </div>

@@ -61,11 +61,11 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
   };
 
   return (
-    <Card className="p-6 bg-slate-900/50 border-slate-800 hover:border-slate-700 transition-colors h-full flex flex-col">
+    <Card className="p-6 bg-slate-900/50 border-slate-800 hover:border-slate-700 transition-colors h-full flex flex-col overflow-hidden">
       <div className="flex items-start gap-4 flex-1">
         <div className="text-2xl">{getTypeIcon(resource.type)}</div>
         <div className="flex-1 flex flex-col h-full">
-          <div className="flex items-start justify-between mb-3">
+          <div className="mb-3">
             <div className="flex-1">
               <h3 className="text-xl font-semibold text-white mb-2">
                 {resource.title}
@@ -74,7 +74,9 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
                 {resource.description}
               </p>
             </div>
-            <div className="flex flex-col items-end gap-2 ml-4">
+            
+            {/* Badges - Mobile: below content, Desktop: side by side */}
+            <div className="flex flex-wrap gap-2 sm:justify-start justify-start">
               <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getDifficultyColor(resource.difficulty)}`}>
                 {resource.difficulty}
               </span>
@@ -111,9 +113,9 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
           </div>
 
           {resource.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-4 max-w-full overflow-hidden">
               {resource.tags.map((tag, tagIndex) => (
-                <span key={tagIndex} className="px-2 py-1 bg-slate-800 text-slate-400 rounded text-xs">
+                <span key={tagIndex} className="px-2 py-1 bg-slate-800 text-slate-400 rounded text-xs whitespace-nowrap">
                   {tag}
                 </span>
               ))}

@@ -50,7 +50,11 @@ const Navigation = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         align="start" 
-        className="w-56 bg-slate-800 border-slate-700 z-50"
+        className="w-56 bg-slate-800 border-slate-700 z-50 max-h-[60vh] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-700 [&::-webkit-scrollbar-thumb]:bg-slate-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-slate-400"
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: '#64748b #374151'
+        }}
       >
         {allNavigationItems.map((item) => (
           <DropdownMenuItem key={item.path} asChild className="focus:bg-slate-700">
