@@ -7,6 +7,9 @@ export interface Project {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   estimatedHours: number;
   category: 'Python' | 'Docker' | 'Kubernetes' | 'CI/CD' | 'IaC';
+  topic: string;
+  icon: string;
+  url: string;
   tags: string[];
   prerequisites: string[];
   objectives: string[];
@@ -14,6 +17,8 @@ export interface Project {
   resources: ProjectResource[];
   isPopular?: boolean;
   isNew?: boolean;
+  completed?: boolean;
+  completed_at?: string;
   lastUpdated: Date;
 }
 

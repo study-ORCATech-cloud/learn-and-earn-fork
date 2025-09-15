@@ -93,6 +93,9 @@ const LabIDEPage: React.FC = () => {
   }, [course, contentId, contentType]);
   
   const contentUrl = useMemo(() => contentResource?.url || '', [contentResource?.url]);
+  
+  // Check if already completed in backend data
+  const isAlreadyCompleted = contentResource?.completed;
 
   // LocalStorage helper functions
   const savePendingChanges = (changes: Map<string, string>) => {
@@ -954,17 +957,17 @@ const LabIDEPage: React.FC = () => {
                 </Button>
                 <Button
                   onClick={handleCompleteClick}
-                  disabled={isCompleting || isCompleted}
+                  disabled={isCompleting || isCompleted || isAlreadyCompleted}
                   size="sm"
                   className={`${
-                    isCompleted 
+                    isCompleted || isAlreadyCompleted
                       ? 'bg-green-600 border-green-500 text-white cursor-default' 
                       : 'bg-green-700 hover:bg-green-600 border-green-600 text-white hover:border-green-500'
                   }`}
-                  title={isCompleted ? 'Lab completed' : 'Mark lab as completed'}
+                  title={isCompleted || isAlreadyCompleted ? `${contentType.charAt(0).toUpperCase() + contentType.slice(1)} completed` : `Mark ${contentType} as completed`}
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
-                  {isCompleting ? 'Completing...' : isCompleted ? 'Completed' : 'Complete'}
+                  {isCompleting ? 'Completing...' : (isCompleted || isAlreadyCompleted) ? 'Completed' : 'Complete'}
                 </Button>
               </div>
             </div>

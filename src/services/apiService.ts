@@ -64,11 +64,17 @@ class ApiService {
     }
   }
 
-  async getLabContent(labUrl: string): Promise<LabContentResponse> {
+  async getLabContent(labUrl: string, options?: { type?: string }): Promise<LabContentResponse> {
     try {
+      // Construct URL with query parameters
+      const url = new URL(`${BASE_URL}/api/v1/lab/content`);
+      if (options?.type) {
+        url.searchParams.append('type', options.type);
+      }
+
       // Make the request without retry for 403 errors
       const response = await fetch(
-        `${BASE_URL}/api/v1/lab/content`,
+        url.toString(),
         this.enhanceRequestWithAuth({
           method: 'GET',
           headers: {
@@ -97,7 +103,7 @@ class ApiService {
       // For other errors, use the retry mechanism
       if (!response.ok) {
         const response = await this.fetchWithRetry(
-          `${BASE_URL}/api/v1/lab/content`,
+          url.toString(),
           {
             method: 'GET',
             headers: {

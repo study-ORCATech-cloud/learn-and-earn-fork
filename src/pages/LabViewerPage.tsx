@@ -67,7 +67,7 @@ const combineLabFiles = (labContent: LabContent | null): LabFile[] => {
 };
 
 const LabViewerPage: React.FC = () => {
-  const { courseId, labId, articleId } = useParams<{ courseId: string; labId?: string; articleId?: string }>();
+  const { courseId, labId, articleId, projectId } = useParams<{ courseId?: string; labId?: string; articleId?: string; projectId?: string }>();
   
   // Helper function to render file content based on type
   const renderFileContent = (file: LabFile, isPreview: boolean = false) => {
@@ -93,8 +93,8 @@ const LabViewerPage: React.FC = () => {
   };
   
   // Determine content type and ID
-  const contentType = labId ? 'lab' : 'article';
-  const contentId = labId || articleId;
+  const contentType = labId ? 'lab' : projectId ? 'project' : 'article';
+  const contentId = labId || articleId || projectId;
   const { data, refetch } = useBackendData();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { 
@@ -106,17 +106,20 @@ const LabViewerPage: React.FC = () => {
   } = useOrcaWallet();
   const { toast } = useToast();
   
-  // Find the course and lab resource
-  const course = data.courses[courseId];
+  // Find the course and lab resource OR project
+  const course = courseId ? data.courses[courseId] : undefined;
+  const project = projectId ? data.projects?.find((p: any) => p.id === projectId) : undefined;
+  
   const contentResource = course?.resources ? Object.values(course.resources).find(r => r.id === contentId && r.type === contentType) : undefined;
   
-  const contentUrl = contentResource?.url || '';
+  const contentUrl = contentResource?.url || project?.url || '';
   const navigate = useNavigate();
   const [labContent, setLabContent] = useState<LabContent | null>(null);
   
   // Cache keys for this specific content
-  const cachedContentKey = `lab-content-${courseId}-${contentType}-${contentId}`;
-  const cacheTimestampKey = `lab-content-timestamp-${courseId}-${contentType}-${contentId}`;
+  const cacheKey = projectId ? `project-${projectId}` : `${courseId}-${contentType}-${contentId}`;
+  const cachedContentKey = `lab-content-${cacheKey}`;
+  const cacheTimestampKey = `lab-content-timestamp-${cacheKey}`;
   const [selectedFile, setSelectedFile] = useState<LabFile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -125,6 +128,9 @@ const LabViewerPage: React.FC = () => {
   const [showPurchaseDialog, setShowPurchaseDialog] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  
+  // Check if already completed in backend data
+  const isAlreadyCompleted = contentResource?.completed || project?.completed
   
   // Cache management functions
   const saveCachedContent = (content: LabContent) => {
@@ -170,15 +176,20 @@ const LabViewerPage: React.FC = () => {
 
   // Check authentication and redirect if not authenticated
   useEffect(() => {
-    if (!authLoading && !isAuthenticated && courseId) {
-      navigate(`/course/${courseId}`, { replace: true });
+    if (!authLoading && !isAuthenticated) {
+      if (courseId) {
+        navigate(`/course/${courseId}`, { replace: true });
+      } else if (projectId) {
+        navigate(`/projects`, { replace: true });
+      }
     }
-  }, [isAuthenticated, authLoading, courseId, navigate]);
+  }, [isAuthenticated, authLoading, courseId, projectId, navigate]);
 
   // Fetch lab content and access info
   const fetchLabData = async (forceRefresh = false) => {
-    if (!contentUrl || !contentResource) {
-      setError(`${contentType === 'lab' ? 'Lab' : 'Article'} not found or invalid ${contentType} configuration`);
+    if (!contentUrl || (!contentResource && !project)) {
+      const typeName = contentType === 'lab' ? 'Lab' : contentType === 'project' ? 'Project' : 'Article';
+      setError(`${typeName} not found or invalid ${contentType} configuration`);
       setIsLoading(false);
       return;
     }
@@ -216,7 +227,9 @@ const LabViewerPage: React.FC = () => {
       }
       
       // Fetch from backend if no cache or force refresh
-      const contentResponse = await apiService.getLabContent(contentUrl);
+      const contentResponse = projectId ? 
+        await apiService.getLabContent(contentUrl, { type: 'project' }) :
+        await apiService.getLabContent(contentUrl);
       
       if (contentResponse.success && contentResponse.data) {
         setLabContent(contentResponse.data);
@@ -291,7 +304,7 @@ const LabViewerPage: React.FC = () => {
     if (!authLoading && isAuthenticated) {
       fetchLabData();
     }
-  }, [contentUrl, contentResource, authLoading, isAuthenticated]);
+  }, [contentUrl, contentResource, project, authLoading, isAuthenticated]);
 
   // Early return for non-authenticated users (after all hooks)
   if (!authLoading && !isAuthenticated) {
@@ -382,9 +395,13 @@ const LabViewerPage: React.FC = () => {
 
     try {
       setIsCompleting(true);
-      
+
+      const resourceTypeName = contentType === 'lab' ? 'Lab' : contentType === 'project' ? 'Project' : 'Article';
       const baseUrl = import.meta.env.VITE_BACKEND_BASE_PATH || 'http://localhost:5000';
-      const response = await fetch(`${baseUrl}/api/v1/labs/complete`, {
+      const url = projectId ? 
+        `${baseUrl}/api/v1/labs/complete?type=project` : 
+        `${baseUrl}/api/v1/labs/complete`;
+      const response = await fetch(url, {
         method: 'POST',
         credentials: 'include', // Use cookie-based auth like other API calls
         headers: {
@@ -394,10 +411,10 @@ const LabViewerPage: React.FC = () => {
       });
 
       if (response.ok) {
-        setIsCompleted(true);
+        setIsCompleted(true);  
         toast({
-          title: "Lab Completed!",
-          description: "You have successfully completed this lab",
+          title: `${resourceTypeName} Completed!`,
+          description: `You have successfully completed this ${contentType}`,
           className: "bg-green-900 border-green-700 text-white",
         });
         // Refresh backend data to reflect the completion
@@ -406,16 +423,17 @@ const LabViewerPage: React.FC = () => {
         const errorData = await response.json();
         toast({
           title: "Completion Failed",
-          description: errorData.message || "Unable to mark lab as completed",
+          description: errorData.message || `Unable to mark ${resourceTypeName} as completed`,
           variant: "destructive",
           className: "bg-red-900 border-red-700 text-white",
         });
       }
     } catch (error) {
       console.error('Error completing lab:', error);
+      const resourceTypeName = contentType === 'lab' ? 'lab' : contentType === 'project' ? 'project' : 'article';
       toast({
         title: "Completion Error",
-        description: "An unexpected error occurred while marking the lab as completed",
+        description: `An unexpected error occurred while marking the ${resourceTypeName} as completed`,
         variant: "destructive",
         className: "bg-red-900 border-red-700 text-white",
       });
@@ -674,11 +692,17 @@ const LabViewerPage: React.FC = () => {
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <button 
-                onClick={() => navigate(`/course/${courseId}`)}
+                onClick={() => {
+                  if (projectId) {
+                    navigate('/projects');
+                  } else {
+                    navigate(`/course/${courseId}`);
+                  }
+                }}
                 className="inline-flex items-center text-slate-400 hover:text-white transition-colors"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to {course?.title || 'Course'}
+                {projectId ? 'Back to Projects' : `Back to ${course?.title || 'Course'}`}
               </button>
               
               <div className="flex items-center gap-4">
@@ -706,7 +730,13 @@ const LabViewerPage: React.FC = () => {
                 {/* Action Buttons */}
                 <div className="flex gap-2">
                   <Button
-                    onClick={() => navigate(`/course/${courseId}/${contentType}/${contentId}/ide`)}
+                    onClick={() => {
+                      if (projectId) {
+                        navigate(`/project/${projectId}/ide`);
+                      } else {
+                        navigate(`/course/${courseId}/${contentType}/${contentId}/ide`);
+                      }
+                    }}
                     variant="outline"
                     size="sm"
                     className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white hover:border-blue-500 hover:text-blue-400"
@@ -718,17 +748,17 @@ const LabViewerPage: React.FC = () => {
                   
                   <Button
                     onClick={handleCompleteClick}
-                    disabled={isCompleting || isCompleted}
+                    disabled={isCompleting || isCompleted || isAlreadyCompleted}
                     size="sm"
                     className={`${
-                      isCompleted 
+                      isCompleted || isAlreadyCompleted
                         ? 'bg-green-600 border-green-500 text-white cursor-default' 
                         : 'bg-green-700 hover:bg-green-600 border-green-600 text-white hover:border-green-500'
                     }`}
-                    title={isCompleted ? 'Lab completed' : 'Mark lab as completed'}
+                    title={isCompleted || isAlreadyCompleted ? `${contentType === 'lab' ? 'Lab' : contentType === 'project' ? 'Project' : 'Article'} completed` : `Mark ${contentType} as completed`}
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    {isCompleting ? 'Completing...' : isCompleted ? 'Completed' : 'Complete'}
+                    {isCompleting ? 'Completing...' : (isCompleted || isAlreadyCompleted) ? 'Completed' : 'Complete'}
                   </Button>
                 </div>
               </div>
@@ -742,21 +772,35 @@ const LabViewerPage: React.FC = () => {
           <div className="mb-8">
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-sm text-slate-400 mb-4">
-              <span>{course?.title}</span>
-              <span>›</span>
-              <span>{contentResource?.title || contentType}</span>
+              {projectId ? (
+                <>
+                  <span>Projects</span>
+                  <span>›</span>
+                  <span>{project?.title || 'Project'}</span>
+                </>
+              ) : (
+                <>
+                  <span>{course?.title}</span>
+                  <span>›</span>
+                  <span>{contentResource?.title || contentType}</span>
+                </>
+              )}
             </div>
             
             <div className="flex items-center gap-3 mb-4">
-              <h1 className="text-3xl font-bold text-white">{labContent?.lab_info?.title || 'Lab'}</h1>
-              {labContent?.lab_info?.difficulty && (
-                <Badge className={getDifficultyColor(labContent.lab_info.difficulty)}>
-                  {labContent.lab_info.difficulty.charAt(0).toUpperCase() + labContent.lab_info.difficulty.slice(1)}
+              <h1 className="text-3xl font-bold text-white">
+                {labContent?.lab_info?.title || project?.title || 'Lab'}
+              </h1>
+              {(labContent?.lab_info?.difficulty || project?.difficulty) && (
+                <Badge className={getDifficultyColor(labContent?.lab_info?.difficulty || project?.difficulty?.toLowerCase() || 'beginner')}>
+                  {(labContent?.lab_info?.difficulty || project?.difficulty || 'beginner').charAt(0).toUpperCase() + (labContent?.lab_info?.difficulty || project?.difficulty || 'beginner').slice(1)}
                 </Badge>
               )}
             </div>
             
-            <p className="text-slate-300 text-lg mb-4">{contentResource?.description || `${contentType} description not available`}</p>
+            <p className="text-slate-300 text-lg mb-4">
+              {contentResource?.description || (project as any)?.description || `${contentType} description not available`}
+            </p>
             
             {/* Premium Access Section */}
             {hasPremiumFiles && !hasAccess && (
@@ -925,10 +969,10 @@ const LabViewerPage: React.FC = () => {
           onClose={() => setShowPurchaseDialog(false)}
           onConfirm={handlePurchaseConfirm}
           labData={{
-            title: labContent.lab_info?.title || 'Lab',
-            difficulty: labContent.lab_info?.difficulty || 'beginner',
+            title: labContent.lab_info?.title || (project as any)?.title || 'Lab',
+            difficulty: labContent.lab_info?.difficulty || (project as any)?.difficulty?.toLowerCase() || 'beginner',
             cost: labCost,
-            description: contentResource?.description || '',
+            description: contentResource?.description || (project as any)?.description || '',
             premiumFilesCount: labContent.content?.premium_files_count
           }}
           isPurchasing={isPurchasing}
