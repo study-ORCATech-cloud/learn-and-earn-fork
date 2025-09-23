@@ -301,8 +301,8 @@ const GetOrcaCoinsPage = () => {
                 <div className="p-6 bg-slate-900/50 rounded-lg border border-slate-800">
                   <h3 className="text-lg font-semibold text-white mb-2">Can I get a refund?</h3>
                   <p className="text-slate-300">
-                    We offer refunds within 7 days of purchase if you haven't used any of your Orca Coins. 
-                    Contact our support team for assistance.
+                    No, we do not offer refunds for Orca Coins once they have been purchased.
+                    Please ensure you are satisfied with your purchase before completing the transaction.
                   </p>
                 </div>
               </div>
