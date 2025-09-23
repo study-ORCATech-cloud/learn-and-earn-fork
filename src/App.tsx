@@ -16,6 +16,11 @@ import SupportPage from "./pages/SupportPage";
 import ContactPage from "./pages/ContactPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import LabViewerPage from "./pages/LabViewerPage";
+import TermsHubPage from "./pages/TermsHubPage";
+import TermsOfServicePage from "./pages/TermsOfServicePage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import CopyrightAgreementPage from "./pages/CopyrightAgreementPage";
+import GdprAgreementPage from "./pages/GdprAgreementPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -89,6 +94,13 @@ const App = () => (
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/support" element={<SupportPage />} />
                     <Route path="/contact" element={<ContactPage />} />
+                    
+                    {/* Legal Pages */}
+                    <Route path="/terms" element={<TermsHubPage />} />
+                    <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                    <Route path="/copyright-agreement" element={<CopyrightAgreementPage />} />
+                    <Route path="/gdpr-agreement" element={<GdprAgreementPage />} />
                     
                     {/* Management Routes */}
                     <Route path="/management/*" element={
