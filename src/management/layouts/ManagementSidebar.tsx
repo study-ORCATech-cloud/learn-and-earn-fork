@@ -14,7 +14,8 @@ import {
   LogOut,
   BarChart3,
   Coins,
-  MessageSquare
+  MessageSquare,
+  Package
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -87,15 +88,23 @@ const ManagementSidebar: React.FC<ManagementSidebarProps> = ({
       path: '/management/analytics',
       icon: <BarChart3 className="w-5 h-5" />,
       requiredPermission: 'view_all_users',
-      description: 'Orca Coins economy and platform analytics'
+      description: 'Dojo Coins economy and platform analytics'
     },
     {
-      id: 'orca-coins',
-      label: 'Orca Coins',
-      path: '/management/orca-coins',
+      id: 'dojo-coins',
+      label: 'Dojo Coins',
+      path: '/management/dojo-coins',
       icon: <Coins className="w-5 h-5" />,
       requiredPermission: 'view_all_users',
-      description: 'Orca Coins transactions and management'
+      description: 'Dojo Coins transactions and management'
+    },
+    {
+      id: 'packages',
+      label: 'Packages',
+      path: '/management/packages',
+      icon: <Package className="w-5 h-5" />,
+      requiredPermission: 'manage_system',
+      description: 'Manage Dojo Coin packages and payment analytics'
     },
     {
       id: 'system',

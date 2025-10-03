@@ -16,7 +16,7 @@ const GdprAgreementContent: React.FC = () => {
       {/* Introduction */}
       <section className="space-y-3">
         <p className="leading-relaxed">
-          This agreement outlines your rights and how to exercise them when using LabDojo.io, operated by ORCA Tech.
+          This agreement outlines your rights and how to exercise them when using LabDojo.io.
         </p>
       </section>
 
@@ -93,7 +93,7 @@ const GdprAgreementContent: React.FC = () => {
       <section className="space-y-3">
         <h2 className="text-xl font-semibold text-white">Data Controller</h2>
         <p className="leading-relaxed">
-          ORCA Tech, operating LabDojo.io, acts as the data controller for the personal data processed through this platform.
+          LabDojo.io acts as the data controller for the personal data processed through this platform. 
           For any GDPR-related inquiries, please contact us using the information provided above.
         </p>
       </section>

@@ -1,4 +1,4 @@
-// Analytics page for Orca Coins economy and platform metrics
+// Analytics page for Dojo Coins economy and platform metrics
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -21,14 +21,14 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import { orcaCoinsService } from '../../services/orcaCoinsService';
+import { dojoCoinsService } from '../../services/dojoCoinsService';
 import {
   AdminAnalyticsResponse,
   EconomyOverview,
   TransactionBreakdown,
   PopularLab,
   WalletDistribution
-} from '../../types/orcaCoins';
+} from '../../types/dojoCoins';
 
 const AnalyticsPage: React.FC = () => {
   const [analytics, setAnalytics] = useState<AdminAnalyticsResponse['data'] | null>(null);
@@ -45,7 +45,7 @@ const AnalyticsPage: React.FC = () => {
       setIsLoading(true);
       setError(null);
       
-      const response = await orcaCoinsService.getAdminAnalytics();
+      const response = await dojoCoinsService.getAdminAnalytics();
       
       if (response.success && response.data) {
         setAnalytics(response.data);
@@ -112,7 +112,7 @@ const AnalyticsPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-white">Analytics</h1>
-            <p className="text-slate-400">Orca Coins economy and platform metrics</p>
+            <p className="text-slate-400">Dojo Coins economy and platform metrics</p>
           </div>
         </div>
         <LoadingSpinner />
@@ -126,7 +126,7 @@ const AnalyticsPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-white">Analytics</h1>
-            <p className="text-slate-400">Orca Coins economy and platform metrics</p>
+            <p className="text-slate-400">Dojo Coins economy and platform metrics</p>
           </div>
           <Button onClick={loadAnalytics} variant="outline" size="sm" className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white">
             <RefreshCw className="w-4 h-4 mr-2" />
@@ -150,7 +150,7 @@ const AnalyticsPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-white">Analytics</h1>
-            <p className="text-slate-400">Orca Coins economy and platform metrics</p>
+            <p className="text-slate-400">Dojo Coins economy and platform metrics</p>
           </div>
         </div>
         <div className="text-center py-12">
@@ -166,7 +166,7 @@ const AnalyticsPage: React.FC = () => {
     <>
       <Helmet>
         <title>Analytics - Management Dashboard</title>
-        <meta name="description" content="Orca Coins economy and platform analytics" />
+        <meta name="description" content="Dojo Coins economy and platform analytics" />
       </Helmet>
 
       <div className="space-y-6">
@@ -193,10 +193,10 @@ const AnalyticsPage: React.FC = () => {
             <CardContent>
               <div className="text-2xl font-bold text-amber-400 flex items-center gap-1">
                 <Coins className="w-6 h-6" />
-                {analytics.economy_overview.total_orca_in_circulation.toLocaleString()}
+                {analytics.economy_overview.total_coins_in_circulation.toLocaleString()}
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                Active Orca Coins in user wallets
+                Active Dojo Coins in user wallets
               </p>
             </CardContent>
           </Card>
@@ -211,7 +211,7 @@ const AnalyticsPage: React.FC = () => {
             <CardContent>
               <div className="text-2xl font-bold text-green-400 flex items-center gap-1">
                 <Coins className="w-6 h-6" />
-                {analytics.economy_overview.total_orca_earned.toLocaleString()}
+                {analytics.economy_overview.total_coins_earned.toLocaleString()}
               </div>
               <p className="text-xs text-slate-500 mt-1">
                 Total coins distributed to users
@@ -229,7 +229,7 @@ const AnalyticsPage: React.FC = () => {
             <CardContent>
               <div className="text-2xl font-bold text-red-400 flex items-center gap-1">
                 <Coins className="w-6 h-6" />
-                {analytics.economy_overview.total_orca_spent.toLocaleString()}
+                {analytics.economy_overview.total_coins_spent.toLocaleString()}
               </div>
               <p className="text-xs text-slate-500 mt-1">
                 Total coins spent on purchases

@@ -9,21 +9,28 @@
 ## 1. Project Overview
 
 ### Purpose & Domain
-**labdojo-fork** is a modular, scalable React-based Learning Platform designed to provide interactive educational content such as courses, learning paths, projects, labs, and roadmaps. It solves the problem of delivering structured, progressive learning experiences with integrated user progress tracking, role-based access control, and management capabilities.
+**LabDojo Learning Platform** is a modular, scalable React-based Learning Platform designed to provide interactive educational content such as courses, learning paths, projects, labs, and roadmaps. It solves the problem of delivering structured, progressive learning experiences with integrated user progress tracking, role-based access control, premium content monetization through Dojo Coins, and comprehensive management capabilities. The platform provides a unified viewing and completion experience across all content types with responsive design, secure payment processing, and comprehensive mobile support.
 
 ### Target Users & Use Cases
-- **Learners:** Access courses, labs, projects, and track progress.
-- **Educators/Content Managers:** Manage learning content, user progress, and roadmap planning.
-- **Administrators/Moderators:** Oversee user roles, permissions, system health, and operational tasks.
-- **Developers:** Extend platform features, integrate new content, and maintain system health.
+- **Learners:** Access courses, labs, projects, purchase Dojo Coins for premium content, and track progress.
+- **Educators/Content Managers:** Manage learning content, user progress, premium content access, and roadmap planning.
+- **Administrators/Moderators:** Oversee user roles, permissions, Dojo Coins transactions, system health, and operational tasks.
+- **Developers:** Extend platform features, integrate new content, maintain payment systems, and system health.
 
 ### Core Business Logic & Domain Models
-- **Learning Content:** Courses, Learning Paths, Projects, Labs, Roadmaps.
-- **User Progress:** Tracking completion, favorites, achievements.
+- **Learning Content:** Courses, Learning Paths, Projects, Labs, Roadmaps with unified viewing experience.
+- **User Progress:** Comprehensive completion tracking across all content types with multiple completion field support.
+- **Content Completion:** Smart completion system with backend state synchronization and disabled button states.
+- **Project Integration:** Full project support using LabViewerPage infrastructure with specialized API handling.
+- **Dojo Coins Economy:** Virtual currency system for premium content access with secure payment processing.
+- **Payment Integration:** Paddle.com integration for secure transactions, package management, and checkout flows.
+- **Wallet Management:** User coin balance tracking, transaction history, and purchase management.
+- **Package System:** Flexible pricing with one-time purchases, monthly subscriptions, and annual plans.
 - **Role & Permission Management:** Fine-grained access control with hierarchical roles.
 - **System Management:** Health monitoring, cache management, global logout.
-- **Authentication:** OAuth-based SSO with Google and GitHub providers.
+- **Authentication:** Cookie-based authentication with backend integration.
 - **Search & Filtering:** Content discovery with advanced filtering and search capabilities.
+- **Mobile Responsiveness:** Optimized mobile experience with responsive design patterns.
 
 ---
 
@@ -31,10 +38,12 @@
 
 ### High-Level Architecture
 - **Frontend:** React SPA using TypeScript, React Router, React Context API, and React Query.
-- **State Management:** Context providers for auth, backend data, user progress, search, and management.
-- **UI Layer:** Component-based architecture with reusable UI primitives and domain-specific components.
-- **Backend Integration:** REST API services abstracted via service classes.
-- **Authentication:** OAuth 2.0 SSO with secure cookie-based token management.
+- **State Management:** Context providers for auth, backend data, user progress, search, Dojo Wallet, and management.
+- **UI Layer:** Component-based architecture with reusable UI primitives and domain-specific components with mobile-first responsive design.
+- **Backend Integration:** REST API services abstracted via service classes with specialized project content handling, payment processing, and query parameter support.
+- **Content System:** Unified content viewing through LabViewerPage supporting labs, articles, and projects with consistent completion tracking.
+- **Payment System:** Paddle.com integration with secure checkout flows, transaction management, and wallet services.
+- **Authentication:** Cookie-based authentication with backend integration and secure session management.
 - **Deployment:** CI/CD pipeline deploying to GitHub Pages using Vite build system.
 
 ### Complete Repository Structure
@@ -73,24 +82,30 @@
 ├── src/
 │   ├── components/
 │   │   ├── auth/
+│   │   │   └── UserProfile.tsx (mobile-responsive user menu dropdown)
 │   │   ├── course/
+│   │   │   └── ResourceCard.tsx (enhanced with completion badge support)
 │   │   ├── home/
 │   │   ├── layout/
+│   │   │   └── Logo.tsx (responsive mobile header)
 │   │   ├── learning-path/
 │   │   ├── management/
 │   │   │   ├── components/
 │   │   │   │   ├── common/
 │   │   │   │   ├── roles/
 │   │   │   │   ├── system/
-│   │   │   │   └── users/
+│   │   │   │   └── users/ (mobile-responsive modals: GrantCoinsDialog, ChangeRoleDialog)
 │   │   │   ├── context/
 │   │   │   ├── hooks/
 │   │   │   ├── layouts/
+│   │   │   │   └── ManagementLayout.tsx (fixed contact messages header mapping)
 │   │   │   ├── pages/
+│   │   │   │   └── ContactMessagesPage.tsx (mobile-responsive modals, fixed duplicate headers)
 │   │   │   ├── services/
 │   │   │   ├── types/
 │   │   │   └── utils/
 │   │   ├── ui/
+│   │   │   └── ProjectCard.tsx (redesigned with completion support)
 │   │   │   ├── accordion.tsx
 │   │   │   ├── alert-dialog.tsx
 │   │   │   ├── alert.tsx
@@ -143,10 +158,14 @@
 │   ├── lib/
 │   ├── management/
 │   ├── pages/
+│   │   ├── LabViewerPage.tsx (enhanced with project support and completion logic)
+│   │   └── LabIDEPage.tsx (improved completion messages and backend state checking)
 │   ├── services/
+│   │   └── apiService.ts (enhanced with query parameter support for projects)
 │   ├── types/
+│   │   └── project.ts (added completion fields)
 │   ├── App.css
-│   ├── App.tsx
+│   ├── App.tsx (added project routes)
 │   ├── index.css
 │   ├── main.tsx
 │   └── vite-env.d.ts
@@ -174,30 +193,41 @@
 ## 3. Technical Implementation Details
 
 ### Module Organization & Boundaries
-- **`src/components/`**: Contains UI components organized by domain (auth, course, learning-path, management, ui primitives).
+- **`src/components/`**: Contains UI components organized by domain (auth, course, learning-path, management, ui primitives) with enhanced mobile responsiveness and completion support.
 - **`src/context/`**: React Context providers managing global state (auth, backend data, search, user progress).
 - **`src/hooks/`**: Custom React hooks encapsulating reusable logic (mobile detection, toast notifications, filtering).
-- **`src/management/`**: Management module with subfolders for components, context, hooks, layouts, pages, services, types, and utils.
-- **`src/pages/`**: Route/page components for public-facing and management views.
-- **`src/services/`**: Service classes abstracting API calls and business logic.
-- **`src/types/`**: TypeScript interfaces and domain models.
+- **`src/management/`**: Management module with mobile-responsive components, modals, and user interfaces.
+- **`src/pages/`**: Route/page components including unified content viewing (LabViewerPage) supporting all content types with intelligent completion tracking.
+- **`src/services/`**: Service classes abstracting API calls with specialized project content handling and query parameter support.
+- **`src/types/`**: TypeScript interfaces and domain models with comprehensive completion field definitions.
 - **`src/utils/`**: Utility functions for formatting, validation, permissions, and accessibility.
 
 ### Key Interfaces & Implementations
 - **Auth Context (`src/context/AuthContext.tsx`)**: Manages authentication state, login/logout flows, token refresh.
 - **Backend Data Context (`src/context/BackendDataContext.tsx`)**: Fetches and caches core app data.
 - **Management Contexts (`src/management/context/`)**: Separate contexts for management, system health, and user management with reducers and async actions.
-- **UI Components (`src/components/ui/`)**: Rich set of reusable UI primitives built on Radix UI, with consistent styling via Tailwind CSS and `class-variance-authority`.
+- **UI Components (`src/components/ui/`)**: Rich set of reusable UI primitives built on Radix UI, with consistent styling via Tailwind CSS, mobile-first responsive design, and completion badge support.
+- **Content Components**: 
+  - **ProjectCard (`src/components/ui/ProjectCard.tsx`)**: Redesigned with ResourceCard pattern, completion badges, and project navigation.
+  - **ResourceCard (`src/components/course/ResourceCard.tsx`)**: Enhanced with multiple completion field support.
+  - **LabViewerPage (`src/pages/LabViewerPage.tsx`)**: Unified content viewer supporting labs, articles, and projects with intelligent completion state management.
+  - **LabIDEPage (`src/pages/LabIDEPage.tsx`)**: Enhanced with proper completion message handling and backend state synchronization.
+- **Mobile-Responsive Components**:
+  - **UserProfile (`src/components/auth/UserProfile.tsx`)**: Fixed user menu dropdown with mobile scrolling support.
+  - **ManagementLayout (`src/management/layouts/ManagementLayout.tsx`)**: Fixed contact messages header mapping and breadcrumb support.
+  - **ContactMessagesPage (`src/management/pages/ContactMessagesPage.tsx`)**: Enhanced with mobile-responsive modals and fixed duplicate headers.
+- **API Service (`src/services/apiService.ts`)**: Enhanced with query parameter support for project-specific content requests.
 - **Service Layer (`src/management/services/`)**: Classes like `roleManagementService`, `systemManagementService`, `userManagementService` encapsulate API calls and domain logic.
 - **Validation (`src/management/utils/validators.ts`)**: Pure functions for form and input validation.
-- **Routing & Navigation (`src/components/layout/`, `src/management/layouts/`)**: Components like `Header.tsx`, `ManagementSidebar.tsx` implement navigation with RBAC.
+- **Routing & Navigation (`src/components/layout/`, `src/management/layouts/`)**: Components like responsive `Header.tsx`, `ManagementSidebar.tsx` implement navigation with RBAC and mobile optimization.
 
 ### Communication Patterns
 - **React Context + Hooks:** For state sharing and logic encapsulation.
-- **Service Classes:** Abstract API calls, returning typed promises.
-- **React Router:** Client-side routing with protected routes and role-based guards.
+- **Service Classes:** Abstract API calls with specialized project handling and query parameter support, returning typed promises.
+- **React Router:** Client-side routing with protected routes, role-based guards, and project-specific routes.
 - **React Query:** Data fetching and caching in backend data context.
-- **Event Handling:** UI components handle user interactions, modals, dialogs, and forms.
+- **Event Handling:** UI components handle user interactions, modals, dialogs, and forms with mobile-responsive behavior.
+- **Completion System:** Backend state synchronization with smart Complete button management and toast notifications.
 
 ---
 
@@ -268,8 +298,11 @@
 - Use `ProtectedRoute` component to guard routes.
 
 ### Content Management
-- Courses, learning paths, projects, labs, and roadmaps are modeled with TypeScript interfaces.
-- Content is fetched via backend APIs and cached in context.
+- Courses, learning paths, projects, labs, and roadmaps are modeled with TypeScript interfaces including comprehensive completion field support.
+- Content is fetched via backend APIs with specialized project handling using query parameters and cached in context.
+- Unified content viewing through LabViewerPage supporting all content types with consistent completion tracking.
+- Projects integrated with same infrastructure as labs and articles for seamless user experience.
+- Smart completion system with backend state synchronization prevents duplicate completion attempts.
 - Filtering and search implemented with custom hooks (`useCourseFilters`, `useSearch`).
 
 ### Operational Monitoring
@@ -280,12 +313,60 @@
 ### SEO & Accessibility
 - SEO managed via React Helmet and static files (`robots.txt`, `sitemap.xml`).
 - Accessibility utilities in `src/management/utils/accessibility.ts`.
-- UI components built on accessible Radix primitives.
+- UI components built on accessible Radix primitives with mobile-first responsive design.
+- Mobile optimization includes responsive headers, scrollable modals, and touch-friendly interfaces.
 
 ---
 
 # Summary
 
-The **labdojo-fork** codebase is a modern, modular React TypeScript application designed for scalable educational content delivery and management. It employs best practices in component-based UI design, state management via React Context and hooks, and robust service abstractions for backend integration. The project emphasizes security with OAuth SSO and RBAC, operational reliability with monitoring and error logging, and developer experience with clear modularization and comprehensive documentation.
+The **learn-and-earn-fork** codebase is a modern, modular React TypeScript application designed for scalable educational content delivery and management. It employs best practices in component-based UI design, state management via React Context and hooks, and robust service abstractions for backend integration. The project emphasizes security with OAuth SSO and RBAC, operational reliability with monitoring and error logging, mobile-first responsive design, and comprehensive completion tracking across all content types.
 
-This DETAILS.md provides a comprehensive guide for AI agents and developers to understand the project’s purpose, architecture, technical structure, dependencies, development patterns, and operational insights, enabling efficient navigation, extension, and maintenance of the codebase.
+## Recent Enhancements
+
+**Project Integration & Completion System**: The platform now provides unified project support through LabViewerPage with intelligent completion tracking, smart Complete button management, and consistent UI patterns across all content types (labs, articles, projects).
+
+**Mobile Responsiveness**: Comprehensive mobile optimization including responsive headers, scrollable management modals, touch-friendly interfaces, and adaptive layouts ensuring optimal user experience across all device sizes.
+
+**Enhanced API Integration**: Specialized backend communication with query parameter support for project content requests, multiple completion field handling, and robust error management with retry mechanisms.
+
+## Major Platform Updates (2025)
+
+**Complete Orca to Dojo Rebrand**: Comprehensive rebranding throughout the entire platform:
+- Updated all UI text from "Orca Coins" to "Dojo Coins"
+- Renamed files: `GetOrcaCoinsPage.tsx` → `GetDojoCoinsPage.tsx`, `OrcaWalletContext.tsx` → `DojoWalletContext.tsx`, etc.
+- Updated variable names, type definitions, and function names
+- Changed GitHub organization references from "study-ORCATech-cloud" to "study-LabDojo-cloud"
+- Updated social media links and external references
+- Maintained full functionality while updating brand identity
+
+**Paddle Payment Integration**: Implemented secure payment processing system:
+- Integrated Paddle.com for payment processing replacing manual PayPal workflow
+- Added `CheckoutPage.tsx` with complete Paddle SDK integration
+- Implemented purchase initiation API (`/api/v1/purchase/initiate`)
+- Added transaction management and automatic redirects to success/cancel pages
+- Enhanced error handling and payment event management
+- Added browser back button protection to prevent modal persistence
+
+**API Modernization**: Updated backend integration to modern API structure:
+- Migrated from `/api/orca/*` to `/api/wallet/*` endpoints
+- Updated response field mappings: `orca_balance` → `coin_balance`, `total_orca_earned` → `total_coins_earned`, etc.
+- Implemented new request/response format with `package_name` instead of `package_id`
+- Enhanced error handling and authentication with cookie-based sessions
+- Added comprehensive type safety for all API responses
+
+**Enhanced User Experience**: Improved purchase and payment flows:
+- Added collapsible FAQ section with interactive UI components
+- Implemented loading states for all purchase actions
+- Enhanced package organization by type (one-time, monthly_subscription, yearly_subscription)
+- Added dynamic package fetching from backend with proper error handling
+- Improved mobile responsiveness across all payment-related pages
+
+**Technical Infrastructure Improvements**:
+- Added `DojoWalletContext` for comprehensive wallet state management
+- Implemented `dojoCoinsService` for all payment-related API calls
+- Enhanced type definitions in `dojoCoins.ts` with proper field mappings
+- Added `paddleService` for secure payment processing
+- Improved error logging and monitoring for payment flows
+
+This DETAILS.md provides a comprehensive guide for AI agents and developers to understand the project's purpose, architecture, technical structure, dependencies, development patterns, and operational insights, enabling efficient navigation, extension, and maintenance of the codebase.

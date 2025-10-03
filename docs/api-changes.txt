@@ -2,7 +2,7 @@ API CHANGES DOCUMENTATION
 =========================
 
 This document describes all the breaking and significant changes made to existing APIs 
-to support the Orca Coins system and Analytics Dashboard. Frontend applications need 
+to support the Dojo Coins system and Analytics Dashboard. Frontend applications need 
 to be updated to work with these changes.
 
 CRITICAL: All endpoints now require proper JWT authentication unless explicitly noted.
@@ -15,9 +15,9 @@ ENDPOINT: GET /api/v1/lab/content
 STATUS: 🚨 BREAKING CHANGES - Frontend integration required
 
 WHAT CHANGED:
-- Now integrates with Orca Coins premium access system
+- Now integrates with Dojo Coins premium access system
 - Response structure completely overhauled to include access control information
-- Premium files now require Orca Coins payment to access
+- Premium files now require Dojo Coins payment to access
 - New access control logic separates free vs premium content
 
 OLD RESPONSE STRUCTURE:
@@ -164,7 +164,7 @@ STATUS: 🔄 ENHANCED - Backward compatible
 
 WHAT CHANGED:
 - Enhanced error categorization and tracking
-- Better context capture for Orca Coins related errors
+- Better context capture for Dojo Coins related errors
 - Improved admin error management interface
 
 NEW ERROR TYPES ADDED:
@@ -183,7 +183,7 @@ FRONTEND INTEGRATION:
 STATUS: 🔄 ENHANCED - Mostly backward compatible
 
 WHAT CHANGED:
-- Welcome bonus (5 Orca Coins) automatically granted on first login
+- Welcome bonus (5 Dojo Coins) automatically granted on first login
 - User wallet automatically created during authentication
 - Enhanced user profile includes wallet information
 
@@ -198,13 +198,13 @@ FRONTEND INTEGRATION:
 STATUS: 🔄 ENHANCED - Backward compatible
 
 WHAT CHANGED:
-- User profiles now include Orca Coins wallet information
+- User profiles now include Dojo Coins wallet information
 - Enhanced user analytics and behavior tracking
 - Admin users can view user purchase history and wallet details
 
 FRONTEND INTEGRATION:
 - Update user profile pages to show wallet info
-- Admin user management should display Orca Coins data
+- Admin user management should display Dojo Coins data
 
 ==============================================================================
 MIGRATION CHECKLIST FOR FRONTEND
@@ -212,7 +212,7 @@ MIGRATION CHECKLIST FOR FRONTEND
 
 CRITICAL UPDATES REQUIRED:
 □ Update /api/v1/lab/content response parsing (BREAKING CHANGE)
-□ Implement Orca Coins wallet integration
+□ Implement Dojo Coins wallet integration
 □ Add lab purchase flow UI
 □ Handle premium vs free content separation
 □ Update error handling for new error types
@@ -225,7 +225,7 @@ RECOMMENDED UPDATES:
 □ Create purchase confirmation flows
 
 NEW FEATURES TO IMPLEMENT:
-□ Orca Coins wallet management
+□ Dojo Coins wallet management
 □ Lab premium access system
 □ Analytics dashboard (admin)
 □ User purchase history
@@ -240,7 +240,7 @@ TESTING RECOMMENDATIONS
 3. Test premium file access controls
 4. Verify wallet balance updates after purchases
 5. Test analytics dashboard with admin users
-6. Verify error logging captures Orca Coins contexts
+6. Verify error logging captures Dojo Coins contexts
 
 ==============================================================================
 SUPPORT AND TROUBLESHOOTING
@@ -248,13 +248,13 @@ SUPPORT AND TROUBLESHOOTING
 
 COMMON ISSUES:
 1. "access_denied" errors - User needs to purchase lab premium access
-2. "insufficient_balance" - User needs more Orca Coins
+2. "insufficient_balance" - User needs more Dojo Coins
 3. "lab_configuration_error" - Lab .orca-config.json file is malformed
 4. "authentication_failed" - JWT token issues
 
 ERROR CODES REFERENCE:
 - See coins-api.txt and analytics-api.txt for complete error code lists
-- All Orca Coins errors include helpful user-facing messages
+- All Dojo Coins errors include helpful user-facing messages
 - Analytics errors are admin-focused and technical
 
 CONTACT:
@@ -263,4 +263,4 @@ CONTACT:
 - System health: Monitor via /api/analytics/system/health
 
 Last Updated: 2025-08-15
-API Version: v1 (with Orca Coins integration)
+API Version: v1 (with Dojo Coins integration)

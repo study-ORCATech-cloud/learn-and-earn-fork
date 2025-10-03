@@ -1,12 +1,12 @@
 import React from 'react';
 import { Coins, Loader2 } from 'lucide-react';
-import { useOrcaWallet } from '../../context/OrcaWalletContext';
+import { useDojoWallet } from '../../context/DojoWalletContext';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useNavigate } from 'react-router-dom';
 
 const WalletBalance: React.FC = () => {
-  const { balance, isLoadingBalance, formatCoins } = useOrcaWallet();
+  const { balance, isLoadingBalance, formatCoins } = useDojoWallet();
   const navigate = useNavigate();
 
   const handleWalletClick = () => {
@@ -41,7 +41,7 @@ const WalletBalance: React.FC = () => {
         </Button>
       </TooltipTrigger>
       <TooltipContent>
-        <p>Orca Coins Balance - Click to view wallet</p>
+        <p>Dojo Coins Balance - Click to view wallet</p>
       </TooltipContent>
     </Tooltip>
   );

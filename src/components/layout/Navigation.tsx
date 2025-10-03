@@ -29,7 +29,7 @@ const Navigation = () => {
     { path: '/about', label: 'About' },
     { path: '/contact', label: 'Contact Us' },
     { path: '/support', label: 'Support Us' },
-    ...(isAuthenticated ? [{ path: '/coins', label: 'Get Orca Coins', icon: Coins }] : []),
+    ...(isAuthenticated ? [{ path: '/packages', label: 'Get Dojo Coins', icon: Coins }] : []),
   ];
   
   // Add management link for admin/moderator users

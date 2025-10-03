@@ -2,7 +2,7 @@ ANALYTICS & ADMIN DASHBOARD API DOCUMENTATION
 ===============================================
 
 This document describes all the Analytics and Admin Dashboard API endpoints for monitoring,
-business intelligence, and administrative operations in the Orca Coins system.
+business intelligence, and administrative operations in the Dojo Coins system.
 
 BASE URL: /api/analytics
 AUTHENTICATION: JWT token required
@@ -412,11 +412,11 @@ RESPONSE (200 Success):
 }
 
 ===============================================
-8. BULK GRANT ORCA COINS
+8. BULK GRANT DOJO COINS
 ===============================================
 
 ENDPOINT: POST /api/analytics/bulk-operations/grant-coins
-DESCRIPTION: Grant Orca Coins to multiple users in a single operation
+DESCRIPTION: Grant Dojo Coins to multiple users in a single operation
 AUTHENTICATION: Required (JWT)
 AUTHORIZATION: Admin/Owner role required
 

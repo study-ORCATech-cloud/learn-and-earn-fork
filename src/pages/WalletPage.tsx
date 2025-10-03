@@ -20,9 +20,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '../context/AuthContext';
-import { useOrcaWallet } from '../context/OrcaWalletContext';
+import { useDojoWallet } from '../context/DojoWalletContext';
 import { useBackendData } from '../context/BackendDataContext';
-import { OrcaTransaction, LabPurchase } from '../types/orcaCoins';
+import { DojoTransaction, LabPurchase } from '../types/dojoCoins';
 
 const WalletPage: React.FC = () => {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ const WalletPage: React.FC = () => {
     refreshWalletDetails,
     refreshUserLibrary,
     formatCoins
-  } = useOrcaWallet();
+  } = useDojoWallet();
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -145,8 +145,8 @@ const WalletPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>My Wallet - Orca Coins</title>
-        <meta name="description" content="Manage your Orca Coins, view transaction history, and access purchased labs" />
+        <title>My Wallet - Dojo Coins</title>
+        <meta name="description" content="Manage your Dojo Coins, view transaction history, and access purchased labs" />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950">
@@ -155,7 +155,7 @@ const WalletPage: React.FC = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">My Wallet</h1>
-            <p className="text-slate-300">Manage your Orca Coins and view your learning journey</p>
+            <p className="text-slate-300">Manage your Dojo Coins and view your learning journey</p>
           </div>
 
           {error && (
@@ -203,7 +203,7 @@ const WalletPage: React.FC = () => {
                 <CardContent>
                   <div className="text-2xl font-bold text-green-400 flex items-center gap-1">
                     <Coins className="w-6 h-6" />
-                    {walletDetails?.wallet.total_orca_earned ?? '-'}
+                    {walletDetails?.wallet.total_coins_earned ?? '-'}
                   </div>
                 </CardContent>
               </Card>
@@ -218,28 +218,28 @@ const WalletPage: React.FC = () => {
                 <CardContent>
                   <div className="text-2xl font-bold text-blue-300 flex items-center gap-1">
                     <Coins className="w-6 h-6" />
-                    {walletDetails?.wallet.total_orca_spent ?? '-'}
+                    {walletDetails?.wallet.total_coins_spent ?? '-'}
                   </div>
                 </CardContent>
               </Card>
             </div>
           )}
 
-          {/* Get Orca Coins CTA */}
+          {/* Get Dojo Coins CTA */}
           <div className="mb-6">
             <Card className="bg-slate-900/50 border-slate-800">
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="text-center sm:text-left">
-                    <h3 className="text-lg font-semibold text-white mb-2">Need More Orca Coins?</h3>
+                    <h3 className="text-lg font-semibold text-white mb-2">Need More Dojo Coins?</h3>
                     <p className="text-slate-300 text-sm">
                       Get access to premium solutions, advanced tutorials, and exclusive content
                     </p>
                   </div>
-                  <Link to="/coins">
+                  <Link to="/packages">
                     <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600 transition-all duration-300">
                       <Coins className="w-4 h-4 mr-2" />
-                      Get Orca Coins
+                      Get Dojo Coins
                     </Button>
                   </Link>
                 </div>
@@ -271,7 +271,7 @@ const WalletPage: React.FC = () => {
                     Recent Transactions
                   </CardTitle>
                   <CardDescription className="text-slate-400">
-                    Your recent Orca Coins transactions and activities
+                    Your recent Dojo Coins transactions and activities
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -413,7 +413,7 @@ const WalletPage: React.FC = () => {
                               <div className="text-right">
                                 <div className="flex items-center gap-1 text-amber-400 font-semibold text-sm">
                                   <Coins className="w-4 h-4" />
-                                  {purchase.orca_cost}
+                                  {purchase.coin_cost}
                                 </div>
                               </div>
                               <Button

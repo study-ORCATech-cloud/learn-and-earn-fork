@@ -8,10 +8,10 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { apiService } from '../services/apiService';
 import { LabContent, LabFile } from '../types/lab';
-import { PurchaseRequest } from '../types/orcaCoins';
+import { PurchaseRequest } from '../types/dojoCoins';
 import { useBackendData } from '../context/BackendDataContext';
 import { useAuth } from '../context/AuthContext';
-import { useOrcaWallet } from '../context/OrcaWalletContext';
+import { useDojoWallet } from '../context/DojoWalletContext';
 import PurchaseConfirmationDialog from '../components/lab/PurchaseConfirmationDialog';
 import LabUnderConstruction from '../components/lab/LabUnderConstruction';
 import { useToast } from '@/hooks/use-toast';
@@ -103,7 +103,7 @@ const LabViewerPage: React.FC = () => {
     purchaseError, 
     clearErrors,
     refreshBalance
-  } = useOrcaWallet();
+  } = useDojoWallet();
   const { toast } = useToast();
   
   // Find the course and lab resource OR project
@@ -977,7 +977,7 @@ const LabViewerPage: React.FC = () => {
           }}
           isPurchasing={isPurchasing}
           purchaseError={purchaseError}
-          onGetMoreCoins={() => navigate('/coins')}
+          onGetMoreCoins={() => navigate('/packages')}
         />
       )}
     </>

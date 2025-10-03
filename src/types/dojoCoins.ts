@@ -1,15 +1,15 @@
-export interface OrcaWallet {
+export interface DojoWallet {
   id: string;
   user_id: string;
-  orca_balance: number;
-  total_orca_earned: number;
-  total_orca_spent: number;
+  coin_balance: number;
+  total_coins_earned: number;
+  total_coins_spent: number;
   lifetime_purchases: number;
   created_at: string;
   updated_at: string;
 }
 
-export interface OrcaTransaction {
+export interface DojoTransaction {
   id: string;
   user_id?: string; // Added for admin transactions view
   transaction_type: 'LAB_PURCHASE' | 'ADMIN_GRANT' | 'WELCOME_BONUS' | 'REFUND';
@@ -30,7 +30,7 @@ export interface LabPurchase {
   lab_category: string;
   lab_description?: string;
   lab_tags?: string[];
-  orca_cost: number;
+  coin_cost: number;
   status: 'active' | 'expired' | 'refunded';
   created_at: string;
   last_accessed_at?: string;
@@ -39,8 +39,8 @@ export interface LabPurchase {
 }
 
 export interface WalletDetails {
-  wallet: OrcaWallet;
-  recent_transactions: OrcaTransaction[];
+  wallet: DojoWallet;
+  recent_transactions: DojoTransaction[];
   purchased_labs_count: number;
   spending_stats: {
     total_earned: number;
@@ -63,7 +63,7 @@ export interface PurchaseResponse {
   message: string;
   data?: {
     purchase: LabPurchase;
-    transaction: OrcaTransaction;
+    transaction: DojoTransaction;
     new_balance: number;
   };
   error?: string;
@@ -97,13 +97,13 @@ export interface GrantCoinsResponse {
   success: boolean;
   message: string;
   data?: {
-    transaction: OrcaTransaction;
+    transaction: DojoTransaction;
     new_balance: number;
   };
   error?: string;
 }
 
-export interface OrcaApiResponse<T> {
+export interface DojoApiResponse<T> {
   success: boolean;
   data?: T;
   error?: string;
@@ -166,7 +166,7 @@ export interface AdminTransactionsRequest {
 export interface AdminTransactionsResponse {
   success: boolean;
   data?: {
-    transactions: OrcaTransaction[];
+    transactions: DojoTransaction[];
     pagination: {
       total: number;
       limit: number;
@@ -197,9 +197,9 @@ export interface WalletDistribution {
 }
 
 export interface EconomyOverview {
-  total_orca_in_circulation: number;
-  total_orca_earned: number;
-  total_orca_spent: number;
+  total_coins_in_circulation: number;
+  total_coins_earned: number;
+  total_coins_spent: number;
   circulation_rate: number;
 }
 

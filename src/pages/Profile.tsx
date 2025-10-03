@@ -4,7 +4,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Mail, Globe, Clock, Shield, ExternalLink, Settings, ArrowLeft, Coins, Wallet } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useOrcaWallet } from '../context/OrcaWalletContext';
+import { useDojoWallet } from '../context/DojoWalletContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -39,7 +39,7 @@ const formatRelativeTime = (dateString: string) => {
 
 const Profile: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
-  const { balance, walletDetails, formatCoins } = useOrcaWallet();
+  const { balance, walletDetails, formatCoins } = useDojoWallet();
   const navigate = useNavigate();
 
   if (!isAuthenticated || !user) {
@@ -327,7 +327,7 @@ const Profile: React.FC = () => {
             <CardHeader>
               <CardTitle className="text-slate-200 flex items-center gap-2">
                 <Wallet className="w-5 h-5 text-amber-400" />
-                Orca Coins Wallet
+                Dojo Coins Wallet
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -344,14 +344,14 @@ const Profile: React.FC = () => {
                   <>
                     <div className="text-center">
                       <div className="text-2xl font-bold text-green-400 mb-2">
-                        {walletDetails.wallet.total_orca_earned}
+                        {walletDetails.wallet.total_coins_earned}
                       </div>
                       <div className="text-sm text-slate-400">Total Earned</div>
                     </div>
                     
                     <div className="text-center">
                       <div className="text-2xl font-bold text-slate-300 mb-2">
-                        {walletDetails.wallet.total_orca_spent}
+                        {walletDetails.wallet.total_coins_spent}
                       </div>
                       <div className="text-sm text-slate-400">Total Spent</div>
                     </div>

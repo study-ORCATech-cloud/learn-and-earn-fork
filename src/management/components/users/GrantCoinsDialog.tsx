@@ -14,8 +14,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Coins, AlertTriangle, Loader2, Gift } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { orcaCoinsService } from '../../../services/orcaCoinsService';
-import { GrantCoinsRequest, GrantCoinsResponse } from '../../../types/orcaCoins';
+import { dojoCoinsService } from '../../../services/dojoCoinsService';
+import { GrantCoinsRequest, GrantCoinsResponse } from '../../../types/dojoCoins';
 import { User } from '../../../management/types/user';
 
 interface GrantCoinsDialogProps {
@@ -72,12 +72,12 @@ const GrantCoinsDialog: React.FC<GrantCoinsDialogProps> = ({
         reason: reason.trim()
       };
 
-      const response = await orcaCoinsService.grantCoins(grantData);
+      const response = await dojoCoinsService.grantCoins(grantData);
 
       if (response.success) {
         toast({
           title: "Coins Granted Successfully! 🎉",
-          description: `Successfully granted ${amountNum} Orca Coins to ${user.name}`,
+          description: `Successfully granted ${amountNum} Dojo Coins to ${user.name}`,
           className: "bg-green-800 border-green-600 text-green-100",
         });
         onSuccess?.(response);
@@ -120,10 +120,10 @@ const GrantCoinsDialog: React.FC<GrantCoinsDialogProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-white">
             <Gift className="w-5 h-5 text-amber-400" />
-            Grant Orca Coins
+            Grant Dojo Coins
           </DialogTitle>
           <DialogDescription className="text-slate-300">
-            Grant Orca Coins to {user?.name || 'user'}. This action will be logged and cannot be undone.
+            Grant Dojo Coins to {user?.name || 'user'}. This action will be logged and cannot be undone.
           </DialogDescription>
         </DialogHeader>
 
@@ -163,7 +163,7 @@ const GrantCoinsDialog: React.FC<GrantCoinsDialogProps> = ({
               />
             </div>
             <p className="text-xs text-slate-400">
-              Enter a value between 1 and 1000 Orca Coins
+              Enter a value between 1 and 1000 Dojo Coins
             </p>
           </div>
 

@@ -9,20 +9,20 @@ import {
   UserLibrary,
   GrantCoinsRequest,
   GrantCoinsResponse,
-  OrcaApiResponse,
+  DojoApiResponse,
   AdminTransactionsRequest,
   AdminTransactionsResponse,
   AdminAnalyticsResponse
-} from '../types/orcaCoins';
+} from '../types/dojoCoins';
 
 const BASE_URL = import.meta.env.VITE_BACKEND_BASE_PATH || 'http://localhost:5000';
 
-class OrcaCoinsService {
+class DojoCoinsService {
   private async fetchWithAuth(
     endpoint: string, 
     options?: RequestInit
   ): Promise<Response> {
-    const url = `${BASE_URL}/api/orca${endpoint}`;
+    const url = `${BASE_URL}/api/wallet${endpoint}`;
     
     const defaultHeaders = {
       'Content-Type': 'application/json',
@@ -74,13 +74,13 @@ class OrcaCoinsService {
    */
   async getWalletDetails(): Promise<WalletDetails> {
     try {
-      const response = await this.fetchWithAuth('/wallet');
+      const response = await this.fetchWithAuth('/');
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-      const result: OrcaApiResponse<WalletDetails> = await response.json();
+      const result: DojoApiResponse<WalletDetails> = await response.json();
       
       if (!result.success || !result.data) {
         throw new Error(result.error || 'Failed to fetch wallet details');
@@ -94,11 +94,11 @@ class OrcaCoinsService {
   }
 
   /**
-   * Get current Orca Coins balance for the authenticated user
+   * Get current Dojo Coins balance for the authenticated user
    */
   async getWalletBalance(): Promise<number> {
     try {
-      const response = await this.fetchWithAuth('/wallet/balance');
+      const response = await this.fetchWithAuth('/balance');
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -118,7 +118,7 @@ class OrcaCoinsService {
   }
 
   /**
-   * Purchase premium access to a lab using Orca Coins
+   * Purchase premium access to a lab using Dojo Coins
    */
   async purchaseLabAccess(purchaseData: PurchaseRequest): Promise<PurchaseResponse> {
     try {
@@ -158,7 +158,7 @@ class OrcaCoinsService {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-      const result: OrcaApiResponse<LabAccessInfo> = await response.json();
+      const result: DojoApiResponse<LabAccessInfo> = await response.json();
       
       if (!result.success || !result.data) {
         throw new Error(result.error || 'Failed to check lab access');
@@ -182,7 +182,7 @@ class OrcaCoinsService {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-      const result: OrcaApiResponse<UserLibrary> = await response.json();
+      const result: DojoApiResponse<UserLibrary> = await response.json();
       
       if (!result.success || !result.data) {
         throw new Error(result.error || 'Failed to fetch user library');
@@ -196,7 +196,7 @@ class OrcaCoinsService {
   }
 
   /**
-   * Admin function to grant Orca Coins to a user
+   * Admin function to grant Dojo Coins to a user
    */
   async grantCoins(grantData: GrantCoinsRequest): Promise<GrantCoinsResponse> {
     try {
@@ -222,7 +222,7 @@ class OrcaCoinsService {
   }
 
   /**
-   * Admin function to view all Orca transactions with filtering
+   * Admin function to view all Dojo transactions with filtering
    */
   async getAdminTransactions(params: AdminTransactionsRequest): Promise<AdminTransactionsResponse> {
     try {
@@ -252,7 +252,7 @@ class OrcaCoinsService {
   }
 
   /**
-   * Admin function to get Orca Coins analytics overview
+   * Admin function to get Dojo Coins analytics overview
    */
   async getAdminAnalytics(): Promise<AdminAnalyticsResponse> {
     try {
@@ -290,9 +290,9 @@ class OrcaCoinsService {
   }
 
   /**
-   * Format currency display for Orca Coins
+   * Format currency display for Dojo Coins
    */
-  formatOrcaCoins(amount: number): string {
+  formatDojoCoins(amount: number): string {
     return `${amount} 🪙`;
   }
 
@@ -304,4 +304,4 @@ class OrcaCoinsService {
   }
 }
 
-export const orcaCoinsService = new OrcaCoinsService();
+export const dojoCoinsService = new DojoCoinsService();

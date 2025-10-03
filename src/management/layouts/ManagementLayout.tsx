@@ -86,8 +86,8 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({ children }) => {
           breadcrumbs.push({ label: 'Analytics', path: '/management/analytics', isCurrentPage: true });
           break;
           
-        case 'orca-coins':
-          breadcrumbs.push({ label: 'Orca Coins', path: '/management/orca-coins', isCurrentPage: true });
+        case 'dojo-coins':
+          breadcrumbs.push({ label: 'Dojo Coins', path: '/management/dojo-coins', isCurrentPage: true });
           break;
           
         case 'contact-messages':
@@ -121,7 +121,7 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({ children }) => {
   const getPageIcon = () => {
     const path = location.pathname;
     if (path === '/management/system') return <Settings className="w-6 h-6" />;
-    if (path === '/management/orca-coins') return <Coins className="w-6 h-6" />;
+    if (path === '/management/dojo-coins') return <Coins className="w-6 h-6" />;
     if (path === '/management/analytics') return <BarChart3 className="w-6 h-6" />;
     if (path === '/management/roles') return <Shield className="w-6 h-6" />;
     if (path === '/management/users') return <Users className="w-6 h-6" />;
@@ -136,8 +136,8 @@ const ManagementLayout: React.FC<ManagementLayoutProps> = ({ children }) => {
       '/management/users': 'Manage users, roles, and permissions',
       '/management/users/create': 'Create a new user account',
       '/management/roles': 'View and manage role hierarchy and permissions',
-      '/management/analytics': 'Orca Coins economy and platform analytics',
-      '/management/orca-coins': 'Orca Coins transactions and management',
+      '/management/analytics': 'Dojo Coins economy and platform analytics',
+      '/management/dojo-coins': 'Dojo Coins transactions and management',
       '/management/contact-messages': 'Manage customer inquiries and support requests',
       '/management/system': 'System health monitoring and maintenance',
     };

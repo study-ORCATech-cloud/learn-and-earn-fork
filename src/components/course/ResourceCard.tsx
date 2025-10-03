@@ -105,7 +105,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, course }) => {
                     </span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>This lab may contain premium content that requires Orca Coins</p>
+                    <p>This lab may contain premium content that requires Dojo Coins</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

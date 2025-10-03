@@ -174,7 +174,7 @@ const ContactPage = () => {
                       <h3 className="text-xl font-semibold text-white mb-2">Join Our Community</h3>
                       <p className="text-slate-300 mb-2">Explore our labs and connect with other learners.</p>
                       <a 
-                        href="https://github.com/study-ORCATech-cloud"
+                        href="https://github.com/LabDojo-io"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-400 hover:text-blue-300 transition-colors"

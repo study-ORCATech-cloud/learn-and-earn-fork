@@ -24,6 +24,13 @@ LabDojo is a comprehensive learning platform designed to help students and profe
 - **Responsive Design** - Perfect experience across desktop, tablet, and mobile devices
 - **Search & Discovery** - Find resources quickly with smart search functionality
 
+### 🪙 **Dojo Coins Premium System**
+- **Premium Content Access** - Use Dojo Coins to unlock detailed solutions, advanced tutorials, and exclusive materials
+- **Secure Payment Integration** - Powered by Paddle.com for safe and reliable transactions
+- **Flexible Packages** - One-time purchases, monthly subscriptions, and annual plans
+- **Instant Access** - Immediate access to premium content after purchase
+- **Wallet Management** - Track your coin balance and transaction history
+
 ### 🎨 **Modern User Interface**
 - **Cyberpunk-themed Design** - Futuristic, dark theme with gradient effects
 - **Smooth Animations** - Engaging user experience with modern animations
@@ -38,6 +45,8 @@ LabDojo is a comprehensive learning platform designed to help students and profe
 - **Routing**: React Router v7
 - **State Management**: React Context API
 - **Icons**: Lucide React
+- **Payment Processing**: Paddle.com integration
+- **Authentication**: Cookie-based auth with backend
 - **Deployment**: GitHub Pages with automated CI/CD
 
 ## 🚀 Getting Started
@@ -50,8 +59,8 @@ LabDojo is a comprehensive learning platform designed to help students and profe
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/orca-tech-learn.git
-   cd orca-tech-learn
+   git clone https://github.com/yourusername/labdojo-learn.git
+   cd labdojo-learn
    ```
 
 2. **Install dependencies**
@@ -126,7 +135,7 @@ Please check our [Contributing Guidelines](CONTRIBUTING.md) for more information
 
 The platform is automatically deployed to GitHub Pages using GitHub Actions. Every push to the main branch triggers a new deployment.
 
-**Live Site**: [https://yourusername.github.io/orca-tech-learn/](https://yourusername.github.io/orca-tech-learn/)
+**Live Site**: [https://yourusername.github.io/labdojo-learn/](https://yourusername.github.io/labdojo-learn/)
 
 For detailed deployment instructions, see [Deployment Guide](docs/deployment-guide.md).
 
@@ -150,7 +159,9 @@ LabDojo follows proven educational principles:
 
 ## 🔮 Future Roadmap
 
-- **User Authentication** - Personal accounts and progress sync
+- ✅ **User Authentication** - Personal accounts and progress sync (Completed)
+- ✅ **Premium Content System** - Dojo Coins and payment integration (Completed)
+- ✅ **Secure Payment Processing** - Paddle.com integration (Completed)
 - **Advanced Analytics** - Detailed learning insights
 - **Community Features** - Discussion forums and peer learning
 - **Mobile App** - Native mobile experience
@@ -176,6 +187,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Ready to start your tech learning journey?** 🚀 [Get Started Now](https://yourusername.github.io/orca-tech-learn/)
+**Ready to start your tech learning journey?** 🚀 [Get Started Now](https://yourusername.github.io/labdojo-learn/)
 
 *Transform your career with cutting-edge skills. Learn. Build. Succeed.*

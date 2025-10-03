@@ -10,7 +10,7 @@ export interface ErrorLogData {
   userId?: string;
   timestamp: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
-  errorType: 'general' | 'orca_coins_error' | 'lab_access_error' | 'analytics_error';
+  errorType: 'general' | 'dojo_coins_error' | 'lab_access_error' | 'analytics_error';
   context: {
     route: string;
     userRole?: string;
@@ -285,9 +285,9 @@ class ErrorLoggingService {
   }
 
   /**
-   * Log Orca Coins related errors
+   * Log Dojo Coins related errors
    */
-  async logOrcaCoinsError(
+  async logDojoCoinsError(
     error: Error,
     context: {
       feature: string;
@@ -299,7 +299,7 @@ class ErrorLoggingService {
   ) {
     await this.logError(error, undefined, {
       ...context,
-      errorType: 'orca_coins_error',
+      errorType: 'dojo_coins_error',
       metadata: {
         walletBalance: context.walletBalance,
         transactionId: context.transactionId,

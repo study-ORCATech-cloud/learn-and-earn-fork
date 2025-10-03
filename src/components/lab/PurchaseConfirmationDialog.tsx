@@ -10,8 +10,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Coins, Lock, AlertTriangle, Loader2, Plus } from 'lucide-react';
-import { useOrcaWallet } from '../../context/OrcaWalletContext';
-import { PurchaseRequest } from '../../types/orcaCoins';
+import { useDojoWallet } from '../../context/DojoWalletContext';
+import { PurchaseRequest } from '../../types/dojoCoins';
 
 interface PurchaseConfirmationDialogProps {
   isOpen: boolean;
@@ -38,7 +38,7 @@ const PurchaseConfirmationDialog: React.FC<PurchaseConfirmationDialogProps> = ({
   purchaseError,
   onGetMoreCoins
 }) => {
-  const { balance, canAffordLab, formatCoins } = useOrcaWallet();
+  const { balance, canAffordLab, formatCoins } = useDojoWallet();
 
   const canAfford = canAffordLab(labData.cost);
   const currentBalance = balance || 0;
@@ -135,7 +135,7 @@ const PurchaseConfirmationDialog: React.FC<PurchaseConfirmationDialogProps> = ({
             <Alert className="bg-orange-900/30 border-orange-500/30">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription className="text-orange-300">
-                Insufficient Orca Coins. You need {labData.cost - currentBalance} more coins to purchase this lab.
+                Insufficient Dojo Coins. You need {labData.cost - currentBalance} more coins to purchase this lab.
               </AlertDescription>
             </Alert>
           )}
@@ -179,7 +179,7 @@ const PurchaseConfirmationDialog: React.FC<PurchaseConfirmationDialogProps> = ({
             </Button>
           ) : (
             <Button
-              onClick={onGetMoreCoins || (() => window.open('/coins', '_blank'))}
+              onClick={onGetMoreCoins || (() => window.open('/packages', '_blank'))}
               className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />

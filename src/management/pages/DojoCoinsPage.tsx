@@ -1,4 +1,4 @@
-// Orca Coins management page for viewing transactions and admin controls
+// Dojo Coins management page for viewing transactions and admin controls
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -27,18 +27,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import { orcaCoinsService } from '../../services/orcaCoinsService';
+import { dojoCoinsService } from '../../services/dojoCoinsService';
 import {
   AdminTransactionsRequest,
   AdminTransactionsResponse,
-  OrcaTransaction
-} from '../../types/orcaCoins';
+  DojoTransaction
+} from '../../types/dojoCoins';
 import { userManagementService } from '../services/userManagementService';
 
 const ITEMS_PER_PAGE = 50;
 
-const OrcaCoinsPage: React.FC = () => {
-  const [transactions, setTransactions] = useState<OrcaTransaction[]>([]);
+const DojoCoinsPage: React.FC = () => {
+  const [transactions, setTransactions] = useState<DojoTransaction[]>([]);
   const [pagination, setPagination] = useState({
     total: 0,
     limit: ITEMS_PER_PAGE,
@@ -111,7 +111,7 @@ const OrcaCoinsPage: React.FC = () => {
       setIsLoading(true);
       setError(null);
       
-      const response = await orcaCoinsService.getAdminTransactions(filters);
+      const response = await dojoCoinsService.getAdminTransactions(filters);
       
       if (response.success && response.data) {
         setTransactions(response.data.transactions);
@@ -233,8 +233,8 @@ const OrcaCoinsPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Orca Coins Management - Management Dashboard</title>
-        <meta name="description" content="Manage Orca Coins transactions and admin controls" />
+        <title>Dojo Coins Management - Management Dashboard</title>
+        <meta name="description" content="Manage Dojo Coins transactions and admin controls" />
       </Helmet>
 
       <div className="space-y-6">
@@ -459,4 +459,4 @@ const OrcaCoinsPage: React.FC = () => {
   );
 };
 
-export default OrcaCoinsPage;
+export default DojoCoinsPage;

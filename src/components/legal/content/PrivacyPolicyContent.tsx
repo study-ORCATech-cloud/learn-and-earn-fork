@@ -16,7 +16,7 @@ const PrivacyPolicyContent: React.FC = () => {
       {/* Introduction */}
       <section className="space-y-3">
         <p className="leading-relaxed">
-          LabDojo.io, operated by ORCA Tech ("Website," "Platform," "we," "us," or "our") respects your privacy.<br/>
+          LabDojo.io ("Website," "Platform," "we," "us," or "our") respects your privacy.<br/>
           This Privacy Policy explains how we collect, use, and protect your information when you use the Website.<br/>
           By accessing or using the Website, you agree to the practices described below.
         </p>
@@ -32,7 +32,7 @@ const PrivacyPolicyContent: React.FC = () => {
           <li><strong>Account Information:</strong> When you register using Single Sign-On (SSO) providers (such as Google or GitHub), we receive limited profile data (e.g., name, email address). We do not store your passwords.</li>
           <li><strong>User Progress Data:</strong> We track your activities on the Platform, including completed labs, exercises, and usage statistics.</li>
           <li><strong>Authentication Cookies:</strong> We use a cookie containing a JSON Web Token (JWT) to authenticate sessions and identify users between frontend and backend.</li>
-          <li><strong>Payments:</strong> Payments for Orca Coins are processed by third-party providers. We do not collect or store payment card or banking information.</li>
+          <li><strong>Payments:</strong> Payments for Dojo Coins are processed by third-party providers. We do not collect or store payment card or banking information.</li>
         </ul>
       </section>
 
@@ -46,7 +46,7 @@ const PrivacyPolicyContent: React.FC = () => {
           <li>Provide and manage your access to labs, tutorials, and premium content.</li>
           <li>Track progress to personalize your learning experience.</li>
           <li>Authenticate sessions using JWT cookies.</li>
-          <li>Process Orca Coin purchases via secure third-party payment processors.</li>
+          <li>Process Dojo Coin purchases via secure third-party payment processors.</li>
           <li>Maintain the security and functionality of the Platform.</li>
         </ul>
       </section>
@@ -70,7 +70,7 @@ const PrivacyPolicyContent: React.FC = () => {
         </p>
         <ul className="list-disc pl-6 space-y-1">
           <li><strong>SSO providers</strong> (Google, GitHub) to facilitate login.</li>
-          <li><strong>Payment processors</strong> (e.g., Stripe, PayPal) to complete transactions.</li>
+          <li><strong>Payment processors</strong> (e.g., Paddle, Stripe, PayPal) to complete transactions.</li>
           <li><strong>Legal authorities</strong> if required by law.</li>
         </ul>
       </section>
@@ -125,7 +125,7 @@ const PrivacyPolicyContent: React.FC = () => {
       <section className="space-y-3">
         <h2 className="text-xl font-semibold text-white">9. International Users</h2>
         <p className="leading-relaxed">
-          The Website is operated by ORCA Tech from Israel, and user data is stored and processed on servers located in European Union.<br/>
+          The Website is operated from Israel, and user data is stored and processed on servers located in European Union.<br/>
           If you access the Website from outside of the EU/EEA, you acknowledge that your data may be transferred and processed in Israel or other jurisdictions.
         </p>
         <p className="leading-relaxed">

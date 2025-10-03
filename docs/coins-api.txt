@@ -1,4 +1,4 @@
-ORCA COINS API DOCUMENTATION
+DOJO COINS API DOCUMENTATION
 ===============================
 
 This document describes all the Orca Coins system API endpoints, their functionality, 
@@ -242,7 +242,7 @@ RESPONSE (200 Success):
 }
 
 ===============================
-6. GRANT ORCA COINS (ADMIN)
+6. GRANT DOJO COINS (ADMIN)
 ===============================
 
 ENDPOINT: POST /api/orca/admin/grant

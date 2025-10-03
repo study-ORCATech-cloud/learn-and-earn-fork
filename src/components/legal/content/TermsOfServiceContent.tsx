@@ -16,7 +16,7 @@ const TermsOfServiceContent: React.FC = () => {
       {/* Introduction */}
       <section className="space-y-3">
         <p className="leading-relaxed">
-          Welcome to LabDojo.io, operated by ORCA Tech ("Website," "Platform," "we," "us," or "our").<br/>
+          Welcome to LabDojo.io ("Website," "Platform," "we," "us," or "our").<br/>
           By accessing or using this Website, you ("you," "user," or "member") agree to be bound by these Terms of Use ("Terms").<br/>
           If you do not agree, you must not use the Website.
         </p>
@@ -26,7 +26,7 @@ const TermsOfServiceContent: React.FC = () => {
       <section className="space-y-3">
         <h2 className="text-xl font-semibold text-white">1. Intellectual Property Rights</h2>
         <p className="leading-relaxed">
-          All content on this Website, including but not limited to text, tutorials, labs, images, graphics, software, and design ("Content"), is the property of ORCA Tech (operating LabDojo.io) or its licensors.<br/>
+          All content on this Website, including but not limited to text, tutorials, labs, images, graphics, software, and design ("Content"), is the property of LabDojo.io or its licensors.<br/>
           The Content is protected by copyright, and other intellectual property laws.
         </p>
         <ul className="list-disc pl-6 space-y-1">
@@ -51,16 +51,16 @@ const TermsOfServiceContent: React.FC = () => {
 
       {/* Section 3 */}
       <section className="space-y-3">
-        <h2 className="text-xl font-semibold text-white">3. Orca Coins (Virtual Tokens)</h2>
+        <h2 className="text-xl font-semibold text-white">3. Dojo Coins (Virtual Tokens)</h2>
         <p className="leading-relaxed">
-          The Platform offers "Orca Coins," a virtual token that allows access to premium labs, exercises, and features.
+          The Platform offers "Dojo Coins," a virtual token that allows access to premium labs, exercises, and features.
         </p>
         <ul className="list-disc pl-6 space-y-1">
-          <li><strong>Purchase:</strong> Orca Coins may be purchased via third-party payment processors. We do not store payment details.</li>
-          <li><strong>Use:</strong> Orca Coins may only be used within this Platform.</li>
-          <li><strong>No Monetary Value:</strong> Orca Coins are not money, not cryptocurrency, and have no real-world monetary value. They cannot be redeemed, exchanged, or refunded.</li>
-          <li><strong>Non-Transferable:</strong> Orca Coins cannot be sold, traded, or transferred to other users.</li>
-          <li><strong>Finality:</strong> All Orca Coin purchases are final and non-refundable.</li>
+          <li><strong>Purchase:</strong> Dojo Coins may be purchased via third-party payment processors. We do not store payment details.</li>
+          <li><strong>Use:</strong> Dojo Coins may only be used within this Platform.</li>
+          <li><strong>No Monetary Value:</strong> Dojo Coins are not money, not cryptocurrency, and have no real-world monetary value. They cannot be redeemed, exchanged, or refunded.</li>
+          <li><strong>Non-Transferable:</strong> Dojo Coins cannot be sold, traded, or transferred to other users.</li>
+          <li><strong>Finality:</strong> All Dojo Coins purchases are final and non-refundable.</li>
         </ul>
       </section>
 
@@ -84,7 +84,7 @@ const TermsOfServiceContent: React.FC = () => {
           <li>Copy, reproduce, or redistribute Content without permission.</li>
           <li>Use automated systems (bots, scrapers, crawlers) to access or extract data.</li>
           <li>Attempt to hack, disrupt, or otherwise interfere with the Website's operation.</li>
-          <li>Misuse Orca Coins, including attempts to trade or sell outside the Platform.</li>
+          <li>Misuse Dojo Coins, including attempts to trade or sell outside the Platform.</li>
         </ul>
       </section>
 
@@ -108,7 +108,7 @@ const TermsOfServiceContent: React.FC = () => {
         </p>
         <ul className="list-disc pl-6 space-y-1">
           <li>We shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Platform.</li>
-          <li>Our liability in any case is limited to the amount you paid (if any) in Orca Coins within the last 3 months prior to the claim.</li>
+          <li>Our liability in any case is limited to the amount you paid (if any) in Dojo Coins within the last 3 months prior to the claim.</li>
         </ul>
       </section>
 
@@ -128,7 +128,7 @@ const TermsOfServiceContent: React.FC = () => {
           We reserve the right to suspend or terminate your account and access to the Website at any time, with or without cause.
         </p>
         <ul className="list-disc pl-6 space-y-1">
-          <li>If terminated due to violation of these Terms, any remaining Orca Coins may be forfeited.</li>
+          <li>If terminated due to violation of these Terms, any remaining Dojo Coins may be forfeited.</li>
         </ul>
       </section>
 

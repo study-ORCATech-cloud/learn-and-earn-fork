@@ -25,13 +25,13 @@ import AuthCallbackPage from "./pages/AuthCallbackPage";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import WalletPage from "./pages/WalletPage";
-import GetOrcaCoinsPage from "./pages/GetOrcaCoinsPage";
+import GetDojoCoinsPage from "./pages/GetDojoCoinsPage";
 import LabIDEPage from "./pages/LabIDEPage";
 import { UserProgressProvider } from "./context/UserProgressContext";
 import { SearchProvider } from "./context/SearchContext";
 import { BackendDataProvider } from "./context/BackendDataContext";
 import { AuthProvider } from "./context/AuthContext";
-import { OrcaWalletProvider } from "./context/OrcaWalletContext";
+import { DojoWalletProvider } from "./context/DojoWalletContext";
 import { VotingProvider } from "./context/VotingContext";
 import { useScrollToTop } from "./hooks/useScrollToTop";
 import RoadmapPage from "./pages/RoadmapPage";
@@ -41,8 +41,9 @@ import UserDetailsPage from "./management/pages/UserDetailsPage";
 import RolesPage from "./management/pages/RolesPage";
 import SystemPage from "./management/pages/SystemPage";
 import AnalyticsPage from "./management/pages/AnalyticsPage";
-import OrcaCoinsPage from "./management/pages/OrcaCoinsPage";
+import DojoCoinsPage from "./management/pages/DojoCoinsPage";
 import ContactMessagesPage from "./management/pages/ContactMessagesPage";
+import PackagesPage from "./management/pages/PackagesPage";
 import { ManagementProvider } from "./management/context/ManagementContext";
 import { UserManagementProvider } from "./management/context/UserManagementContext";
 import { SystemProvider } from "./management/context/SystemContext";
@@ -50,6 +51,9 @@ import ManagementLayout from "./management/layouts/ManagementLayout";
 import ProtectedRoute from "./management/components/common/ProtectedRoute";
 import ErrorBoundary from "./management/components/common/ErrorBoundary";
 import Footer from "./components/layout/Footer";
+import CheckoutPage from "./pages/CheckoutPage";
+import PurchaseSuccess from "./pages/PurchaseSuccess";
+import PurchaseCancel from "./pages/PurchaseCancel";
 
 const queryClient = new QueryClient();
 
@@ -64,7 +68,7 @@ const App = () => (
       <AuthProvider>
         <VotingProvider>
           <BackendDataProvider>
-            <OrcaWalletProvider>
+            <DojoWalletProvider>
             <UserProgressProvider>
               <SearchProvider>
               <TooltipProvider>
@@ -90,10 +94,15 @@ const App = () => (
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/wallet" element={<WalletPage />} />
-                    <Route path="/coins" element={<GetOrcaCoinsPage />} />
+                    <Route path="/packages" element={<GetDojoCoinsPage />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/support" element={<SupportPage />} />
                     <Route path="/contact" element={<ContactPage />} />
+                    
+                    {/* Payment Routes */}
+                    <Route path="/checkout" element={<CheckoutPage />} />
+                    <Route path="/purchase/success" element={<PurchaseSuccess />} />
+                    <Route path="/purchase/cancel" element={<PurchaseCancel />} />
                     
                     {/* Legal Pages */}
                     <Route path="/terms" element={<TermsHubPage />} />
@@ -118,7 +127,12 @@ const App = () => (
                                     <Route path="roles" element={<RolesPage />} />
                                     <Route path="contact-messages" element={<ContactMessagesPage />} />
                                     <Route path="analytics" element={<AnalyticsPage />} />
-                                    <Route path="orca-coins" element={<OrcaCoinsPage />} />
+                                    <Route path="dojo-coins" element={<DojoCoinsPage />} />
+                                    <Route path="packages" element={
+                                      <ProtectedRoute requiredRoles={['owner']}>
+                                        <PackagesPage />
+                                      </ProtectedRoute>
+                                    } />
                                     <Route path="system" element={
                                       <ProtectedRoute requiredRoles={['admin', 'owner']}>
                                         <SystemPage />
@@ -142,7 +156,7 @@ const App = () => (
               </TooltipProvider>
               </SearchProvider>
             </UserProgressProvider>
-            </OrcaWalletProvider>
+            </DojoWalletProvider>
           </BackendDataProvider>
         </VotingProvider>
       </AuthProvider>

@@ -87,11 +87,11 @@ const getHelpContent = (path: string): HelpContent => {
     '/management/analytics': {
       icon: <BarChart3 className="w-6 h-6" />,
       title: 'Platform Analytics',
-      description: 'Monitor platform metrics and Orca Coins economy.',
+      description: 'Monitor platform metrics and Dojo Coins economy.',
       sections: [
         {
           title: 'Economy Overview',
-          content: 'Track the Orca Coins economy including total coins in circulation, transaction volumes, and coin distribution across users.'
+          content: 'Track the Dojo Coins economy including total coins in circulation, transaction volumes, and coin distribution across users.'
         },
         {
           title: 'User Analytics',
@@ -103,18 +103,18 @@ const getHelpContent = (path: string): HelpContent => {
         }
       ]
     },
-    '/management/orca-coins': {
+    '/management/dojo-coins': {
       icon: <Coins className="w-6 h-6" />,
-      title: 'Orca Coins Management',
-      description: 'Manage Orca Coins transactions and administrative controls.',
+      title: 'Dojo Coins Management',
+      description: 'Manage Dojo Coins transactions and administrative controls.',
       sections: [
         {
           title: 'Transaction Monitoring',
-          content: 'View all Orca Coins transactions including lab purchases, admin grants, welcome bonuses, and refunds. Filter by user, transaction type, or date range.'
+          content: 'View all Dojo Coins transactions including lab purchases, admin grants, welcome bonuses, and refunds. Filter by user, transaction type, or date range.'
         },
         {
           title: 'Admin Controls',
-          content: 'Grant coins to users, process refunds, and monitor the overall health of the Orca Coins economy. All administrative actions are logged for audit purposes.'
+          content: 'Grant coins to users, process refunds, and monitor the overall health of the Dojo Coins economy. All administrative actions are logged for audit purposes.'
         },
         {
           title: 'User Filtering',

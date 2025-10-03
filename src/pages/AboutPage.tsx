@@ -134,14 +134,14 @@ const AboutPage = () => {
           </div>
         </section>
 
-        {/* Orca Coins Section */}
+        {/* Dojo Coins Section */}
         <section className="py-16 px-4 bg-gradient-to-b from-slate-900/70 to-slate-900/70">
           <div className="container mx-auto">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
                 <div className="flex items-center justify-center gap-3 mb-4">
                   <Coins className="w-8 h-8 text-amber-400" />
-                  <h2 className="text-4xl font-bold text-white">Orca Coins</h2>
+                  <h2 className="text-4xl font-bold text-white">Dojo Coins</h2>
                   <Coins className="w-8 h-8 text-amber-400" />
                 </div>
                 <p className="text-xl text-slate-300">
@@ -158,21 +158,21 @@ const AboutPage = () => {
                 <p className="text-slate-300 leading-relaxed">
                   Every lab, exercise, and core learning material on LabDojo is <strong className="text-green-400">100% free</strong>. 
                   You can complete entire courses, master new technologies, and build your skills without spending a penny. 
-                  Orca Coins are only for optional premium enhancements that complement your free learning experience.
+                  Dojo Coins are only for optional premium enhancements that complement your free learning experience.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                {/* What are Orca Coins */}
+                {/* What are Dojo Coins */}
                 <div className="bg-slate-900/50 rounded-lg p-6 border border-slate-800">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
                       <Coins className="w-5 h-5 text-white" />
                     </div>
-                    <h3 className="text-xl font-semibold text-white">What are Orca Coins?</h3>
+                    <h3 className="text-xl font-semibold text-white">What are Dojo Coins?</h3>
                   </div>
                   <p className="text-slate-300 leading-relaxed">
-                    Orca Coins are our platform's virtual currency that allows you to access premium content and features. 
+                    Dojo Coins are our platform's virtual currency that allows you to access premium content and features. 
                     They're designed to support the platform while giving you access to enhanced learning materials, 
                     bonus exercises, and exclusive content created by industry experts.
                   </p>
@@ -236,10 +236,10 @@ const AboutPage = () => {
               </div>
 
               <div className="text-center mt-8">
-                <Link to="/coins">
+                <Link to="/packages">
                   <button className="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-300 flex items-center gap-2 mx-auto">
                     <Coins className="w-5 h-5" />
-                    Get Orca Coins
+                    Get Dojo Coins
                   </button>
                 </Link>
               </div>
@@ -267,7 +267,7 @@ const AboutPage = () => {
                 </button>
               </Link>
               <a 
-                href="https://github.com/study-ORCATech-cloud"
+                href="https://github.com/LabDojo-io"
                 target="_blank"
                 rel="noopener noreferrer"
               >

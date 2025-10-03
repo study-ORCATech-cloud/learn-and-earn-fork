@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback, ReactNode } from 'react';
-import { orcaCoinsService } from '../services/orcaCoinsService';
+import { dojoCoinsService } from '../services/dojoCoinsService';
 import { useAuth } from './AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -9,9 +9,9 @@ import {
   LabAccessInfo,
   PurchaseRequest,
   PurchaseResponse
-} from '../types/orcaCoins';
+} from '../types/dojoCoins';
 
-interface OrcaWalletState {
+interface DojoWalletState {
   // Wallet data
   balance: number | null;
   walletDetails: WalletDetails | null;
@@ -31,7 +31,7 @@ interface OrcaWalletState {
   labAccessCache: Record<string, LabAccessInfo>;
 }
 
-type OrcaWalletAction =
+type DojoWalletAction =
   | { type: 'SET_LOADING_BALANCE'; payload: boolean }
   | { type: 'SET_LOADING_WALLET'; payload: boolean }
   | { type: 'SET_LOADING_LIBRARY'; payload: boolean }
@@ -45,7 +45,7 @@ type OrcaWalletAction =
   | { type: 'UPDATE_BALANCE_AFTER_PURCHASE'; payload: { newBalance: number; purchase: LabPurchase } }
   | { type: 'RESET_STATE' };
 
-const initialState: OrcaWalletState = {
+const initialState: DojoWalletState = {
   balance: null,
   walletDetails: null,
   userLibrary: null,
@@ -58,7 +58,7 @@ const initialState: OrcaWalletState = {
   labAccessCache: {},
 };
 
-function orcaWalletReducer(state: OrcaWalletState, action: OrcaWalletAction): OrcaWalletState {
+function walletReducer(state: DojoWalletState, action: DojoWalletAction): DojoWalletState {
   switch (action.type) {
     case 'SET_LOADING_BALANCE':
       return { ...state, isLoadingBalance: action.payload };
@@ -74,7 +74,7 @@ function orcaWalletReducer(state: OrcaWalletState, action: OrcaWalletAction): Or
       return { 
         ...state, 
         walletDetails: action.payload, 
-        balance: action.payload.wallet.orca_balance,
+        balance: action.payload.wallet.coin_balance,
         error: null 
       };
     case 'SET_USER_LIBRARY':
@@ -104,8 +104,8 @@ function orcaWalletReducer(state: OrcaWalletState, action: OrcaWalletAction): Or
           ...state.walletDetails,
           wallet: {
             ...state.walletDetails.wallet,
-            orca_balance: action.payload.newBalance,
-            total_orca_spent: state.walletDetails.wallet.total_orca_spent + action.payload.purchase.orca_cost,
+            balance: action.payload.newBalance,
+            total_spent: state.walletDetails.wallet.total_spent + action.payload.purchase.cost,
             lifetime_purchases: state.walletDetails.wallet.lifetime_purchases + 1
           }
         } : null
@@ -117,7 +117,7 @@ function orcaWalletReducer(state: OrcaWalletState, action: OrcaWalletAction): Or
   }
 }
 
-interface OrcaWalletContextValue extends OrcaWalletState {
+interface DojoWalletContextValue extends DojoWalletState {
   // Actions
   refreshBalance: () => Promise<void>;
   refreshWalletDetails: () => Promise<void>;
@@ -135,14 +135,14 @@ interface OrcaWalletContextValue extends OrcaWalletState {
   clearErrors: () => void;
 }
 
-const OrcaWalletContext = createContext<OrcaWalletContextValue | undefined>(undefined);
+const DojoWalletContext = createContext<DojoWalletContextValue | undefined>(undefined);
 
-interface OrcaWalletProviderProps {
+interface DojoWalletProviderProps {
   children: ReactNode;
 }
 
-export const OrcaWalletProvider: React.FC<OrcaWalletProviderProps> = ({ children }) => {
-  const [state, dispatch] = useReducer(orcaWalletReducer, initialState);
+export const DojoWalletProvider: React.FC<DojoWalletProviderProps> = ({ children }) => {
+  const [state, dispatch] = useReducer(walletReducer, initialState);
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
 
@@ -166,7 +166,7 @@ export const OrcaWalletProvider: React.FC<OrcaWalletProviderProps> = ({ children
     
     dispatch({ type: 'SET_LOADING_BALANCE', payload: true });
     try {
-      const balance = await orcaCoinsService.getWalletBalance();
+      const balance = await dojoCoinsService.getWalletBalance();
       dispatch({ type: 'SET_BALANCE', payload: balance });
     } catch (error) {
       console.error('Failed to refresh balance:', error);
@@ -181,7 +181,7 @@ export const OrcaWalletProvider: React.FC<OrcaWalletProviderProps> = ({ children
     
     dispatch({ type: 'SET_LOADING_WALLET', payload: true });
     try {
-      const walletDetails = await orcaCoinsService.getWalletDetails();
+      const walletDetails = await dojoCoinsService.getWalletDetails();
       dispatch({ type: 'SET_WALLET_DETAILS', payload: walletDetails });
       
       // Check for welcome bonus and show message for new users
@@ -189,11 +189,11 @@ export const OrcaWalletProvider: React.FC<OrcaWalletProviderProps> = ({ children
         transaction => transaction.transaction_type === 'WELCOME_BONUS'
       );
       
-      if (hasWelcomeBonus && walletDetails.wallet.orca_balance === 5 && walletDetails.recent_transactions.length === 1) {
+      if (hasWelcomeBonus && walletDetails.wallet.coin_balance === 5 && walletDetails.recent_transactions.length === 1) {
         // This appears to be a new user who just received their welcome bonus
         toast({
           title: "Welcome to LabDojo! 🎉",
-          description: "You've received 5 free Orca Coins to get started. Use them to unlock premium lab content!",
+          description: "You've received 5 free Dojo Coins to get started. Use them to unlock premium lab content!",
           duration: 6000,
         });
       }
@@ -210,7 +210,7 @@ export const OrcaWalletProvider: React.FC<OrcaWalletProviderProps> = ({ children
     
     dispatch({ type: 'SET_LOADING_LIBRARY', payload: true });
     try {
-      const userLibrary = await orcaCoinsService.getUserLibrary();
+      const userLibrary = await dojoCoinsService.getUserLibrary();
       dispatch({ type: 'SET_USER_LIBRARY', payload: userLibrary });
     } catch (error) {
       console.error('Failed to refresh user library:', error);
@@ -231,7 +231,7 @@ export const OrcaWalletProvider: React.FC<OrcaWalletProviderProps> = ({ children
     }
 
     try {
-      const accessInfo = await orcaCoinsService.checkLabAccess(labUrl);
+      const accessInfo = await dojoCoinsService.checkLabAccess(labUrl);
       dispatch({ type: 'SET_LAB_ACCESS', payload: { labUrl, accessInfo } });
       return accessInfo;
     } catch (error) {
@@ -249,7 +249,7 @@ export const OrcaWalletProvider: React.FC<OrcaWalletProviderProps> = ({ children
     dispatch({ type: 'SET_PURCHASE_ERROR', payload: null });
     
     try {
-      const response = await orcaCoinsService.purchaseLabAccess(purchaseData);
+      const response = await dojoCoinsService.purchaseLabAccess(purchaseData);
       
       if (response.success && response.data) {
         // Update local state with new balance and purchase
@@ -296,15 +296,15 @@ export const OrcaWalletProvider: React.FC<OrcaWalletProviderProps> = ({ children
   }, [isAuthenticated]);
 
   const canAffordLab = useCallback((cost: number): boolean => {
-    return state.balance !== null && orcaCoinsService.canAfford(state.balance, cost);
+    return state.balance !== null && dojoCoinsService.canAfford(state.balance, cost);
   }, [state.balance]);
 
   const formatCoins = useCallback((amount: number): string => {
-    return orcaCoinsService.formatOrcaCoins(amount);
+    return dojoCoinsService.formatDojoCoins(amount);
   }, []);
 
   const calculateLabCost = useCallback((difficulty: 'beginner' | 'intermediate' | 'professional' | 'expert'): number => {
-    return orcaCoinsService.calculateLabPrice(difficulty);
+    return dojoCoinsService.calculateLabPrice(difficulty);
   }, []);
 
   const hasAccessToLab = useCallback((labUrl: string): boolean => {
@@ -317,7 +317,7 @@ export const OrcaWalletProvider: React.FC<OrcaWalletProviderProps> = ({ children
     dispatch({ type: 'SET_PURCHASE_ERROR', payload: null });
   }, []);
 
-  const contextValue: OrcaWalletContextValue = {
+  const contextValue: DojoWalletContextValue = {
     ...state,
     refreshBalance,
     refreshWalletDetails,
@@ -332,16 +332,16 @@ export const OrcaWalletProvider: React.FC<OrcaWalletProviderProps> = ({ children
   };
 
   return (
-    <OrcaWalletContext.Provider value={contextValue}>
+    <DojoWalletContext.Provider value={contextValue}>
       {children}
-    </OrcaWalletContext.Provider>
+    </DojoWalletContext.Provider>
   );
 };
 
-export const useOrcaWallet = (): OrcaWalletContextValue => {
-  const context = useContext(OrcaWalletContext);
+export const useDojoWallet = (): DojoWalletContextValue => {
+  const context = useContext(DojoWalletContext);
   if (context === undefined) {
-    throw new Error('useOrcaWallet must be used within an OrcaWalletProvider');
+    throw new Error('useDojoWallet must be used within an DojoWalletProvider');
   }
   return context;
 };

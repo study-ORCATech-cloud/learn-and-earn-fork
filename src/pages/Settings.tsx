@@ -108,7 +108,6 @@ const Settings: React.FC = () => {
     setIsSaving(true);
     try {
       // TODO: Implement API call to save settings
-      console.log('Saving settings:', settings);
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
       setHasChanges(false);
     } catch (error) {
@@ -121,7 +120,6 @@ const Settings: React.FC = () => {
   const handleReset = () => {
     // TODO: Reset to default settings or reload from backend
     setHasChanges(false);
-    console.log('Reset settings to defaults');
   };
 
   if (!isAuthenticated || !user) {

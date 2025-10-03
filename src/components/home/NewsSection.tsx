@@ -24,12 +24,12 @@ const newsItems: NewsItem[] = [
       <>
         Connect with fellow learners and contribute to our growing community. Check out our{' '}
         <a 
-          href="https://github.com/study-ORCATech-cloud" 
+          href="https://github.com/LabDojo-io" 
           target="_blank" 
           rel="noopener noreferrer"
           className="text-blue-400 hover:text-blue-300 underline font-medium"
         >
-          ORCATech Study
+          LabDojo-io
         </a>
         {' '}organization on GitHub for practice repositories and community discussions.
       </>
