@@ -140,14 +140,19 @@ const GetDojoCoinsPage = () => {
   // Group packages by type
   const groupPackagesByType = (packages: Package[]) => {
     const grouped: Record<string, Package[]> = {};
-    
+
     packages.forEach(pkg => {
       if (!grouped[pkg.package_type]) {
         grouped[pkg.package_type] = [];
       }
       grouped[pkg.package_type].push(pkg);
     });
-    
+
+    // Sort packages within each group by price (lowest to highest)
+    Object.keys(grouped).forEach(type => {
+      grouped[type].sort((a, b) => a.price_usd - b.price_usd);
+    });
+
     return grouped;
   };
 

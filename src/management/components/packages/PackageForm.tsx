@@ -311,7 +311,7 @@ const PackageForm: React.FC<PackageFormProps> = ({
                 <Input
                   id="price_usd"
                   type="number"
-                  min="5.00"
+                  min="4.99"
                   max="10000"
                   step="0.01"
                   value={formData.price_usd}
@@ -323,7 +323,7 @@ const PackageForm: React.FC<PackageFormProps> = ({
                 />
               </div>
               <p className="text-xs text-slate-500">
-                Minimum $5.00, maximum $10,000
+                Minimum $4.99, maximum $10,000
               </p>
               {errors.price_usd && (
                 <p className="text-sm text-red-400">{errors.price_usd}</p>

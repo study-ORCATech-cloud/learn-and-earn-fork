@@ -16,7 +16,7 @@ const PrivacyPolicyContent: React.FC = () => {
       {/* Introduction */}
       <section className="space-y-3">
         <p className="leading-relaxed">
-          LabDojo.io ("Website," "Platform," "we," "us," or "our") respects your privacy.<br/>
+          LabDojo.io, operated by ORCA Tech ("Website," "Platform," "we," "us," or "our") respects your privacy.<br/>
           This Privacy Policy explains how we collect, use, and protect your information when you use the Website.<br/>
           By accessing or using the Website, you agree to the practices described below.
         </p>
@@ -125,7 +125,7 @@ const PrivacyPolicyContent: React.FC = () => {
       <section className="space-y-3">
         <h2 className="text-xl font-semibold text-white">9. International Users</h2>
         <p className="leading-relaxed">
-          The Website is operated from Israel, and user data is stored and processed on servers located in European Union.<br/>
+          The Website is operated by ORCA Tech from Israel, and user data is stored and processed on servers located in European Union.<br/>
           If you access the Website from outside of the EU/EEA, you acknowledge that your data may be transferred and processed in Israel or other jurisdictions.
         </p>
         <p className="leading-relaxed">

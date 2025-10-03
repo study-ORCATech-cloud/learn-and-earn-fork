@@ -156,8 +156,8 @@ class PackageManagementService {
     }
 
     if ('price_usd' in data && data.price_usd !== undefined) {
-      if (data.price_usd < 5.00) {
-        errors.push('Price must be at least $5.00');
+      if (data.price_usd < 4.99) {
+        errors.push('Price must be at least $4.99');
       }
       if (data.price_usd > 10000) {
         errors.push('Price must be less than $10,000');
