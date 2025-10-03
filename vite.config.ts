@@ -14,7 +14,7 @@ const dynamicCSPPlugin = (mode: string) => ({
       : "'self' http://localhost:* https://cdn.jsdelivr.net https://api.github.com https://cdn.paddle.com https://sandbox-api.paddle.com wss: ws:";
     
     const cspContent = `default-src 'self'; 
-                        script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.paddle.com; 
+                        script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.paddle.com https://public.profitwell.com; 
                         worker-src blob: 'self'; 
                         connect-src ${connectSrc}; 
                         img-src 'self' data: https: blob:; 
